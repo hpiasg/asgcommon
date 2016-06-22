@@ -19,6 +19,8 @@ package de.uni_potsdam.hpi.asg.common.io.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.Serializable;
+
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -26,7 +28,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class SyncTool {
+public class SyncTool implements Serializable {
+
+    private static final long serialVersionUID = 4564277794397798986L;
 
     //@formatter:off
     @XmlElement(name = "searchpaths")

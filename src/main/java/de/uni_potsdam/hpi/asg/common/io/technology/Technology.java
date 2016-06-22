@@ -20,6 +20,7 @@ package de.uni_potsdam.hpi.asg.common.io.technology;
  */
 
 import java.io.File;
+import java.io.Serializable;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -35,8 +36,10 @@ import org.apache.logging.log4j.Logger;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
-public class Technology {
-    private static final Logger logger = LogManager.getLogger();
+public class Technology implements Serializable {
+
+    private static final long   serialVersionUID = 1867717371715445576L;
+    private static final Logger logger           = LogManager.getLogger();
 
     //@formatter:off
     

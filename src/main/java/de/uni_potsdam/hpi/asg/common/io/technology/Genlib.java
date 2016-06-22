@@ -19,15 +19,19 @@ package de.uni_potsdam.hpi.asg.common.io.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class Genlib {
+public class Genlib implements Serializable {
+
+    private static final long serialVersionUID = -7764726802415284856L;
 
     @XmlElement(name = "libfile")
-    private String libfile;
+    private String            libfile;
 
     public String getLibfile() {
         return libfile;

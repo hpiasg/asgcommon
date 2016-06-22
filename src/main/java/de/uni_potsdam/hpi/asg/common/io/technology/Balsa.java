@@ -19,17 +19,20 @@ package de.uni_potsdam.hpi.asg.common.io.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class Balsa {
+public class Balsa implements Serializable {
+    private static final long serialVersionUID = -7729551903207056828L;
 
     @XmlElement(name = "style")
-    private String style;
+    private String            style;
     @XmlElement(name = "tech")
-    private String tech;
+    private String            tech;
 
     @Override
     @Deprecated

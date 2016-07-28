@@ -26,49 +26,50 @@ import javax.xml.bind.annotation.XmlEnum;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Parameter {
-	@XmlEnum
-	public enum ParameterType {
-		name,				// Name of variable -- BrzVariable
-		width,				// Width of all signals -- BrzCallMux, BrzFetch, BrzConstant, BrzCaseFetch
-		operator,			// -- BrzBinaryFunc, BrzBinaryFuncConstR
-		value,				// -- BrzConstant
-		port_count,			// -- BrzDecisionWait
-		index_width,		// -- BrzCaseFetch
-		low_index,			// BrzSlice
-		
-		input_count,		// -- BrzCallMux, BrzCaseFetch, BrzCombineEqual, BrzEncode
-		input_width,		// -- BrzVariable, BrzCase, BrzFalseVariable, BrzAdapt, BrzCombineEqual
-		input_signed,		// -- BrzAdapt
-		
-		inputA_width,		// -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzCombine
-		inputA_signed,		// -- BrzBinaryFunc, BrzBinaryFuncConstR
-		
-		inputB_width,		// -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzCombine
-		inputB_signed,		// -- BrzBinaryFunc, BrzBinaryFuncConstR
-		inputB_value,		// -- BrzBinaryFuncConstR
-		
-		outputA_width,		// BrzSplit
-		outputB_width,		// BrzSplit
-			
-		output_width,		// -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzCombine, BrzAdapt, BrzCombineEqual, BrzEncode
-		output_signed,		// -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzAdapt
-		output_count,		// -- BrzVariable, BrzCase, BrzFalseVariable, BrzWireFork
-		
-		var_spec,			// Outputspec of Variable -- BrzVariable, BrzFalseVariable
-		fetch_spec,			// NYI -- BrzFetch, BrzCaseFetch
-		case_spec,			// NYI -- BrzCase
-		encode_spec			// NYI -- BrzEncode
-	}
-	
-	@XmlAttribute(name="id", required=true)
-	private int id;
-	@XmlAttribute(name="type", required=true)
-	private ParameterType type;
-	
-	public int getId() {
-		return id;
-	}
-	public ParameterType getType() {
-		return type;
-	}
+    @XmlEnum
+    public enum ParameterType {
+        name, // Name of variable -- BrzVariable
+        width, // Width of all signals -- BrzCallMux, BrzFetch, BrzConstant, BrzCaseFetch
+        operator, // -- BrzBinaryFunc, BrzBinaryFuncConstR
+        value, // -- BrzConstant
+        port_count, // -- BrzDecisionWait
+        index_width, // -- BrzCaseFetch
+        low_index, // BrzSlice
+
+        input_count, // -- BrzCallMux, BrzCaseFetch, BrzCombineEqual, BrzEncode
+        input_width, // -- BrzVariable, BrzCase, BrzFalseVariable, BrzAdapt, BrzCombineEqual
+        input_signed, // -- BrzAdapt
+
+        inputA_width, // -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzCombine
+        inputA_signed, // -- BrzBinaryFunc, BrzBinaryFuncConstR
+
+        inputB_width, // -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzCombine
+        inputB_signed, // -- BrzBinaryFunc, BrzBinaryFuncConstR
+        inputB_value, // -- BrzBinaryFuncConstR
+
+        outputA_width, // BrzSplit
+        outputB_width, // BrzSplit
+
+        output_width, // -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzCombine, BrzAdapt, BrzCombineEqual, BrzEncode
+        output_signed, // -- BrzBinaryFunc, BrzBinaryFuncConstR, BrzAdapt
+        output_count, // -- BrzVariable, BrzCase, BrzFalseVariable, BrzWireFork
+
+        var_spec, // Outputspec of Variable -- BrzVariable, BrzFalseVariable
+        fetch_spec, // NYI -- BrzFetch, BrzCaseFetch
+        case_spec, // NYI -- BrzCase
+        encode_spec // NYI -- BrzEncode
+    }
+
+    @XmlAttribute(name = "id", required = true)
+    private int           id;
+    @XmlAttribute(name = "type", required = true)
+    private ParameterType type;
+
+    public int getId() {
+        return id;
+    }
+
+    public ParameterType getType() {
+        return type;
+    }
 }

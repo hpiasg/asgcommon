@@ -37,38 +37,38 @@ import org.apache.logging.log4j.Logger;
 @XmlRootElement(name = "components")
 @XmlAccessorType(XmlAccessType.NONE)
 public class Components {
-	protected static final Logger	logger			= LogManager.getLogger();
-	protected static final String	injarfilename	= "/components.xml";
+    protected static final Logger logger        = LogManager.getLogger();
+    protected static final String injarfilename = "/components.xml";
 
-	@XmlElement(name = "component")
-	private List<Component> components;
+    @XmlElement(name = "component")
+    private List<Component>       components;
 
-	protected Components() {
-	}
+    protected Components() {
+    }
 
-	public static Components readIn(String filename) {
-		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Components.class);
-			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-			if(filename == null || filename.equals("")) {
-				InputStream inputStream = Components.class.getResourceAsStream(injarfilename);
-				return (Components)jaxbUnmarshaller.unmarshal(inputStream);
-			} else {
-				File file = new File(filename);
-				if(file.exists()) {
-					return (Components)jaxbUnmarshaller.unmarshal(file);
-				} else {
-					logger.error("File " + filename + " not found");
-					return null;
-				}
-			}
-		} catch(JAXBException e) {
-			logger.error(e.getLocalizedMessage());
-			return null;
-		}
-	}
+    public static Components readIn(String filename) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Components.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            if(filename == null || filename.equals("")) {
+                InputStream inputStream = Components.class.getResourceAsStream(injarfilename);
+                return (Components)jaxbUnmarshaller.unmarshal(inputStream);
+            } else {
+                File file = new File(filename);
+                if(file.exists()) {
+                    return (Components)jaxbUnmarshaller.unmarshal(file);
+                } else {
+                    logger.error("File " + filename + " not found");
+                    return null;
+                }
+            }
+        } catch(JAXBException e) {
+            logger.error(e.getLocalizedMessage());
+            return null;
+        }
+    }
 
-	public List<Component> getComponents() {
-		return components;
-	}
+    public List<Component> getComponents() {
+        return components;
+    }
 }

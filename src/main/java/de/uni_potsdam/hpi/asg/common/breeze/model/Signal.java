@@ -20,29 +20,29 @@ package de.uni_potsdam.hpi.asg.common.breeze.model;
  */
 
 public class Signal {
-	private String		name;
-	private int			width;
-	private Direction	direction;
+    private String    name;
+    private int       width;
+    private Direction direction;
 
-	public Signal(String name, int width, Direction direction) {
-		this.name = name;
-		this.width = width;
-		this.direction = direction;
-	}
+    public Signal(String name, int width, Direction direction) {
+        this.name = name;
+        this.width = width;
+        this.direction = direction;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public int getWidth() {
-		return width;
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	public Direction getDirection() {
-		return direction;
-	}
+    public Direction getDirection() {
+        return direction;
+    }
 
-	public enum Direction {
-		in, out
-	}
+    public enum Direction {
+        in, out
+    }
 }

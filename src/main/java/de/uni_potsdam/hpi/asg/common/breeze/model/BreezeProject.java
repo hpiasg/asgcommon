@@ -28,29 +28,29 @@ import de.uni_potsdam.hpi.asg.common.breeze.model.xml.Component;
 import de.uni_potsdam.hpi.asg.common.breeze.model.xml.Components;
 
 public class BreezeProject extends AbstractBreezeProject {
-	private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
-	public static BreezeProject create(File rootfile, String componentconfig, boolean skipUndefinedComponents, boolean skipSubComponents) {
-		BreezeProject retVal = new BreezeProject();
-		if(!retVal.readComponentsList(componentconfig)) {
-			return null;
-		}
-		if(!BreezeNetlist.create(rootfile, skipUndefinedComponents, skipSubComponents, retVal)) {
-			logger.error("Could not create Breeze netlist for " + rootfile);
-			return null;
-		}
-		return retVal;
-	}
+    public static BreezeProject create(File rootfile, String componentconfig, boolean skipUndefinedComponents, boolean skipSubComponents) {
+        BreezeProject retVal = new BreezeProject();
+        if(!retVal.readComponentsList(componentconfig)) {
+            return null;
+        }
+        if(!BreezeNetlist.create(rootfile, skipUndefinedComponents, skipSubComponents, retVal)) {
+            logger.error("Could not create Breeze netlist for " + rootfile);
+            return null;
+        }
+        return retVal;
+    }
 
-	private boolean readComponentsList(String componentconfig) {
-		Components components = Components.readIn(componentconfig);
-		if(components != null) {
-			for(Component comp : components.getComponents()) {
-				componentList.put(comp.getBreezename(), new HSComponent(comp));
-			}
-			return true;
-		}
-		logger.error("Componentlist not found");
-		return false;
-	}
+    private boolean readComponentsList(String componentconfig) {
+        Components components = Components.readIn(componentconfig);
+        if(components != null) {
+            for(Component comp : components.getComponents()) {
+                componentList.put(comp.getBreezename(), new HSComponent(comp));
+            }
+            return true;
+        }
+        logger.error("Componentlist not found");
+        return false;
+    }
 }

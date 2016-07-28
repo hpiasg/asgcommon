@@ -27,29 +27,29 @@ import java.util.Set;
 
 public class BreezeNetlistHierachieOrderer {
 
-	private Queue<AbstractBreezeNetlist> todo;
-	
-	public BreezeNetlistHierachieOrderer(Collection<AbstractBreezeNetlist> netlists) {
-		this.todo = new LinkedList<AbstractBreezeNetlist>(netlists);
-	}
-	
-	public Set<AbstractBreezeNetlist> order() {
-		Set<AbstractBreezeNetlist> retVal = new LinkedHashSet<AbstractBreezeNetlist>();
-		while(!todo.isEmpty()) {
-			AbstractBreezeNetlist list = todo.poll();
-			boolean isleaf = true;
-			for(BreezeNetlistInst inst : list.getSubBreezeInst()) {
-				if(todo.contains(inst.getInstantiatedNetlist())) {
-					isleaf = false;
-					break;
-				}
-			}
-			if(isleaf) {
-				retVal.add(list);
-			} else {
-				todo.add(list);
-			}
-		}
-		return retVal;
-	}
+    private Queue<AbstractBreezeNetlist> todo;
+
+    public BreezeNetlistHierachieOrderer(Collection<AbstractBreezeNetlist> netlists) {
+        this.todo = new LinkedList<AbstractBreezeNetlist>(netlists);
+    }
+
+    public Set<AbstractBreezeNetlist> order() {
+        Set<AbstractBreezeNetlist> retVal = new LinkedHashSet<AbstractBreezeNetlist>();
+        while(!todo.isEmpty()) {
+            AbstractBreezeNetlist list = todo.poll();
+            boolean isleaf = true;
+            for(BreezeNetlistInst inst : list.getSubBreezeInst()) {
+                if(todo.contains(inst.getInstantiatedNetlist())) {
+                    isleaf = false;
+                    break;
+                }
+            }
+            if(isleaf) {
+                retVal.add(list);
+            } else {
+                todo.add(list);
+            }
+        }
+        return retVal;
+    }
 }

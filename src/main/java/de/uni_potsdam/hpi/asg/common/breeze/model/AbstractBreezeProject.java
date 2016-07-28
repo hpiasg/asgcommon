@@ -26,42 +26,42 @@ import java.util.Set;
 
 public abstract class AbstractBreezeProject {
 
-	protected Map<String, AbstractBreezeNetlist>	netlists;
-	private Set<String>								alreadyChecked;
-	protected Map<String, AbstractHSComponent>		componentList;
-	private Set<AbstractBreezeNetlist>				sortedNetlists;
+    protected Map<String, AbstractBreezeNetlist> netlists;
+    private Set<String>                          alreadyChecked;
+    protected Map<String, AbstractHSComponent>   componentList;
+    private Set<AbstractBreezeNetlist>           sortedNetlists;
 
-	protected AbstractBreezeProject() {
-		alreadyChecked = new HashSet<String>();
-		netlists = new HashMap<String, AbstractBreezeNetlist>();
-		componentList = new HashMap<String, AbstractHSComponent>();
-	}
+    protected AbstractBreezeProject() {
+        alreadyChecked = new HashSet<String>();
+        netlists = new HashMap<String, AbstractBreezeNetlist>();
+        componentList = new HashMap<String, AbstractHSComponent>();
+    }
 
-	public Set<String> getAlreadyChecked() {
-		return alreadyChecked;
-	}
+    public Set<String> getAlreadyChecked() {
+        return alreadyChecked;
+    }
 
-	public Map<String, AbstractBreezeNetlist> getNetlists() {
-		return netlists;
-	}
+    public Map<String, AbstractBreezeNetlist> getNetlists() {
+        return netlists;
+    }
 
-	public Map<String, AbstractHSComponent> getComponentList() {
-		return componentList;
-	}
+    public Map<String, AbstractHSComponent> getComponentList() {
+        return componentList;
+    }
 
-	public Set<HSComponentType> getAllHSTypes() {
-		Set<HSComponentType> retVal = new HashSet<HSComponentType>();
-		for(AbstractHSComponent comp : componentList.values()) {
-			retVal.addAll(comp.getTypes());
-		}
-		return retVal;
-	}
+    public Set<HSComponentType> getAllHSTypes() {
+        Set<HSComponentType> retVal = new HashSet<HSComponentType>();
+        for(AbstractHSComponent comp : componentList.values()) {
+            retVal.addAll(comp.getTypes());
+        }
+        return retVal;
+    }
 
-	public Set<AbstractBreezeNetlist> getSortedNetlists() {
-		if(sortedNetlists == null || netlists.size() > sortedNetlists.size()) {
-			BreezeNetlistHierachieOrderer order = new BreezeNetlistHierachieOrderer(netlists.values());
-			sortedNetlists = order.order();
-		}
-		return sortedNetlists;
-	}
+    public Set<AbstractBreezeNetlist> getSortedNetlists() {
+        if(sortedNetlists == null || netlists.size() > sortedNetlists.size()) {
+            BreezeNetlistHierachieOrderer order = new BreezeNetlistHierachieOrderer(netlists.values());
+            sortedNetlists = order.order();
+        }
+        return sortedNetlists;
+    }
 }

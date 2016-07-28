@@ -21,21 +21,21 @@ package de.uni_potsdam.hpi.asg.common.io;
 
 public class Timeout implements Runnable {
 
-	private Thread t;
-	private int timeout;
-	
-	public Timeout(Thread t, int timeout) {
-		this.t = t;
-		this.timeout = timeout;
-	}
-	
-	public void run() {
+    private Thread t;
+    private int    timeout;
+
+    public Timeout(Thread t, int timeout) {
+        this.t = t;
+        this.timeout = timeout;
+    }
+
+    public void run() {
         try {
-			Thread.sleep(timeout);
-			t.interrupt();
-			return;
-		} catch (InterruptedException e) {
-			return;
-		}        
+            Thread.sleep(timeout);
+            t.interrupt();
+            return;
+        } catch(InterruptedException e) {
+            return;
+        }
     }
 }

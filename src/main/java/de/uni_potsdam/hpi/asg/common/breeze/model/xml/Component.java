@@ -26,26 +26,29 @@ import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Component {
-	@XmlAttribute(name="breezename", required=true)
-	String breezename;
-	@XmlAttribute(name="symbol")
-	String symbol;
-	
-	@XmlElement(name="parameters")
-	private Parameters parameters;
-	@XmlElement(name="channels")
-	private Channels channels;
-	
-	public String getBreezename() {
-		return breezename;
-	}	
-	public Channels getChannels() {
-		return channels;
-	}
-	public Parameters getParameters() {
-		return parameters;
-	}
-	public String getSymbol() {
-		return symbol;
-	}
+    @XmlAttribute(name = "breezename", required = true)
+    String             breezename;
+    @XmlAttribute(name = "symbol")
+    String             symbol;
+
+    @XmlElement(name = "parameters")
+    private Parameters parameters;
+    @XmlElement(name = "channels")
+    private Channels   channels;
+
+    public String getBreezename() {
+        return breezename;
+    }
+
+    public Channels getChannels() {
+        return channels;
+    }
+
+    public Parameters getParameters() {
+        return parameters;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
 }

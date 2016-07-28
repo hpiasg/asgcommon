@@ -29,92 +29,92 @@ import de.uni_potsdam.hpi.asg.common.breeze.model.xml.Parameter;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezeComponentElement;
 
 /**
- * Represents a handshake component 
+ * Represents a handshake component
  * (e.g. BrzVariable or BrzCallMux)
  * 
  */
 public abstract class AbstractHSComponent {
 
-	private Map<String, HSComponentType>						typeMap;
-	private Map<AbstractBreezeNetlist, List<HSComponentInst>>	instances;
-	protected Component											comp;
+    private Map<String, HSComponentType>                      typeMap;
+    private Map<AbstractBreezeNetlist, List<HSComponentInst>> instances;
+    protected Component                                       comp;
 
-	public AbstractHSComponent(Component comp) {
-		typeMap = new HashMap<String, HSComponentType>();
-		instances = new HashMap<AbstractBreezeNetlist, List<HSComponentInst>>();
-		this.comp = comp;
-	}
+    public AbstractHSComponent(Component comp) {
+        typeMap = new HashMap<String, HSComponentType>();
+        instances = new HashMap<AbstractBreezeNetlist, List<HSComponentInst>>();
+        this.comp = comp;
+    }
 
-	public abstract boolean createInstance(BreezeComponentElement be, AbstractBreezeNetlist netlist);
+    public abstract boolean createInstance(BreezeComponentElement be, AbstractBreezeNetlist netlist);
 
-	protected HSComponentType internalCreateInstanceType(BreezeComponentElement be) {
-		HSComponentType type = null;
-		String typeidstr = getTypeID(be);
-		if(typeMap.containsKey(typeidstr)) {
-			type = (HSComponentType)typeMap.get(typeidstr);
-		}
-		if(type == null) {
-			type = HSComponentType.create(comp.getParameters(), be.parameters, this);
-			if(type == null) {
-				return null;
-			}
-			typeMap.put(typeidstr, type);
-		}
-		return type;
-	}
+    protected HSComponentType internalCreateInstanceType(BreezeComponentElement be) {
+        HSComponentType type = null;
+        String typeidstr = getTypeID(be);
+        if(typeMap.containsKey(typeidstr)) {
+            type = (HSComponentType)typeMap.get(typeidstr);
+        }
+        if(type == null) {
+            type = HSComponentType.create(comp.getParameters(), be.parameters, this);
+            if(type == null) {
+                return null;
+            }
+            typeMap.put(typeidstr, type);
+        }
+        return type;
+    }
 
-	protected HSComponentInst internalCreateInstanceInst(BreezeComponentElement be, AbstractBreezeNetlist netlist, HSComponentType type) {
-		HSComponentInst inst = HSComponentInst.create(be.getID(), be.channels, type, comp.getChannels(), netlist, this);
-		if(inst == null) {
-			return null;
-		}
+    protected HSComponentInst internalCreateInstanceInst(BreezeComponentElement be, AbstractBreezeNetlist netlist, HSComponentType type) {
+        HSComponentInst inst = HSComponentInst.create(be.getID(), be.channels, type, comp.getChannels(), netlist, this);
+        if(inst == null) {
+            return null;
+        }
 
-		if(!instances.containsKey(netlist)) {
-			instances.put(netlist, new ArrayList<HSComponentInst>());
-		}
-		instances.get(netlist).add(inst);
-		return inst;
-	}
+        if(!instances.containsKey(netlist)) {
+            instances.put(netlist, new ArrayList<HSComponentInst>());
+        }
+        instances.get(netlist).add(inst);
+        return inst;
+    }
 
-	private String getTypeID(BreezeComponentElement be) {
-		StringBuilder str = new StringBuilder();
-		int i = 0;
-		if(comp.getParameters() != null) {
-			for(Object o : be.parameters) {
-				Parameter param = comp.getParameters().getParameter(i);
-				if(param != null) {
-					str.append(o.toString());
-				}
-				i++;
-			}
-		}
-		return str.toString();
-	}
+    private String getTypeID(BreezeComponentElement be) {
+        StringBuilder str = new StringBuilder();
+        int i = 0;
+        if(comp.getParameters() != null) {
+            for(Object o : be.parameters) {
+                Parameter param = comp.getParameters().getParameter(i);
+                if(param != null) {
+                    str.append(o.toString());
+                }
+                i++;
+            }
+        }
+        return str.toString();
+    }
 
-	public int getNumChans() {
-		return comp.getChannels().getSize();
-	}
+    public int getNumChans() {
+        return comp.getChannels().getSize();
+    }
 
-	public List<HSComponentType> getTypes() {
-		return new ArrayList<HSComponentType>(typeMap.values());
-	}
+    public List<HSComponentType> getTypes() {
+        return new ArrayList<HSComponentType>(typeMap.values());
+    }
 
-	public List<HSComponentInst> getInstances(AbstractBreezeNetlist netlist) {
-		if(!instances.containsKey(netlist)) {
-			instances.put(netlist, new ArrayList<HSComponentInst>());
-		}
-		return instances.get(netlist);
-	}
+    public List<HSComponentInst> getInstances(AbstractBreezeNetlist netlist) {
+        if(!instances.containsKey(netlist)) {
+            instances.put(netlist, new ArrayList<HSComponentInst>());
+        }
+        return instances.get(netlist);
+    }
 
-	public String getSymbol() {
-		return comp.getSymbol();
-	}
+    public String getSymbol() {
+        return comp.getSymbol();
+    }
 
-	public String getBrzString() {
-		return comp.getBreezename();
-	}
+    public String getBrzString() {
+        return comp.getBreezename();
+    }
 
-	public Component getComp() {
-		return comp;
-	}
+    public Component getComp() {
+        return comp;
+    }
 }

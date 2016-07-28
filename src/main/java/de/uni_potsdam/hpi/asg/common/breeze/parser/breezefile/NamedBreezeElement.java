@@ -19,7 +19,6 @@ package de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 public interface NamedBreezeElement {
-	public String getName();
+    public String getName();
 }

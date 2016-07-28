@@ -28,20 +28,20 @@ import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezeComponentEle
  */
 public class HSComponent extends AbstractHSComponent {
 
-	public HSComponent(Component comp) {
-		super(comp);
-	}
+    public HSComponent(Component comp) {
+        super(comp);
+    }
 
-	@Override
-	public boolean createInstance(BreezeComponentElement be, AbstractBreezeNetlist netlist) {
-		HSComponentType type = internalCreateInstanceType(be);
-		if(type == null) {
-			return false;
-		}
-		HSComponentInst inst = internalCreateInstanceInst(be, netlist, type);
-		if(inst == null) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean createInstance(BreezeComponentElement be, AbstractBreezeNetlist netlist) {
+        HSComponentType type = internalCreateInstanceType(be);
+        if(type == null) {
+            return false;
+        }
+        HSComponentInst inst = internalCreateInstanceInst(be, netlist, type);
+        if(inst == null) {
+            return false;
+        }
+        return true;
+    }
 }

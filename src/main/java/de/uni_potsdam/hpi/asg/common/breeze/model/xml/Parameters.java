@@ -27,15 +27,15 @@ import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Parameters {
-	@XmlElement(name="parameter")
-	private List<Parameter> parameters;
+    @XmlElement(name = "parameter")
+    private List<Parameter> parameters;
 
-	public Parameter getParameter(int id) {
-		for(Parameter param : parameters) {
-			if(param.getId() == id) {
-				return param;
-			}
-		}
-		return null;
-	}
+    public Parameter getParameter(int id) {
+        for(Parameter param : parameters) {
+            if(param.getId() == id) {
+                return param;
+            }
+        }
+        return null;
+    }
 }

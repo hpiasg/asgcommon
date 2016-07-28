@@ -246,4 +246,21 @@ public class FileHelper {
         String newfilename = basedir + getFileSeparator() + filename;
         return new File(newfilename);
     }
+
+    public void deleteFileR(File file) {
+        if(file.exists()) {
+            if(file.isFile()) {
+                file.delete();
+                return;
+            }
+            if(file.isDirectory()) {
+                String files[] = file.list();
+                for(String str : files) {
+                    deleteFileR(new File(file, str));
+                }
+                file.delete();
+            }
+        }
+    }
+
 }

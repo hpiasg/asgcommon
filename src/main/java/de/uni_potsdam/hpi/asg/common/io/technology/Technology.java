@@ -59,7 +59,7 @@ public class Technology implements Serializable {
     public static Technology readIn(File file) {
         try {
             if(!file.exists()) {
-                logger.error("Technologyfile not found");
+                logger.error("Technologyfile " + file.getAbsolutePath() + " not found");
                 return null;
             }
             JAXBContext jaxbContext = JAXBContext.newInstance(Technology.class);

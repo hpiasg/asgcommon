@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.io.remote;
+package de.uni_potsdam.hpi.asg.common.remote;
 
 /*
  * Copyright (C) 2016 Norman Kluge
@@ -32,7 +32,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import de.uni_potsdam.hpi.asg.common.io.WorkingdirGenerator;
+import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
 
 public abstract class SimpleRemoteOperationWorkflow {
     private static final Logger logger = LogManager.getLogger();

@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.io.remote;
+package de.uni_potsdam.hpi.asg.common.remote;
 
 /*
  * Copyright (C) 2016 Norman Kluge

@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.io.technology;
+package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2014 Norman Kluge
+ * Copyright (C) 2016 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -21,30 +21,41 @@ package de.uni_potsdam.hpi.asg.common.io.technology;
 
 import java.io.Serializable;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class Balsa implements Serializable {
-    private static final long serialVersionUID = -7729551903207056828L;
+public class SyncTool implements Serializable {
 
-    @XmlElement(name = "style")
-    private String            style;
-    @XmlElement(name = "tech")
-    private String            tech;
+    private static final long serialVersionUID = 4564277794397798986L;
 
-    @Override
-    @Deprecated
-    public String toString() {
-        return tech + "/" + style;
+    //@formatter:off
+    @XmlElement(name = "searchpaths")
+    private String searchPaths;
+    @XmlElement(name = "libraries")
+    private String libraries;
+    @XmlElement(name = "postcompilecmd")
+    private List<String> postCompileCmds;
+    @XmlElement(name = "veriloginclude")
+    private List<String> verilogIncludes;
+    //@formatter:on
+
+    public String getLibraries() {
+        return libraries;
     }
 
-    public String getStyle() {
-        return style;
+    public String getSearchPaths() {
+        return searchPaths;
     }
 
-    public String getTech() {
-        return tech;
+    public List<String> getPostCompileCmds() {
+        return postCompileCmds;
+    }
+
+    public List<String> getVerilogIncludes() {
+        return verilogIncludes;
     }
 }

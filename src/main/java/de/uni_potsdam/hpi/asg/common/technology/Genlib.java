@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.io.technology;
+package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
  * Copyright (C) 2012 - 2014 Norman Kluge

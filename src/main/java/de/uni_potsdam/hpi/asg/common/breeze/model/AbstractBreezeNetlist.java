@@ -38,8 +38,8 @@ import de.uni_potsdam.hpi.asg.common.breeze.model.HSChannel.HSChannelConnection;
 import de.uni_potsdam.hpi.asg.common.breeze.model.PortComponent.Direction;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezeComponentElement;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezePartElement;
-import de.uni_potsdam.hpi.asg.common.io.FileHelper;
-import de.uni_potsdam.hpi.asg.common.io.FileHelper.Filetype;
+import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
+import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper.Filetype;
 
 public abstract class AbstractBreezeNetlist {
     private static final Logger      logger = LogManager.getLogger();

@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.io.remote;
+package de.uni_potsdam.hpi.asg.common.remote;
 
 /*
  * Copyright (C) 2016 Norman Kluge
@@ -19,35 +19,34 @@ package de.uni_potsdam.hpi.asg.common.io.remote;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.jcraft.jsch.UIKeyboardInteractive;
-import com.jcraft.jsch.UserInfo;
+public class RemoteInformation {
 
-public class ASGUserInfo implements UserInfo, UIKeyboardInteractive {
+    private String remoteFolder;
+
+    private String host;
+    private String username;
+    private String password;
+
+    public RemoteInformation(String host, String username, String password, String remotefolder) {
+        this.username = username;
+        this.password = password;
+        this.host = host;
+        this.remoteFolder = remotefolder;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
     public String getPassword() {
-        return null;
+        return password;
     }
 
-    public boolean promptYesNo(String str) {
-        return false;
+    public String getRemoteFolder() {
+        return remoteFolder;
     }
 
-    public String getPassphrase() {
-        return null;
+    public String getUsername() {
+        return username;
     }
-
-    public boolean promptPassphrase(String message) {
-        return false;
-    }
-
-    public boolean promptPassword(String message) {
-        return false;
-    }
-
-    public void showMessage(String message) {
-    }
-
-    public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo) {
-        return null;
-    }
-
 }

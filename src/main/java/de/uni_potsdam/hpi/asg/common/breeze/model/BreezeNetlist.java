@@ -34,9 +34,9 @@ import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezeImport;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezePartElement;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezeparser.BreezeParser;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezeparser.ParseException;
-import de.uni_potsdam.hpi.asg.common.io.FileHelper;
-import de.uni_potsdam.hpi.asg.common.io.WorkingdirGenerator;
-import de.uni_potsdam.hpi.asg.common.io.FileHelper.Filetype;
+import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
+import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
+import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper.Filetype;
 
 public class BreezeNetlist extends AbstractBreezeNetlist {
     private static final Logger logger = LogManager.getLogger();

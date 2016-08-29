@@ -25,34 +25,30 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Channel {
-	public enum ChannelType {
-		data_in, data_out, 
-		control_in, control_out, 
-		dataA_in, dataA_out,
-		dataB_in, dataB_out,
-		decision_in, decision_out, 
-		index_in,
-		extension_out,
-		arbA_in, arbB_in, arbA_out, arbB_out
-	}
-	public enum PortType {
-		passive, active
-	}
-	
-	@XmlAttribute(name="id", required=true)
-	private int id;
-	@XmlAttribute(name="type", required=true)
-	private ChannelType type;
-	@XmlAttribute(name="porttype", required=true)
-	private PortType porttype;
-	
-	public int getId() {
-		return id;
-	}
-	public PortType getPorttype() {
-		return porttype;
-	}
-	public ChannelType getType() {
-		return type;
-	}
+    public enum ChannelType {
+        data_in, data_out, control_in, control_out, dataA_in, dataA_out, dataB_in, dataB_out, decision_in, decision_out, index_in, extension_out, arbA_in, arbB_in, arbA_out, arbB_out
+    }
+
+    public enum PortType {
+        passive, active
+    }
+
+    @XmlAttribute(name = "id", required = true)
+    private int         id;
+    @XmlAttribute(name = "type", required = true)
+    private ChannelType type;
+    @XmlAttribute(name = "porttype", required = true)
+    private PortType    porttype;
+
+    public int getId() {
+        return id;
+    }
+
+    public PortType getPorttype() {
+        return porttype;
+    }
+
+    public ChannelType getType() {
+        return type;
+    }
 }

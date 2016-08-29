@@ -24,41 +24,41 @@ import java.util.List;
 
 public abstract class ComponentInst {
 
-	protected int				id;
-	protected List<HSChannel>	dataIn;
-	protected List<HSChannel>	dataOut;
-	protected List<HSChannel>	controlIn;
-	protected List<HSChannel>	controlOut;
+    protected int                   id;
+    protected List<HSChannel>       dataIn;
+    protected List<HSChannel>       dataOut;
+    protected List<HSChannel>       controlIn;
+    protected List<HSChannel>       controlOut;
 
-	protected AbstractBreezeNetlist netlist;
+    protected AbstractBreezeNetlist netlist;
 
-	protected ComponentInst(int id, AbstractBreezeNetlist netlist) {
-		this.id = id;
-		this.netlist = netlist;
-		this.dataIn = new ArrayList<HSChannel>();
-		this.dataOut = new ArrayList<HSChannel>();
-		this.controlIn = new ArrayList<HSChannel>();
-		this.controlOut = new ArrayList<HSChannel>();
-	}
+    protected ComponentInst(int id, AbstractBreezeNetlist netlist) {
+        this.id = id;
+        this.netlist = netlist;
+        this.dataIn = new ArrayList<HSChannel>();
+        this.dataOut = new ArrayList<HSChannel>();
+        this.controlIn = new ArrayList<HSChannel>();
+        this.controlOut = new ArrayList<HSChannel>();
+    }
 
-	public int getId() {
-		return id;
-	}
+    public int getId() {
+        return id;
+    }
 
-	public List<HSChannel> getControlIn() {
-		return controlIn;
-	}
+    public List<HSChannel> getControlIn() {
+        return controlIn;
+    }
 
-	public List<HSChannel> getControlOut() {
-		return controlOut;
-	}
+    public List<HSChannel> getControlOut() {
+        return controlOut;
+    }
 
-	public List<HSChannel> getDataIn() {
-		return dataIn;
-	}
+    public List<HSChannel> getDataIn() {
+        return dataIn;
+    }
 
-	public List<HSChannel> getDataOut() {
-		return dataOut;
-	}
+    public List<HSChannel> getDataOut() {
+        return dataOut;
+    }
 
 }

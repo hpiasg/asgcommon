@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
+package de.uni_potsdam.hpi.asg.common.io.technology;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2014 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,36 +19,32 @@ package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class Component {
-    @XmlAttribute(name = "breezename", required = true)
-    String             breezename;
-    @XmlAttribute(name = "symbol")
-    String             symbol;
+public class Balsa implements Serializable {
+    private static final long serialVersionUID = -7729551903207056828L;
 
-    @XmlElement(name = "parameters")
-    private Parameters parameters;
-    @XmlElement(name = "channels")
-    private Channels   channels;
+    @XmlElement(name = "style")
+    private String            style;
+    @XmlElement(name = "tech")
+    private String            tech;
 
-    public String getBreezename() {
-        return breezename;
+    @Override
+    @Deprecated
+    public String toString() {
+        return tech + "/" + style;
     }
 
-    public Channels getChannels() {
-        return channels;
+    public String getStyle() {
+        return style;
     }
 
-    public Parameters getParameters() {
-        return parameters;
-    }
-
-    public String getSymbol() {
-        return symbol;
+    public String getTech() {
+        return tech;
     }
 }

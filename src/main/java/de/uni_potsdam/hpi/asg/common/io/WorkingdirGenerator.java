@@ -25,75 +25,60 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class WorkingdirGenerator {
-	private static final Logger logger = LogManager.getLogger();
-	private static final String filesep = System.getProperty("file.separator");
-	private static final String ostmpdir = System.getProperty("java.io.tmpdir");
-	
-	private String workingdir;
-	
-	private static WorkingdirGenerator instance;
-	
-	private WorkingdirGenerator() {}
-	
-	public static WorkingdirGenerator getInstance() {
-		if(instance == null) {
-			instance = new WorkingdirGenerator();
-		}
-		return instance;
-	}	
-	
-	public String create(File cmdlinedir, String configdir, String defaultsubdir, Invoker invoker) {
-		// Temp dir
-		String wdirstr = null;
-		if(cmdlinedir != null) {
-			wdirstr = cmdlinedir.getAbsolutePath();
-		} else if(configdir != null && !configdir.equals("")) {
-			wdirstr = configdir.endsWith(filesep) ? configdir.substring(0, configdir.length()-1) : configdir;
-		} else {
-			String ostmpdir2 = ostmpdir.endsWith(filesep) ? ostmpdir.substring(0, ostmpdir.length()-1) : ostmpdir;
-			wdirstr = ostmpdir2 + filesep + defaultsubdir;
-		}
-		File workingfile = new File(wdirstr);
-		int tmpnum = 0;			
-		while(!workingfile.mkdir()) {
-			workingfile = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
-		}
-		workingdir = workingfile.getAbsolutePath() + FileHelper.getFileSeparator();
-		FileHelper.getInstance().setWorkingdir(workingdir);
-		if(invoker != null) {
-			invoker.setWorkingdir(workingdir);
-		}
-		Zipper.getInstance().setWorkingdir(workingdir);
-		logger.debug("Tmp dir: " + workingdir);
-		
-		return workingdir;
-	}
-	
-	public void delete() {
-		if(workingdir != null) {
-			delete(new File(workingdir));
-			workingdir = null;
-		}
-	}
-	
-	private void delete(File file) {
-		if(file.exists()) {
-			if(file.isFile()) {
-				file.delete();
-				return;
-			}
-			if(file.isDirectory()) {
-				String files[] = file.list();
-				for(String str : files) {
-					delete(new File(file, str));
-				}
-				file.delete();
-			}
-		}
-	}
-	
-	public String getWorkingdir() {
-		return workingdir;
-	}
+    private static final Logger        logger   = LogManager.getLogger();
+    private static final String        filesep  = System.getProperty("file.separator");
+    private static final String        ostmpdir = System.getProperty("java.io.tmpdir");
+
+    private String                     workingdir;
+
+    private static WorkingdirGenerator instance;
+
+    private WorkingdirGenerator() {
+    }
+
+    public static WorkingdirGenerator getInstance() {
+        if(instance == null) {
+            instance = new WorkingdirGenerator();
+        }
+        return instance;
+    }
+
+    public String create(File cmdlinedir, String configdir, String defaultsubdir, Invoker invoker) {
+        // Temp dir
+        String wdirstr = null;
+        if(cmdlinedir != null) {
+            wdirstr = cmdlinedir.getAbsolutePath();
+        } else if(configdir != null && !configdir.equals("")) {
+            wdirstr = configdir.endsWith(filesep) ? configdir.substring(0, configdir.length() - 1) : configdir;
+        } else {
+            String ostmpdir2 = ostmpdir.endsWith(filesep) ? ostmpdir.substring(0, ostmpdir.length() - 1) : ostmpdir;
+            wdirstr = ostmpdir2 + filesep + defaultsubdir;
+        }
+        File workingfile = new File(wdirstr);
+        int tmpnum = 0;
+        while(!workingfile.mkdir()) {
+            workingfile = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
+        }
+        workingdir = workingfile.getAbsolutePath() + FileHelper.getFileSeparator();
+        FileHelper.getInstance().setWorkingdir(workingdir);
+        if(invoker != null) {
+            invoker.setWorkingdir(workingdir);
+        }
+        Zipper.getInstance().setWorkingdir(workingdir);
+        logger.debug("Tmp dir: " + workingdir);
+
+        return workingdir;
+    }
+
+    public void delete() {
+        if(workingdir != null) {
+            FileHelper.getInstance().deleteFileR(new File(workingdir));
+            workingdir = null;
+        }
+    }
+
+    public String getWorkingdir() {
+        return workingdir;
+    }
 
 }

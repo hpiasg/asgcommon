@@ -20,7 +20,7 @@ package de.uni_potsdam.hpi.asg.common.breeze.parser;
  */
 
 public class HSPort {
-	public boolean isActive=false;
-	public boolean isInput=false;
-	public String name=null;
+    public boolean isActive = false;
+    public boolean isInput  = false;
+    public String  name     = null;
 }

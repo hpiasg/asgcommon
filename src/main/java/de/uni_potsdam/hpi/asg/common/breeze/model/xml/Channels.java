@@ -27,19 +27,19 @@ import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Channels {
-	@XmlElement(name="channel")
-	private List<Channel> channels;
-	
-	public Channel getChannel(int id) {
-		for(Channel chan : channels) {
-			if(chan.getId() == id) {
-				return chan;
-			}
-		}
-		return null;
-	}
-	
-	public int getSize() {
-		return channels.size();
-	}
+    @XmlElement(name = "channel")
+    private List<Channel> channels;
+
+    public Channel getChannel(int id) {
+        for(Channel chan : channels) {
+            if(chan.getId() == id) {
+                return chan;
+            }
+        }
+        return null;
+    }
+
+    public int getSize() {
+        return channels.size();
+    }
 }

@@ -20,43 +20,43 @@ package de.uni_potsdam.hpi.asg.common.breeze.model;
  */
 
 public class PortComponent extends ComponentInst {
-	public enum Direction {
-		in, out
-	}
+    public enum Direction {
+        in, out
+    }
 
-	private Direction	direction;
-	private String		name;
+    private Direction direction;
+    private String    name;
 
-	public PortComponent(int id, String str, AbstractBreezeNetlist netlist) {
-		super(id, netlist);
-		name = str;
-	}
+    public PortComponent(int id, String str, AbstractBreezeNetlist netlist) {
+        super(id, netlist);
+        name = str;
+    }
 
-	public void setDirection(Direction direction) {
-		this.direction = direction;
-	}
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
 
-	public Direction getDirection() {
-		return direction;
-	}
+    public Direction getDirection() {
+        return direction;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void addInstControlIn(HSChannel instControlIn) {
-		this.controlIn.add(instControlIn);
-	}
+    public void addInstControlIn(HSChannel instControlIn) {
+        this.controlIn.add(instControlIn);
+    }
 
-	public void addInstControlOut(HSChannel instControlOut) {
-		this.controlOut.add(instControlOut);
-	}
+    public void addInstControlOut(HSChannel instControlOut) {
+        this.controlOut.add(instControlOut);
+    }
 
-	public void addInstDataIn(HSChannel instDataIn) {
-		this.dataIn.add(instDataIn);
-	}
+    public void addInstDataIn(HSChannel instDataIn) {
+        this.dataIn.add(instDataIn);
+    }
 
-	public void addInstDataOut(HSChannel instDataOut) {
-		this.dataOut.add(instDataOut);
-	}
+    public void addInstDataOut(HSChannel instDataOut) {
+        this.dataOut.add(instDataOut);
+    }
 }

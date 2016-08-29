@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
+package de.uni_potsdam.hpi.asg.common.io.technology;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2016 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,36 +19,43 @@ package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.Serializable;
+
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class Component {
-    @XmlAttribute(name = "breezename", required = true)
-    String             breezename;
-    @XmlAttribute(name = "symbol")
-    String             symbol;
+public class SyncTool implements Serializable {
 
-    @XmlElement(name = "parameters")
-    private Parameters parameters;
-    @XmlElement(name = "channels")
-    private Channels   channels;
+    private static final long serialVersionUID = 4564277794397798986L;
 
-    public String getBreezename() {
-        return breezename;
+    //@formatter:off
+    @XmlElement(name = "searchpaths")
+    private String searchPaths;
+    @XmlElement(name = "libraries")
+    private String libraries;
+    @XmlElement(name = "postcompilecmd")
+    private List<String> postCompileCmds;
+    @XmlElement(name = "veriloginclude")
+    private List<String> verilogIncludes;
+    //@formatter:on
+
+    public String getLibraries() {
+        return libraries;
     }
 
-    public Channels getChannels() {
-        return channels;
+    public String getSearchPaths() {
+        return searchPaths;
     }
 
-    public Parameters getParameters() {
-        return parameters;
+    public List<String> getPostCompileCmds() {
+        return postCompileCmds;
     }
 
-    public String getSymbol() {
-        return symbol;
+    public List<String> getVerilogIncludes() {
+        return verilogIncludes;
     }
 }

@@ -27,27 +27,27 @@ import org.kohsuke.args4j.CmdLineParser;
 
 public class CommandlineOptions {
 
-	public boolean parseCmdLine(String[] args, String str) {
-		CmdLineParser parser = new CmdLineParser(this);
-		if(args.length == 0) {
-			printUsage(parser, str);
-			return false;
-		} else {
-			try {
-				parser.parseArgument(args);
-			} catch(CmdLineException e) {
-				System.out.println("Arguments Error: " + e.getMessage() + "\n");
-				printUsage(parser, str);
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private void printUsage(CmdLineParser parser, String str) {
-		System.out.println(str);
-		OutputStream stream = new ByteArrayOutputStream();
-		parser.printUsage(stream);
-		System.out.println(stream.toString());
-	}
+    public boolean parseCmdLine(String[] args, String str) {
+        CmdLineParser parser = new CmdLineParser(this);
+        if(args.length == 0) {
+            printUsage(parser, str);
+            return false;
+        } else {
+            try {
+                parser.parseArgument(args);
+            } catch(CmdLineException e) {
+                System.out.println("Arguments Error: " + e.getMessage() + "\n");
+                printUsage(parser, str);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void printUsage(CmdLineParser parser, String str) {
+        System.out.println(str);
+        OutputStream stream = new ByteArrayOutputStream();
+        parser.printUsage(stream);
+        System.out.println(stream.toString());
+    }
 }

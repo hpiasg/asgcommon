@@ -20,25 +20,24 @@ package de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 public class BreezeImport extends AbstractBreezeElement {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -489866964489709268L;
-	private String importString;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -489866964489709268L;
+    private String            importString;
 
-	public BreezeImport(String importString) {
-		this.importString = importString;
-	}
+    public BreezeImport(String importString) {
+        this.importString = importString;
+    }
 
-	@Override
-	public void output() {
-		System.out.printf("(import "+importString+")\n");
-	}
-	
-	public String getImportString() {
-		return importString;
-	}
+    @Override
+    public void output() {
+        System.out.printf("(import " + importString + ")\n");
+    }
+
+    public String getImportString() {
+        return importString;
+    }
 }

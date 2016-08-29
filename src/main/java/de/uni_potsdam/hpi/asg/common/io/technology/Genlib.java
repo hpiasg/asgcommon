@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.breeze.model;
+package de.uni_potsdam.hpi.asg.common.io.technology;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2014 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,30 +19,21 @@ package de.uni_potsdam.hpi.asg.common.breeze.model;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Signal {
-    private String    name;
-    private int       width;
-    private Direction direction;
+import java.io.Serializable;
 
-    public Signal(String name, int width, Direction direction) {
-        this.name = name;
-        this.width = width;
-        this.direction = direction;
-    }
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
-    public String getName() {
-        return name;
-    }
+@XmlAccessorType(XmlAccessType.NONE)
+public class Genlib implements Serializable {
 
-    public int getWidth() {
-        return width;
-    }
+    private static final long serialVersionUID = -7764726802415284856L;
 
-    public Direction getDirection() {
-        return direction;
-    }
+    @XmlElement(name = "libfile")
+    private String            libfile;
 
-    public enum Direction {
-        in, out
+    public String getLibfile() {
+        return libfile;
     }
 }

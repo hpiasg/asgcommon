@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.breeze.model;
+package de.uni_potsdam.hpi.asg.common.io.remote;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2016 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,30 +19,34 @@ package de.uni_potsdam.hpi.asg.common.breeze.model;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Signal {
-    private String    name;
-    private int       width;
-    private Direction direction;
+public class RemoteInformation {
 
-    public Signal(String name, int width, Direction direction) {
-        this.name = name;
-        this.width = width;
-        this.direction = direction;
+    private String remoteFolder;
+
+    private String host;
+    private String username;
+    private String password;
+
+    public RemoteInformation(String host, String username, String password, String remotefolder) {
+        this.username = username;
+        this.password = password;
+        this.host = host;
+        this.remoteFolder = remotefolder;
     }
 
-    public String getName() {
-        return name;
+    public String getHost() {
+        return host;
     }
 
-    public int getWidth() {
-        return width;
+    public String getPassword() {
+        return password;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public String getRemoteFolder() {
+        return remoteFolder;
     }
 
-    public enum Direction {
-        in, out
+    public String getUsername() {
+        return username;
     }
 }

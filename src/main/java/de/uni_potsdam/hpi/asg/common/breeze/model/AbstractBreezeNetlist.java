@@ -42,184 +42,184 @@ import de.uni_potsdam.hpi.asg.common.io.FileHelper;
 import de.uni_potsdam.hpi.asg.common.io.FileHelper.Filetype;
 
 public abstract class AbstractBreezeNetlist {
-	private static final Logger logger = LogManager.getLogger();
+    private static final Logger      logger = LogManager.getLogger();
 
-	private String						name;
-	private Set<String>					tempports;
-	private Set<PortComponent>			ports;
-	private Map<Integer, HSChannel>		channelList;
-	protected AbstractBreezeProject		project;
-	protected Set<BreezeNetlistInst>	subBreezeInst;
+    private String                   name;
+    private Set<String>              tempports;
+    private Set<PortComponent>       ports;
+    private Map<Integer, HSChannel>  channelList;
+    protected AbstractBreezeProject  project;
+    protected Set<BreezeNetlistInst> subBreezeInst;
 
-	protected AbstractBreezeNetlist(String name, AbstractBreezeProject project) {
-		this.name = name;
-		this.channelList = new HashMap<Integer, HSChannel>();
-		this.tempports = new LinkedHashSet<String>();
-		this.project = project;
-		this.subBreezeInst = new HashSet<BreezeNetlistInst>();
-	}
+    protected AbstractBreezeNetlist(String name, AbstractBreezeProject project) {
+        this.name = name;
+        this.channelList = new HashMap<Integer, HSChannel>();
+        this.tempports = new LinkedHashSet<String>();
+        this.project = project;
+        this.subBreezeInst = new HashSet<BreezeNetlistInst>();
+    }
 
-	@SuppressWarnings("unchecked")
-	protected boolean parseBreeze(BreezePartElement part, boolean skipUndefinedComponents) {
-		TreeMap<Integer, BreezeComponentElement> tm = part.getComponentList().getComponents();
-		for(Entry<Integer, BreezeComponentElement> e : tm.entrySet()) {
-			BreezeComponentElement be = e.getValue();
-			String compname = be.getName().replaceAll("\"", "").replace("$", "");
-			if(!project.getAlreadyChecked().contains(compname)) {
-				if(project.getNetlists().containsKey(compname)) { // is already known sub procedure?
-					this.subBreezeInst.add(BreezeNetlistInst.create(be.getID(), be.channels, this, project.getNetlists().get(compname)));
-					continue;
-				} else if(this.createInstance(compname, be)) { // is HS component instance?
-					continue;
-				} else {
-					if(!skipUndefinedComponents) {
-						logger.error("Could not find defition for component " + compname);
-						return false;
-					} else {
-						logger.warn("Could not find defition for component " + compname);
-						project.getAlreadyChecked().add(compname);
-					}
-				}
-			}
-		}
+    @SuppressWarnings("unchecked")
+    protected boolean parseBreeze(BreezePartElement part, boolean skipUndefinedComponents) {
+        TreeMap<Integer, BreezeComponentElement> tm = part.getComponentList().getComponents();
+        for(Entry<Integer, BreezeComponentElement> e : tm.entrySet()) {
+            BreezeComponentElement be = e.getValue();
+            String compname = be.getName().replaceAll("\"", "").replace("$", "");
+            if(!project.getAlreadyChecked().contains(compname)) {
+                if(project.getNetlists().containsKey(compname)) { // is already known sub procedure?
+                    this.subBreezeInst.add(BreezeNetlistInst.create(be.getID(), be.channels, this, project.getNetlists().get(compname)));
+                    continue;
+                } else if(this.createInstance(compname, be)) { // is HS component instance?
+                    continue;
+                } else {
+                    if(!skipUndefinedComponents) {
+                        logger.error("Could not find defition for component " + compname);
+                        return false;
+                    } else {
+                        logger.warn("Could not find defition for component " + compname);
+                        project.getAlreadyChecked().add(compname);
+                    }
+                }
+            }
+        }
 
-		for(Object o : part.getPorts()) {
-			if(o instanceof LinkedList) {
-				LinkedList<Object> ol = (LinkedList<Object>)o;
-				String str = ((String)ol.get(1)).replace("\"", "");
-				tempports.add(str);
-			}
-		}
+        for(Object o : part.getPorts()) {
+            if(o instanceof LinkedList) {
+                LinkedList<Object> ol = (LinkedList<Object>)o;
+                String str = ((String)ol.get(1)).replace("\"", "");
+                tempports.add(str);
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private boolean createInstance(String name, BreezeComponentElement be) {
-		AbstractHSComponent comp = project.getComponentList().get(name);
-		if(comp != null) {
-			return comp.createInstance(be, this);
-		}
-		return false;
-	}
+    private boolean createInstance(String name, BreezeComponentElement be) {
+        AbstractHSComponent comp = project.getComponentList().get(name);
+        if(comp != null) {
+            return comp.createInstance(be, this);
+        }
+        return false;
+    }
 
-	public SortedSet<HSComponentInst> getAllHSInstances() {
-		SortedSet<HSComponentInst> retVal = new TreeSet<HSComponentInst>();
-		for(AbstractHSComponent comp : project.getComponentList().values()) {
-			retVal.addAll(comp.getInstances(this));
-		}
-		return retVal;
-	}
+    public SortedSet<HSComponentInst> getAllHSInstances() {
+        SortedSet<HSComponentInst> retVal = new TreeSet<HSComponentInst>();
+        for(AbstractHSComponent comp : project.getComponentList().values()) {
+            retVal.addAll(comp.getInstances(this));
+        }
+        return retVal;
+    }
 
-	public Set<PortComponent> getAllPorts() {
-		return ports;
-	}
+    public Set<PortComponent> getAllPorts() {
+        return ports;
+    }
 
-	public Map<Integer, HSChannel> getChannelList() {
-		return channelList;
-	}
+    public Map<Integer, HSChannel> getChannelList() {
+        return channelList;
+    }
 
-	public HSChannel getChan(int id, int width, DataType datatype, ComponentInst inst, HSChannelConnection type) {
-		HSChannel chan = channelList.containsKey(id) ? channelList.get(id) : new HSChannel(id, width, datatype);
-		switch(type) {
-			case active:
-				if(!chan.setActive(inst)) {
-					return null;
-				}
-				break;
-			case passive:
-				if(!chan.setPassive(inst)) {
-					return null;
-				}
-				break;
-		}
-		channelList.put(id, chan);
-		return chan;
-	}
+    public HSChannel getChan(int id, int width, DataType datatype, ComponentInst inst, HSChannelConnection type) {
+        HSChannel chan = channelList.containsKey(id) ? channelList.get(id) : new HSChannel(id, width, datatype);
+        switch(type) {
+            case active:
+                if(!chan.setActive(inst)) {
+                    return null;
+                }
+                break;
+            case passive:
+                if(!chan.setPassive(inst)) {
+                    return null;
+                }
+                break;
+        }
+        channelList.put(id, chan);
+        return chan;
+    }
 
-	public HSChannel getChan(int id) {
-		return channelList.containsKey(id) ? channelList.get(id) : null;
-	}
+    public HSChannel getChan(int id) {
+        return channelList.containsKey(id) ? channelList.get(id) : null;
+    }
 
-	protected boolean connectPorts(boolean skipUndefinedComponents) {
-		ports = new HashSet<PortComponent>();
-		int i = 1;
-		for(String str : tempports) {
-			HSChannel chan = getChan(i);
-			PortComponent comp = new PortComponent(-i, str, this);
-			ports.add(comp);
-			if(chan != null) {
-				if(chan.getActive() == null) {
-					chan.setActive(comp);
-					if(chan.getDatawidth() != 0) {
-						if(chan.getDatatype() == DataType.push) {
-							comp.setDirection(Direction.in);
-							comp.addInstDataOut(chan);
-						} else {
-							comp.setDirection(Direction.out);
-							comp.addInstDataIn(chan);
-						}
-					} else {
-						comp.setDirection(Direction.in);
-						comp.addInstControlOut(chan);
-					}
-				} else if(chan.getPassive() == null) {
-					chan.setPassive(comp);
-					if(chan.getDatawidth() != 0) {
-						if(chan.getDatatype() == DataType.push) {
-							comp.setDirection(Direction.out);
-							comp.addInstDataIn(chan);
-						} else {
-							comp.setDirection(Direction.in);
-							comp.addInstDataOut(chan);
-						}
-					} else {
-						comp.setDirection(Direction.out);
-						comp.addInstControlIn(chan);
-					}
-				} else {
-					logger.error("Channel " + i + " has no open connection for interface");
-					return false;
-				}
-			} else {
-				if(!skipUndefinedComponents) {
-					logger.error("Channel " + i + " which should be connected to port " + str + " not found");
-					return false;
-				} else {
-					logger.warn("Channel " + i + " which should be connected to port " + str + " not found");
-				}
-			}
-			i++;
-		}
-		return true;
-	}
+    protected boolean connectPorts(boolean skipUndefinedComponents) {
+        ports = new HashSet<PortComponent>();
+        int i = 1;
+        for(String str : tempports) {
+            HSChannel chan = getChan(i);
+            PortComponent comp = new PortComponent(-i, str, this);
+            ports.add(comp);
+            if(chan != null) {
+                if(chan.getActive() == null) {
+                    chan.setActive(comp);
+                    if(chan.getDatawidth() != 0) {
+                        if(chan.getDatatype() == DataType.push) {
+                            comp.setDirection(Direction.in);
+                            comp.addInstDataOut(chan);
+                        } else {
+                            comp.setDirection(Direction.out);
+                            comp.addInstDataIn(chan);
+                        }
+                    } else {
+                        comp.setDirection(Direction.in);
+                        comp.addInstControlOut(chan);
+                    }
+                } else if(chan.getPassive() == null) {
+                    chan.setPassive(comp);
+                    if(chan.getDatawidth() != 0) {
+                        if(chan.getDatatype() == DataType.push) {
+                            comp.setDirection(Direction.out);
+                            comp.addInstDataIn(chan);
+                        } else {
+                            comp.setDirection(Direction.in);
+                            comp.addInstDataOut(chan);
+                        }
+                    } else {
+                        comp.setDirection(Direction.out);
+                        comp.addInstControlIn(chan);
+                    }
+                } else {
+                    logger.error("Channel " + i + " has no open connection for interface");
+                    return false;
+                }
+            } else {
+                if(!skipUndefinedComponents) {
+                    logger.error("Channel " + i + " which should be connected to port " + str + " not found");
+                    return false;
+                } else {
+                    logger.warn("Channel " + i + " which should be connected to port " + str + " not found");
+                }
+            }
+            i++;
+        }
+        return true;
+    }
 
-	public boolean writeOut() {
-		String filename = name + FileHelper.getFileEx(Filetype.breeze);
-		String newline = FileHelper.getNewline();
-		StringBuilder newbreeze = new StringBuilder();
-		newbreeze.append("(breeze-part \"Test\"" + newline);
-		newbreeze.append("(components" + newline);
-		int breezeOutId = 0;
-		for(HSComponentInst inst : getAllHSInstances()) {
-			//(component "$BrzSequence" (2 "S") (355 (356 357)) (at 77 35 "EX.balsa" 0)) ; 252
-			newbreeze.append("(component ");
-			newbreeze.append("\"$" + inst.getBrzStr() + "\" ");
-			newbreeze.append(inst.getType().getBeparams().toString().replace("[", "(").replace("]", ")").replace(",", "") + " ");
-			newbreeze.append(inst.getBechans().toString().replace("[", "(").replace("]", ")").replace(",", "") + " ");
-			newbreeze.append("())");
-			newbreeze.append(newline);
-			inst.setNewId(breezeOutId);
-			breezeOutId++;
-		}
-		newbreeze.append("))");
-		return FileHelper.getInstance().writeFile(filename, newbreeze.toString());
-	}
+    public boolean writeOut() {
+        String filename = name + FileHelper.getFileEx(Filetype.breeze);
+        String newline = FileHelper.getNewline();
+        StringBuilder newbreeze = new StringBuilder();
+        newbreeze.append("(breeze-part \"Test\"" + newline);
+        newbreeze.append("(components" + newline);
+        int breezeOutId = 0;
+        for(HSComponentInst inst : getAllHSInstances()) {
+            //(component "$BrzSequence" (2 "S") (355 (356 357)) (at 77 35 "EX.balsa" 0)) ; 252
+            newbreeze.append("(component ");
+            newbreeze.append("\"$" + inst.getBrzStr() + "\" ");
+            newbreeze.append(inst.getType().getBeparams().toString().replace("[", "(").replace("]", ")").replace(",", "") + " ");
+            newbreeze.append(inst.getBechans().toString().replace("[", "(").replace("]", ")").replace(",", "") + " ");
+            newbreeze.append("())");
+            newbreeze.append(newline);
+            inst.setNewId(breezeOutId);
+            breezeOutId++;
+        }
+        newbreeze.append("))");
+        return FileHelper.getInstance().writeFile(filename, newbreeze.toString());
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Set<BreezeNetlistInst> getSubBreezeInst() {
-		return subBreezeInst;
-	}
+    public Set<BreezeNetlistInst> getSubBreezeInst() {
+        return subBreezeInst;
+    }
 }

@@ -28,3 +28,8 @@ JSch v0.1.53
 http://www.jcraft.com/
 Copyright (c) 2002-2015 Atsuhiko Yamanaka, JCraft,Inc.
 Licensed under the BSD license
+
+Trove4J v3.0.3
+http://trove.starlight-systems.com/
+Copyright (C) 2009-2012 Trove Development Team
+Licensed under the Lesser GNU Public License

@@ -62,7 +62,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
     private int                   x;
     private SimulationStep<T>     newStep;
     private int                   numsteps;
-    private Queue<T>              checkstates;
+    protected Queue<T>            checkstates;
 
     private SimulationStepPool<T> pool;
 

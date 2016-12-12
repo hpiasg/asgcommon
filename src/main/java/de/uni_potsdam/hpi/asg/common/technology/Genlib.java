@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.io;
+package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2014 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,23 +19,21 @@ package de.uni_potsdam.hpi.asg.common.io;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Timeout implements Runnable {
+import java.io.Serializable;
 
-    private Thread t;
-    private int    timeout;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
-    public Timeout(Thread t, int timeout) {
-        this.t = t;
-        this.timeout = timeout;
-    }
+@XmlAccessorType(XmlAccessType.NONE)
+public class Genlib implements Serializable {
 
-    public void run() {
-        try {
-            Thread.sleep(timeout);
-            t.interrupt();
-            return;
-        } catch(InterruptedException e) {
-            return;
-        }
+    private static final long serialVersionUID = -7764726802415284856L;
+
+    @XmlElement(name = "libfile")
+    private String            libfile;
+
+    public String getLibfile() {
+        return libfile;
     }
 }

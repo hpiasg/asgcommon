@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.io.technology;
+package de.uni_potsdam.hpi.asg.common.stggraph;
 
 /*
- * Copyright (C) 2012 - 2014 Norman Kluge
+ * Copyright (C) 2015 - 2016 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,21 +19,12 @@ package de.uni_potsdam.hpi.asg.common.io.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Serializable;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+public class SimulationStepPool<T extends AbstractState<T>> extends GenericObjectPool<SimulationStep<T>> {
 
-@XmlAccessorType(XmlAccessType.NONE)
-public class Genlib implements Serializable {
-
-    private static final long serialVersionUID = -7764726802415284856L;
-
-    @XmlElement(name = "libfile")
-    private String            libfile;
-
-    public String getLibfile() {
-        return libfile;
+    public SimulationStepPool(PooledObjectFactory<SimulationStep<T>> factory) {
+        super(factory);
     }
 }

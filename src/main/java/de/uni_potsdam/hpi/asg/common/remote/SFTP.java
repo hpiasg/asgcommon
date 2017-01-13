@@ -51,6 +51,10 @@ public class SFTP {
 
     public boolean uploadFiles(Set<String> sourcefiles, String targetfolder, String tempname) {
         try {
+            if(targetfolder == null) {
+                logger.error("Targetfolder is not defined");
+                return false;
+            }
 
             String newTargetBase = targetfolder;
             if(!targetfolder.endsWith("/")) {

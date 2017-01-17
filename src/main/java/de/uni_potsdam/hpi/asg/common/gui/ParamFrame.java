@@ -127,6 +127,15 @@ public abstract class ParamFrame extends JFrame {
         checkbox.setSelected(defaultvalue);
     }
 
+    protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox) {
+        constructLabelCell(panel, row, labelStr);
+        final JTextField textfield = constructTextfieldCell(panel, row, paramName, defaultvalue, hasdefaultcheckbox);
+        final JButton pathbutton = hasPathButton ? constructPathButtonCell(panel, row, filemode, hasdefaultcheckbox, textfield) : null;
+        if(hasdefaultcheckbox) {
+            constructDefaultCheckboxCell(panel, row, defaultvalue, textfield, pathbutton);
+        }
+    }
+
     protected void constructLabelCell(JPanel panel, int row, String labelStr) {
         JLabel label = new JLabel(labelStr);
         GridBagConstraints gbc_label = new GridBagConstraints();
@@ -137,9 +146,63 @@ public abstract class ParamFrame extends JFrame {
         panel.add(label, gbc_label);
     }
 
-    protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox) {
-        constructLabelCell(panel, row, labelStr);
+    protected void constructDefaultCheckboxCell(JPanel panel, int row, final String defaultvalue, final JTextField textfield, final JButton pathbutton) {
+        JCheckBox defaultcheckbox = new JCheckBox("Default");
+        defaultcheckbox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    if(pathbutton != null) {
+                        pathbutton.setEnabled(false);
+                    }
+                    textfield.setText(defaultvalue);
+                    textfield.setEnabled(false);
+                } else if(e.getStateChange() == ItemEvent.DESELECTED) {
+                    if(pathbutton != null) {
+                        pathbutton.setEnabled(true);
+                    }
+                    textfield.setText("");
+                    textfield.setEnabled(true);
+                } else {
+                    System.err.println("error");
+                }
+            }
+        });
 
+        GridBagConstraints gbc_defaultcheckbox = new GridBagConstraints();
+        gbc_defaultcheckbox.anchor = GridBagConstraints.NORTHWEST;
+        gbc_defaultcheckbox.insets = new Insets(0, 0, 5, 0);
+        gbc_defaultcheckbox.gridx = 3;
+        gbc_defaultcheckbox.gridy = row;
+        panel.add(defaultcheckbox, gbc_defaultcheckbox);
+        defaultcheckbox.setSelected(true);
+    }
+
+    protected JButton constructPathButtonCell(JPanel panel, int row, final Integer filemode, boolean hasdefaultcheckbox, final JTextField textfield) {
+        final JButton pathbutton = new JButton("...");
+        pathbutton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setFileSelectionMode(filemode);
+                int result = fileChooser.showOpenDialog(parent);
+                if(result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    textfield.setText(selectedFile.getAbsolutePath());
+                }
+            }
+        });
+        GridBagConstraints gbc_pathbutton = new GridBagConstraints();
+        gbc_pathbutton.insets = new Insets(0, 0, 5, 5);
+        gbc_pathbutton.gridx = 2;
+        gbc_pathbutton.gridy = row;
+        panel.add(pathbutton, gbc_pathbutton);
+        if(hasdefaultcheckbox) {
+            pathbutton.setEnabled(false);
+        }
+        return pathbutton;
+    }
+
+    protected JTextField constructTextfieldCell(JPanel panel, int row, AbstractTextParam paramName, final String defaultvalue, boolean hasdefaultcheckbox) {
         final JTextField textfield = new JTextField();
         textfields.put(paramName, textfield);
 
@@ -154,58 +217,7 @@ public abstract class ParamFrame extends JFrame {
         if(hasdefaultcheckbox) {
             textfield.setEnabled(false);
         }
-
-        final JButton pathbutton = new JButton("..."); //dirty
-        if(hasPathButton) {
-            pathbutton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    JFileChooser fileChooser = new JFileChooser();
-                    fileChooser.setFileSelectionMode(filemode);
-                    int result = fileChooser.showOpenDialog(parent);
-                    if(result == JFileChooser.APPROVE_OPTION) {
-                        File selectedFile = fileChooser.getSelectedFile();
-                        textfield.setText(selectedFile.getAbsolutePath());
-                    }
-                }
-            });
-            GridBagConstraints gbc_pathbutton = new GridBagConstraints();
-            gbc_pathbutton.insets = new Insets(0, 0, 5, 5);
-            gbc_pathbutton.gridx = 2;
-            gbc_pathbutton.gridy = row;
-            panel.add(pathbutton, gbc_pathbutton);
-            if(hasdefaultcheckbox) {
-                pathbutton.setEnabled(false);
-            }
-        }
-
-        if(hasdefaultcheckbox) {
-            JCheckBox defaultcheckbox = new JCheckBox("Default");
-            defaultcheckbox.addItemListener(new ItemListener() {
-
-                @Override
-                public void itemStateChanged(ItemEvent e) {
-                    if(e.getStateChange() == ItemEvent.SELECTED) {
-                        pathbutton.setEnabled(false);
-                        textfield.setText(defaultvalue);
-                        textfield.setEnabled(false);
-                    } else if(e.getStateChange() == ItemEvent.DESELECTED) {
-                        pathbutton.setEnabled(true);
-                        textfield.setText("");
-                        textfield.setEnabled(true);
-                    } else {
-                        System.err.println("error");
-                    }
-                }
-            });
-
-            GridBagConstraints gbc_defaultcheckbox = new GridBagConstraints();
-            gbc_defaultcheckbox.anchor = GridBagConstraints.NORTHWEST;
-            gbc_defaultcheckbox.insets = new Insets(0, 0, 5, 0);
-            gbc_defaultcheckbox.gridx = 3;
-            gbc_defaultcheckbox.gridy = row;
-            panel.add(defaultcheckbox, gbc_defaultcheckbox);
-            defaultcheckbox.setSelected(true);
-        }
+        return textfield;
     }
 
     public String getTextValue(AbstractTextParam param) {

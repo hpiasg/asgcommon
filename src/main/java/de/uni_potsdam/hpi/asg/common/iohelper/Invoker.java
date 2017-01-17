@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2016 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -37,8 +37,10 @@ public abstract class Invoker {
     protected static Invoker    instance;
 
     protected String            workingdir;
+    protected List<Process>     subprocesses;
 
     protected Invoker() {
+        subprocesses = new ArrayList<>();
     }
 
     public static Invoker getInstance() {
@@ -105,6 +107,7 @@ public abstract class Invoker {
             builder.directory(folder);
             builder.environment(); // bugfix setting env in test-mode (why this works? i dont know..)
             process = builder.start();
+            subprocesses.add(process);
 
             Thread timeoutThread = null;
             if(timeout > 0) {
@@ -190,5 +193,11 @@ public abstract class Invoker {
 
         cmd = cmd.replaceAll("\\$BASEDIR", basedir);
         return cmd.split(" ");
+    }
+
+    public void killSubprocesses() {
+        for(Process p : subprocesses) {
+            p.destroy();
+        }
     }
 }

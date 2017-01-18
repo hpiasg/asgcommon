@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2016 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXParseException;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -68,7 +69,14 @@ public class Technology implements Serializable {
             retVal.folder = file.getParentFile();
             return retVal;
         } catch(JAXBException e) {
-            logger.error(e.getLocalizedMessage());
+            if(e.getLinkedException() instanceof SAXParseException) {
+                SAXParseException e2 = (SAXParseException)e.getLinkedException();
+                logger.error("File: " + file.getAbsolutePath() + ", Line: " + e2.getLineNumber() + ", Col: " + e2.getColumnNumber());
+                logger.error(e2.getLocalizedMessage());
+                return null;
+            } else {
+                logger.error(e.getLocalizedMessage());
+            }
             return null;
         }
     }

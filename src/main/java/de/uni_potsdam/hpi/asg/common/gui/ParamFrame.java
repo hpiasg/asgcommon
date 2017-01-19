@@ -91,7 +91,7 @@ public abstract class ParamFrame extends JFrame {
         internalPanel.setLayout(new FlowLayout());
 
         GridBagConstraints gbc_panel = new GridBagConstraints();
-        gbc_panel.anchor = GridBagConstraints.NORTHWEST;
+        gbc_panel.anchor = GridBagConstraints.LINE_START;
         gbc_panel.insets = new Insets(0, 0, 5, 0);
         gbc_panel.gridx = 1;
         gbc_panel.gridy = row;
@@ -116,7 +116,7 @@ public abstract class ParamFrame extends JFrame {
         enumfields.put(paramName, combobox);
 
         GridBagConstraints gbc_combobox = new GridBagConstraints();
-        gbc_combobox.anchor = GridBagConstraints.NORTHWEST;
+        gbc_combobox.anchor = GridBagConstraints.LINE_START;
         gbc_combobox.insets = new Insets(0, 0, 5, 0);
         gbc_combobox.gridx = 1;
         gbc_combobox.gridy = row;
@@ -130,7 +130,7 @@ public abstract class ParamFrame extends JFrame {
         buttons.put(paramName, checkbox);
 
         GridBagConstraints gbc_checkbox = new GridBagConstraints();
-        gbc_checkbox.anchor = GridBagConstraints.NORTHWEST;
+        gbc_checkbox.anchor = GridBagConstraints.LINE_START;
         gbc_checkbox.insets = new Insets(0, 0, 5, 0);
         gbc_checkbox.gridx = 1;
         gbc_checkbox.gridy = row;
@@ -162,7 +162,7 @@ public abstract class ParamFrame extends JFrame {
         JLabel label = new JLabel(labelStr);
         GridBagConstraints gbc_label = new GridBagConstraints();
         gbc_label.insets = new Insets(0, 0, 5, 5);
-        gbc_label.anchor = GridBagConstraints.WEST;
+        gbc_label.anchor = GridBagConstraints.LINE_START;
         gbc_label.gridx = 0;
         gbc_label.gridy = row;
         panel.add(label, gbc_label);
@@ -192,7 +192,7 @@ public abstract class ParamFrame extends JFrame {
         });
 
         GridBagConstraints gbc_defaultcheckbox = new GridBagConstraints();
-        gbc_defaultcheckbox.anchor = GridBagConstraints.NORTHWEST;
+        gbc_defaultcheckbox.anchor = GridBagConstraints.LINE_START;
         gbc_defaultcheckbox.insets = new Insets(0, 0, 5, 0);
         gbc_defaultcheckbox.gridx = 3;
         gbc_defaultcheckbox.gridy = row;
@@ -214,6 +214,7 @@ public abstract class ParamFrame extends JFrame {
             }
         });
         GridBagConstraints gbc_pathbutton = new GridBagConstraints();
+        gbc_pathbutton.anchor = GridBagConstraints.CENTER;
         gbc_pathbutton.insets = new Insets(0, 0, 5, 5);
         gbc_pathbutton.gridx = 2;
         gbc_pathbutton.gridy = row;
@@ -229,6 +230,7 @@ public abstract class ParamFrame extends JFrame {
         textfields.put(paramName, textfield);
 
         GridBagConstraints gbc_text = new GridBagConstraints();
+        gbc_text.anchor = GridBagConstraints.LINE_START;
         gbc_text.fill = GridBagConstraints.HORIZONTAL;
         gbc_text.insets = new Insets(0, 0, 5, 5);
         gbc_text.gridx = 1;

@@ -19,25 +19,36 @@ package de.uni_potsdam.hpi.asg.common.gui;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -127,12 +138,23 @@ public abstract class ParamFrame extends JFrame {
         checkbox.setSelected(defaultvalue);
     }
 
+    protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue) {
+        constructTextEntry(panel, row, paramName, labelStr, defaultvalue, false, null, false, false, null);
+    }
+
     protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox) {
+        constructTextEntry(panel, row, paramName, labelStr, defaultvalue, hasPathButton, filemode, hasdefaultcheckbox, false, null);
+    }
+
+    protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox, boolean hashelpbutton, String helptext) {
         constructLabelCell(panel, row, labelStr);
         final JTextField textfield = constructTextfieldCell(panel, row, paramName, defaultvalue, hasdefaultcheckbox);
         final JButton pathbutton = hasPathButton ? constructPathButtonCell(panel, row, filemode, hasdefaultcheckbox, textfield) : null;
         if(hasdefaultcheckbox) {
             constructDefaultCheckboxCell(panel, row, defaultvalue, textfield, pathbutton);
+        }
+        if(hashelpbutton) {
+            constructHelpButtonCell(panel, row, helptext);
         }
     }
 
@@ -218,6 +240,45 @@ public abstract class ParamFrame extends JFrame {
             textfield.setEnabled(false);
         }
         return textfield;
+    }
+
+    protected void constructHelpButtonCell(JPanel panel, int row, final String helptext) {
+        final JLabel helpbutton = new JLabel(new Icon() {
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y) {
+                Graphics2D g2 = (Graphics2D)g;
+                RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHints(rh);
+                g2.setStroke(new BasicStroke(0.5f));
+                g2.setColor(Color.BLACK);
+                g2.drawOval(x + 1, y + 1, 23, 23);
+                g2.setFont(new Font("default", Font.PLAIN, 15));
+                g2.drawString("?", x + 9, y + 18);
+            }
+
+            @Override
+            public int getIconWidth() {
+                return 25;
+            }
+
+            @Override
+            public int getIconHeight() {
+                return 25;
+            }
+        });
+        helpbutton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(parent, helptext, "Info", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+        GridBagConstraints gbc_helpbutton = new GridBagConstraints();
+        gbc_helpbutton.anchor = GridBagConstraints.CENTER;
+        gbc_helpbutton.fill = GridBagConstraints.NONE;
+        gbc_helpbutton.insets = new Insets(0, 0, 5, 0);
+        gbc_helpbutton.gridx = 4;
+        gbc_helpbutton.gridy = row;
+        panel.add(helpbutton, gbc_helpbutton);
     }
 
     public String getTextValue(AbstractTextParam param) {

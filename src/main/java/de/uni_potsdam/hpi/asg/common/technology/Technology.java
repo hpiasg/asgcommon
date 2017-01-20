@@ -57,10 +57,20 @@ public class Technology implements Serializable {
 
     //@formatter:on
 
+    public static Technology readInSilent(File file) {
+        return readInInternal(file, false);
+    }
+
     public static Technology readIn(File file) {
+        return readInInternal(file, true);
+    }
+
+    private static Technology readInInternal(File file, boolean verbose) {
         try {
             if(!file.exists()) {
-                logger.error("Technologyfile " + file.getAbsolutePath() + " not found");
+                if(verbose) {
+                    logger.error("Technologyfile " + file.getAbsolutePath() + " not found");
+                }
                 return null;
             }
             JAXBContext jaxbContext = JAXBContext.newInstance(Technology.class);
@@ -69,13 +79,15 @@ public class Technology implements Serializable {
             retVal.folder = file.getParentFile();
             return retVal;
         } catch(JAXBException e) {
-            if(e.getLinkedException() instanceof SAXParseException) {
-                SAXParseException e2 = (SAXParseException)e.getLinkedException();
-                logger.error("File: " + file.getAbsolutePath() + ", Line: " + e2.getLineNumber() + ", Col: " + e2.getColumnNumber());
-                logger.error(e2.getLocalizedMessage());
-                return null;
-            } else {
-                logger.error(e.getLocalizedMessage());
+            if(verbose) {
+                if(e.getLinkedException() instanceof SAXParseException) {
+                    SAXParseException e2 = (SAXParseException)e.getLinkedException();
+                    logger.error("File: " + file.getAbsolutePath() + ", Line: " + e2.getLineNumber() + ", Col: " + e2.getColumnNumber());
+                    logger.error(e2.getLocalizedMessage());
+                    return null;
+                } else {
+                    logger.error(e.getLocalizedMessage());
+                }
             }
             return null;
         }

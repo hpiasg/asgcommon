@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -238,13 +238,23 @@ public class FileHelper {
     }
 
     public File getBasedirFile(String filename) {
+        String basedir = getBasedir();
+        String newfilename = basedir + getFileSeparator() + filename;
+        return new File(newfilename);
+    }
+
+    public File replaceBasedir(String str) {
+        String basedir = getBasedir();
+        String newstr = str.replaceAll("\\$BASEDIR", basedir);
+        return new File(newstr);
+    }
+
+    private String getBasedir() {
         String basedir = System.getProperty("basedir");
         if(SystemUtils.IS_OS_WINDOWS) {
             basedir = basedir.replaceAll("\\\\", "/");
         }
-
-        String newfilename = basedir + getFileSeparator() + filename;
-        return new File(newfilename);
+        return basedir;
     }
 
     public void deleteFileR(File file) {

@@ -29,6 +29,7 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.RenderingHints;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -46,15 +47,14 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-public abstract class ParamFrame extends JFrame {
-    private static final long serialVersionUID = 3803172863281872813L;
+public class PropertiesPanel extends JPanel {
+    private static final long serialVersionUID = 7178726681556068358L;
 
     public interface AbstractTextParam {
     }
@@ -65,27 +65,26 @@ public abstract class ParamFrame extends JFrame {
     public interface AbstractEnumParam {
     }
 
-    protected ParamFrame                                parent;
+    protected Window                                    parent;
 
     protected Map<AbstractTextParam, JTextField>        textfields;
     protected Map<AbstractBooleanParam, AbstractButton> buttons;
     protected Map<AbstractEnumParam, JComboBox<String>> enumfields;
 
-    public ParamFrame(String title) {
-        super(title);
+    public PropertiesPanel(Window parent) {
         textfields = new HashMap<>();
         buttons = new HashMap<>();
         enumfields = new HashMap<>();
-        parent = this;
+        this.parent = parent;
     }
 
-    protected void constructSingleRadioButtonGroup(JPanel panel, int row, String labelStr, String[] labels, AbstractBooleanParam[] param, int defaultVal) {
+    public void addSingleRadioButtonGroupEntry(int row, String labelStr, String[] labels, AbstractBooleanParam[] param, int defaultVal) {
         if(labels.length != param.length) {
             System.err.println("Labels != Param");
             return;
         }
 
-        constructLabelCell(panel, row, labelStr);
+        addLabelCell(row, labelStr);
 
         JPanel internalPanel = new JPanel();
         internalPanel.setLayout(new FlowLayout());
@@ -95,7 +94,7 @@ public abstract class ParamFrame extends JFrame {
         gbc_panel.insets = new Insets(0, 0, 5, 0);
         gbc_panel.gridx = 1;
         gbc_panel.gridy = row;
-        panel.add(internalPanel, gbc_panel);
+        this.add(internalPanel, gbc_panel);
 
         ButtonGroup group = new ButtonGroup();
         for(int i = 0; i < labels.length; i++) {
@@ -109,8 +108,8 @@ public abstract class ParamFrame extends JFrame {
         }
     }
 
-    protected void constructComboBox(JPanel panel, int row, AbstractEnumParam paramName, String labelStr, String[] values) {
-        constructLabelCell(panel, row, labelStr);
+    public void addComboBoxEntry(int row, AbstractEnumParam paramName, String labelStr, String[] values) {
+        addLabelCell(row, labelStr);
 
         JComboBox<String> combobox = new JComboBox<>(values);
         enumfields.put(paramName, combobox);
@@ -120,11 +119,11 @@ public abstract class ParamFrame extends JFrame {
         gbc_combobox.insets = new Insets(0, 0, 5, 0);
         gbc_combobox.gridx = 1;
         gbc_combobox.gridy = row;
-        panel.add(combobox, gbc_combobox);
+        this.add(combobox, gbc_combobox);
     }
 
-    protected void constructCheckboxEntry(JPanel panel, int row, AbstractBooleanParam paramName, String labelStr, boolean defaultvalue) {
-        constructLabelCell(panel, row, labelStr);
+    public void addCheckboxEntry(int row, AbstractBooleanParam paramName, String labelStr, boolean defaultvalue) {
+        addLabelCell(row, labelStr);
 
         JCheckBox checkbox = new JCheckBox("");
         buttons.put(paramName, checkbox);
@@ -134,41 +133,45 @@ public abstract class ParamFrame extends JFrame {
         gbc_checkbox.insets = new Insets(0, 0, 5, 0);
         gbc_checkbox.gridx = 1;
         gbc_checkbox.gridy = row;
-        panel.add(checkbox, gbc_checkbox);
+        this.add(checkbox, gbc_checkbox);
         checkbox.setSelected(defaultvalue);
     }
 
-    protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue) {
-        constructTextEntry(panel, row, paramName, labelStr, defaultvalue, false, null, false, false, null);
+    public void addTextEntry(int row, AbstractTextParam paramName, String labelStr, final String defaultvalue) {
+        addTextEntry(row, paramName, labelStr, defaultvalue, false, null, false, false, null);
     }
 
-    protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox) {
-        constructTextEntry(panel, row, paramName, labelStr, defaultvalue, hasPathButton, filemode, hasdefaultcheckbox, false, null);
+    public void addTextEntry(int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox) {
+        addTextEntry(row, paramName, labelStr, defaultvalue, hasPathButton, filemode, hasdefaultcheckbox, false, null);
     }
 
-    protected void constructTextEntry(JPanel panel, int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox, boolean hashelpbutton, String helptext) {
-        constructLabelCell(panel, row, labelStr);
-        final JTextField textfield = constructTextfieldCell(panel, row, paramName, defaultvalue, hasdefaultcheckbox);
-        final JButton pathbutton = hasPathButton ? constructPathButtonCell(panel, row, filemode, hasdefaultcheckbox, textfield) : null;
+    public void addTextEntry(int row, AbstractTextParam paramName, String labelStr, final String defaultvalue, boolean hasPathButton, final Integer filemode, boolean hasdefaultcheckbox, boolean hashelpbutton, String helptext) {
+        addLabelCell(row, labelStr);
+        final JTextField textfield = addTextfieldCell(row, paramName, defaultvalue, hasdefaultcheckbox);
+        final JButton pathbutton = hasPathButton ? addPathButtonCell(row, filemode, hasdefaultcheckbox, textfield) : null;
         if(hasdefaultcheckbox) {
-            constructDefaultCheckboxCell(panel, row, defaultvalue, textfield, pathbutton);
+            addDefaultCheckboxCell(row, defaultvalue, textfield, pathbutton);
         }
         if(hashelpbutton) {
-            constructHelpButtonCell(panel, row, helptext);
+            addHelpButtonCell(row, helptext);
         }
     }
 
-    protected void constructLabelCell(JPanel panel, int row, String labelStr) {
+    public void addLabelEntry(int row, String labelStr) {
+        addLabelCell(row, labelStr);
+    }
+
+    public void addLabelCell(int row, String labelStr) {
         JLabel label = new JLabel(labelStr);
         GridBagConstraints gbc_label = new GridBagConstraints();
         gbc_label.insets = new Insets(0, 0, 5, 5);
         gbc_label.anchor = GridBagConstraints.LINE_START;
         gbc_label.gridx = 0;
         gbc_label.gridy = row;
-        panel.add(label, gbc_label);
+        this.add(label, gbc_label);
     }
 
-    protected void constructDefaultCheckboxCell(JPanel panel, int row, final String defaultvalue, final JTextField textfield, final JButton pathbutton) {
+    public void addDefaultCheckboxCell(int row, final String defaultvalue, final JTextField textfield, final JButton pathbutton) {
         JCheckBox defaultcheckbox = new JCheckBox("Default");
         defaultcheckbox.addItemListener(new ItemListener() {
             @Override
@@ -196,11 +199,11 @@ public abstract class ParamFrame extends JFrame {
         gbc_defaultcheckbox.insets = new Insets(0, 0, 5, 0);
         gbc_defaultcheckbox.gridx = 3;
         gbc_defaultcheckbox.gridy = row;
-        panel.add(defaultcheckbox, gbc_defaultcheckbox);
+        this.add(defaultcheckbox, gbc_defaultcheckbox);
         defaultcheckbox.setSelected(true);
     }
 
-    protected JButton constructPathButtonCell(JPanel panel, int row, final Integer filemode, boolean hasdefaultcheckbox, final JTextField textfield) {
+    public JButton addPathButtonCell(int row, final Integer filemode, boolean hasdefaultcheckbox, final JTextField textfield) {
         final JButton pathbutton = new JButton("...");
         pathbutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -218,14 +221,14 @@ public abstract class ParamFrame extends JFrame {
         gbc_pathbutton.insets = new Insets(0, 0, 5, 5);
         gbc_pathbutton.gridx = 2;
         gbc_pathbutton.gridy = row;
-        panel.add(pathbutton, gbc_pathbutton);
+        this.add(pathbutton, gbc_pathbutton);
         if(hasdefaultcheckbox) {
             pathbutton.setEnabled(false);
         }
         return pathbutton;
     }
 
-    protected JTextField constructTextfieldCell(JPanel panel, int row, AbstractTextParam paramName, final String defaultvalue, boolean hasdefaultcheckbox) {
+    public JTextField addTextfieldCell(int row, AbstractTextParam paramName, final String defaultvalue, boolean hasdefaultcheckbox) {
         final JTextField textfield = new JTextField();
         textfields.put(paramName, textfield);
 
@@ -235,7 +238,7 @@ public abstract class ParamFrame extends JFrame {
         gbc_text.insets = new Insets(0, 0, 5, 5);
         gbc_text.gridx = 1;
         gbc_text.gridy = row;
-        panel.add(textfield, gbc_text);
+        this.add(textfield, gbc_text);
         textfield.setColumns(10);
         textfield.setText(defaultvalue);
         if(hasdefaultcheckbox) {
@@ -244,7 +247,7 @@ public abstract class ParamFrame extends JFrame {
         return textfield;
     }
 
-    protected void constructHelpButtonCell(JPanel panel, int row, final String helptext) {
+    public void addHelpButtonCell(int row, final String helptext) {
         final JLabel helpbutton = new JLabel(new Icon() {
             @Override
             public void paintIcon(Component c, Graphics g, int x, int y) {
@@ -280,18 +283,18 @@ public abstract class ParamFrame extends JFrame {
         gbc_helpbutton.insets = new Insets(0, 0, 5, 0);
         gbc_helpbutton.gridx = 4;
         gbc_helpbutton.gridy = row;
-        panel.add(helpbutton, gbc_helpbutton);
+        this.add(helpbutton, gbc_helpbutton);
     }
 
-    public String getTextValue(AbstractTextParam param) {
-        return textfields.get(param).getText();
+    public Map<AbstractTextParam, JTextField> getTextfields() {
+        return textfields;
     }
 
-    public boolean getBooleanValue(AbstractBooleanParam param) {
-        return buttons.get(param).isSelected();
+    public Map<AbstractBooleanParam, AbstractButton> getButtons() {
+        return buttons;
     }
 
-    public int getEnumValue(AbstractEnumParam param) {
-        return enumfields.get(param).getSelectedIndex();
+    public Map<AbstractEnumParam, JComboBox<String>> getEnumfields() {
+        return enumfields;
     }
 }

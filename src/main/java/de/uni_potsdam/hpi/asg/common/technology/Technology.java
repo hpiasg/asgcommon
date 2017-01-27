@@ -20,10 +20,14 @@ package de.uni_potsdam.hpi.asg.common.technology;
  */
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -56,6 +60,16 @@ public class Technology implements Serializable {
     private File folder;
 
     //@formatter:on
+
+    protected Technology() {
+    }
+
+    public Technology(String name, Balsa balsa, Genlib genlib, SyncTool synctool) {
+        this.name = name;
+        this.balsa = balsa;
+        this.genlib = genlib;
+        this.synctool = synctool;
+    }
 
     public static Technology readInSilent(File file) {
         return readInInternal(file, false);
@@ -90,6 +104,25 @@ public class Technology implements Serializable {
                 }
             }
             return null;
+        }
+    }
+
+    public static boolean writeOut(Technology tech, File file) {
+        try {
+            Writer fw = new FileWriter(file);
+            JAXBContext context = JAXBContext.newInstance(Technology.class);
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            m.marshal(tech, fw);
+            return true;
+        } catch(JAXBException e) {
+            System.out.println(e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
+            return false;
+        } catch(IOException e) {
+            System.out.println(e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
+            return false;
         }
     }
 

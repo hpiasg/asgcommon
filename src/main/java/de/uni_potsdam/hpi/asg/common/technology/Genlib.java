@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2014 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -32,6 +32,13 @@ public class Genlib implements Serializable {
 
     @XmlElement(name = "libfile")
     private String            libfile;
+
+    protected Genlib() {
+    }
+
+    public Genlib(String libfile) {
+        this.libfile = libfile;
+    }
 
     public String getLibfile() {
         return libfile;

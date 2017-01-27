@@ -164,7 +164,7 @@ public class PropertiesPanel extends JPanel {
     public void addLabelCell(int row, String labelStr) {
         JLabel label = new JLabel(labelStr);
         GridBagConstraints gbc_label = new GridBagConstraints();
-        gbc_label.insets = new Insets(0, 0, 5, 5);
+        gbc_label.insets = new Insets(0, 5, 5, 5);
         gbc_label.anchor = GridBagConstraints.LINE_START;
         gbc_label.gridx = 0;
         gbc_label.gridy = row;

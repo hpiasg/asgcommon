@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -116,7 +116,10 @@ public class Zipper {
             while((ze = zis.getNextEntry()) != null) {
                 String filename = ze.getName();
                 File newFile = new File(trgDir, filename);
-
+                if(ze.isDirectory()) {
+                    newFile.mkdir();
+                    continue;
+                }
                 File parent = new File(newFile.getParent());
                 parent.mkdirs();
 

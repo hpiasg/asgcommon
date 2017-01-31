@@ -19,7 +19,6 @@ package de.uni_potsdam.hpi.asg.common.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -84,7 +83,7 @@ public class TechnologyDirectory {
         return techs;
     }
 
-    public Technology createTechnology(Window parent, String name, String balsafolder, String style, String genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes) {
+    public Technology createTechnology(String name, String balsafolder, String style, String genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes) {
         Balsa balsa = new Balsa(style, name);
         File sourcedir = new File(balsafolder);
         File targetdir = new File(balsaTechDir, name);
@@ -118,7 +117,7 @@ public class TechnologyDirectory {
         return tech;
     }
 
-    public Technology importTechnology(Window parent, Technology srcTech, File srcDir) {
+    public Technology importTechnology(Technology srcTech, File srcDir) {
         String name = srcTech.getName();
 
         if(techs.containsKey(name)) {
@@ -136,10 +135,10 @@ public class TechnologyDirectory {
         List<String> postCompileCmds = srcTech.getSynctool().getPostCompileCmds();
         List<String> verilogIncludes = srcTech.getSynctool().getVerilogIncludes();
 
-        return createTechnology(parent, name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes);
+        return createTechnology(name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes);
     }
 
-    public void exportTechnology(Window parent, String name, File dstDir) {
+    public void exportTechnology(String name, File dstDir) {
         if(!techs.containsKey(name)) {
             return;
         }
@@ -181,7 +180,7 @@ public class TechnologyDirectory {
         }
     }
 
-    public void deleteTechnology(Window parent, String name) {
+    public void deleteTechnology(String name) {
         if(!techs.containsKey(name)) {
             return;
         }

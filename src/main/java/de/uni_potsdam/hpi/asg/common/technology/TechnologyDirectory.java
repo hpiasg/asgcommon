@@ -21,6 +21,7 @@ package de.uni_potsdam.hpi.asg.common.technology;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -115,6 +116,61 @@ public class TechnologyDirectory {
         this.techs.put(name, tech);
 
         return tech;
+    }
+
+    public Set<Technology> importTechnology(File file) {
+        if(!file.exists()) {
+            return null;
+        }
+        Set<Technology> retVal = null;
+        if(file.isDirectory()) {
+            retVal = importTechFromDir(file);
+            return null;
+        } else {
+            retVal = importTechFromFile(file);
+        }
+        return retVal;
+    }
+
+    private Set<Technology> importTechFromFile(File file) {
+        Set<Technology> retVal = new HashSet<>();
+
+        Technology tech = Technology.readInSilent(file);
+        if(tech != null) {
+            Technology newTech = this.importTechnology(tech, file.getParentFile());
+            if(newTech != null) {
+                retVal.add(newTech);
+                return retVal;
+            }
+        }
+
+        File tmpDir = Files.createTempDir();
+        if(Zipper.getInstance().unzip(file, tmpDir)) {
+            retVal = importTechFromDir(tmpDir);
+            try {
+                FileUtils.deleteDirectory(tmpDir);
+            } catch(IOException e) {
+            }
+            return retVal;
+        }
+
+        return null;
+    }
+
+    private Set<Technology> importTechFromDir(File file) {
+        TechnologyDirectory tmpTechDir = TechnologyDirectory.create(file, null);
+        if(tmpTechDir == null) {
+            return null;
+        }
+
+        Set<Technology> retVal = new HashSet<>();
+        for(Technology srcTech : tmpTechDir.getTechs()) {
+            Technology newTech = this.importTechnology(srcTech, file);
+            if(newTech != null) {
+                retVal.add(newTech);
+            }
+        }
+        return retVal;
     }
 
     public Technology importTechnology(Technology srcTech, File srcDir) {

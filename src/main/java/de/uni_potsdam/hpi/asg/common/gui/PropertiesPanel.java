@@ -161,6 +161,61 @@ public class PropertiesPanel extends JPanel {
         addLabelCell(row, labelStr);
     }
 
+    public void addTechnologyChooserEntry(int row, String labelStr, String[] technologies, AbstractEnumParam techParam, AbstractBooleanParam checkboxParam, String checkboxLabel, boolean checkboxSelected) {
+        boolean techsPresent = technologies != null;
+        if(technologies == null) {
+            technologies = new String[]{"No technology found"};
+        }
+
+        addLabelCell(row, labelStr);
+        JComboBox<String> combobox = addComboBoxCell(row, techParam, technologies, !checkboxSelected && techsPresent);
+        addTechnologyCheckboxCell(row, checkboxLabel, checkboxParam, combobox, checkboxSelected || !techsPresent, techsPresent);
+    }
+
+    private JComboBox<String> addComboBoxCell(int row, AbstractEnumParam paramName, String[] values, boolean enabled) {
+        JComboBox<String> combobox = new JComboBox<>(values);
+        enumfields.put(paramName, combobox);
+
+        GridBagConstraints gbc_combobox = new GridBagConstraints();
+        gbc_combobox.anchor = GridBagConstraints.LINE_START;
+        gbc_combobox.fill = GridBagConstraints.HORIZONTAL;
+        gbc_combobox.insets = new Insets(0, 0, 5, 5);
+        gbc_combobox.gridx = 1;
+        gbc_combobox.gridy = row;
+        this.add(combobox, gbc_combobox);
+
+        combobox.setEnabled(enabled);
+
+        return combobox;
+    }
+
+    private void addTechnologyCheckboxCell(int row, String label, AbstractBooleanParam paramName, final JComboBox<String> combobox, boolean selected, boolean enabled) {
+        JCheckBox checkbox = new JCheckBox(label);
+        buttons.put(paramName, checkbox);
+        checkbox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if(e.getStateChange() == ItemEvent.SELECTED) {
+                    combobox.setEnabled(false);
+                } else if(e.getStateChange() == ItemEvent.DESELECTED) {
+                    combobox.setEnabled(true);
+                } else {
+                    System.err.println("error");
+                }
+            }
+        });
+
+        GridBagConstraints gbc_defaultcheckbox = new GridBagConstraints();
+        gbc_defaultcheckbox.anchor = GridBagConstraints.LINE_START;
+        gbc_defaultcheckbox.insets = new Insets(0, 0, 5, 0);
+        gbc_defaultcheckbox.gridx = 3;
+        gbc_defaultcheckbox.gridy = row;
+        this.add(checkbox, gbc_defaultcheckbox);
+
+        checkbox.setSelected(selected);
+        checkbox.setEnabled(enabled);
+    }
+
     public void addLabelCell(int row, String labelStr) {
         JLabel label = new JLabel(labelStr);
         GridBagConstraints gbc_label = new GridBagConstraints();

@@ -161,15 +161,28 @@ public class PropertiesPanel extends JPanel {
         addLabelCell(row, labelStr);
     }
 
-    public void addTechnologyChooserEntry(int row, String labelStr, String[] technologies, AbstractEnumParam techParam, AbstractBooleanParam checkboxParam, String checkboxLabel, boolean checkboxSelected) {
-        boolean techsPresent = technologies.length > 0;
+    public void addTechnologyChooserWithDefaultEntry(int row, String labelStr, String[] techs, String defTech, AbstractEnumParam techParam, AbstractBooleanParam checkboxParam, String checkboxLabel) {
+        boolean techsPresent = techs.length > 0;
         if(!techsPresent) {
-            technologies = new String[]{"No technology found"};
+            return;
         }
+        boolean defTechPresent = defTech != null;
 
+        addTechnologyChooserEntry(row, labelStr, techs, techParam, defTech, !defTechPresent, checkboxParam, checkboxLabel, defTechPresent, defTechPresent);
+    }
+
+    public void addTechnologyChooserWithUnsetEntry(int row, String labelStr, String[] techs, AbstractEnumParam techParam, AbstractBooleanParam checkboxParam, String checkboxLabel) {
+        boolean techsPresent = techs.length > 0;
+        if(!techsPresent) {
+            techs = new String[]{"No technology found"};
+        }
+        addTechnologyChooserEntry(row, labelStr, techs, techParam, null, techsPresent, checkboxParam, checkboxLabel, !techsPresent, techsPresent);
+    }
+
+    private void addTechnologyChooserEntry(int row, String labelStr, String[] technologies, AbstractEnumParam techParam, String defTech, boolean comboEnabled, AbstractBooleanParam checkboxParam, String checkboxLabel, boolean checkboxSelected, boolean checkboxEnabled) {
         addLabelCell(row, labelStr);
-        JComboBox<String> combobox = addComboBoxCell(row, techParam, technologies, !checkboxSelected && techsPresent);
-        addTechnologyCheckboxCell(row, checkboxLabel, checkboxParam, combobox, checkboxSelected || !techsPresent, techsPresent);
+        JComboBox<String> combobox = addComboBoxCell(row, techParam, technologies, comboEnabled);
+        addTechnologyCheckboxCell(row, checkboxLabel, checkboxParam, combobox, defTech, checkboxSelected, checkboxEnabled);
     }
 
     private JComboBox<String> addComboBoxCell(int row, AbstractEnumParam paramName, String[] values, boolean enabled) {
@@ -189,7 +202,7 @@ public class PropertiesPanel extends JPanel {
         return combobox;
     }
 
-    private void addTechnologyCheckboxCell(int row, String label, AbstractBooleanParam paramName, final JComboBox<String> combobox, boolean selected, boolean enabled) {
+    private void addTechnologyCheckboxCell(int row, String label, AbstractBooleanParam paramName, final JComboBox<String> combobox, final String defTech, boolean selected, boolean enabled) {
         JCheckBox checkbox = new JCheckBox(label);
         buttons.put(paramName, checkbox);
         checkbox.addItemListener(new ItemListener() {
@@ -197,6 +210,9 @@ public class PropertiesPanel extends JPanel {
             public void itemStateChanged(ItemEvent e) {
                 if(e.getStateChange() == ItemEvent.SELECTED) {
                     combobox.setEnabled(false);
+                    if(defTech != null) {
+                        combobox.setSelectedItem(defTech);
+                    }
                 } else if(e.getStateChange() == ItemEvent.DESELECTED) {
                     combobox.setEnabled(true);
                 } else {

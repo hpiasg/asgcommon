@@ -21,6 +21,7 @@ package de.uni_potsdam.hpi.asg.common.technology;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -259,6 +260,16 @@ public class TechnologyDirectory {
         }
 
         techs.remove(name);
+    }
+
+    public String[] getTechNames() {
+        List<String> techNames = new ArrayList<>();
+        for(Technology t : techs.values()) {
+            techNames.add(t.getName());
+        }
+
+        String[] retVal = new String[techNames.size()];
+        return techNames.toArray(retVal);
     }
 
     public Set<Technology> getTechs() {

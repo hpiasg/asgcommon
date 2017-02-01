@@ -162,8 +162,8 @@ public class PropertiesPanel extends JPanel {
     }
 
     public void addTechnologyChooserEntry(int row, String labelStr, String[] technologies, AbstractEnumParam techParam, AbstractBooleanParam checkboxParam, String checkboxLabel, boolean checkboxSelected) {
-        boolean techsPresent = technologies != null;
-        if(technologies == null) {
+        boolean techsPresent = technologies.length > 0;
+        if(!techsPresent) {
             technologies = new String[]{"No technology found"};
         }
 

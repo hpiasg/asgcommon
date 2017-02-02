@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2015 Norman Kluge
+ * Copyright (C) 2015 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -56,7 +56,7 @@ public class WorkingdirGenerator {
         }
         File workingfile = new File(wdirstr);
         int tmpnum = 0;
-        while(!workingfile.mkdir()) {
+        while(!workingfile.mkdirs()) {
             workingfile = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
         }
         workingdir = workingfile.getAbsolutePath() + FileHelper.getFileSeparator();

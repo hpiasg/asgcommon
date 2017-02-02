@@ -20,8 +20,6 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
  */
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -32,22 +30,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 
 public class LoggerHelper {
 
-    @Deprecated
     public static Logger initLogger(int outputlevel, File logfile, boolean debug) {
-        return initLogger(outputlevel, logfile, debug, null);
-    }
-
-    public static Logger initLogger(int outputlevel, File logfile, boolean debug, String configurl) {
-        if(configurl != null) {
-            URL url = LoggerHelper.class.getResource(configurl);
-            if(url != null) {
-                try {
-                    LogManager.getContext(null, false, url.toURI());
-                } catch(URISyntaxException e2) {
-                }
-            }
-        }
-
         if(logfile == null) {
             logfile = new File("log.txt");
         }

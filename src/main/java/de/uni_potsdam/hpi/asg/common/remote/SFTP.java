@@ -85,7 +85,7 @@ public class SFTP {
                     if(file.getName().startsWith("__")) {
                         continue;
                     }
-                    try (FileInputStream stream = new FileInputStream(file)) {
+                    try(FileInputStream stream = new FileInputStream(file)) {
                         channel.put(stream, file.getName());
                     }
                 } else {
@@ -103,7 +103,7 @@ public class SFTP {
         } catch(FileNotFoundException e) {
             logger.error(e.getLocalizedMessage());
             return false;
-        } catch (IOException e) {
+        } catch(IOException e) {
             logger.error(e.getLocalizedMessage());
             return false;
         }

@@ -249,7 +249,7 @@ public class FileHelper {
         return new File(newstr);
     }
 
-    private String getBasedir() {
+    public String getBasedir() {
         String basedir = System.getProperty("basedir");
         if(SystemUtils.IS_OS_WINDOWS) {
             basedir = basedir.replaceAll("\\\\", "/");

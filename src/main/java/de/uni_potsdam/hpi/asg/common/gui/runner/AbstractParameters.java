@@ -56,7 +56,9 @@ public abstract class AbstractParameters {
             return System.getProperty("user.dir");
         }
         String retVal = str.replaceAll("\\" + basedirStr, FileHelper.getInstance().getBasedir());
-        retVal = retVal.replaceAll("\\" + outfilebaseName, frame.getTextValue(GeneralTextParam.OutFile).replaceAll(".v", ""));
+        if(param != GeneralTextParam.OutFile) {
+            retVal = retVal.replaceAll("\\" + outfilebaseName, frame.getTextValue(GeneralTextParam.OutFile).replaceAll(".v", ""));
+        }
         return retVal;
     }
 

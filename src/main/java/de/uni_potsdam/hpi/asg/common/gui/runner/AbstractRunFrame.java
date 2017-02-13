@@ -20,6 +20,7 @@ package de.uni_potsdam.hpi.asg.common.gui.runner;
  */
 
 import java.awt.event.WindowAdapter;
+import java.io.File;
 
 import javax.swing.JFileChooser;
 
@@ -27,6 +28,7 @@ import de.uni_potsdam.hpi.asg.common.gui.PropertiesFrame;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel;
 import de.uni_potsdam.hpi.asg.common.gui.runner.AbstractParameters.GeneralBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.runner.AbstractParameters.GeneralTextParam;
+import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public abstract class AbstractRunFrame extends PropertiesFrame {
     private static final long    serialVersionUID = -8028988850607540856L;
@@ -47,16 +49,17 @@ public abstract class AbstractRunFrame extends PropertiesFrame {
     }
 
     protected void addOutSection(PropertiesPanel panel, int beginRow, String defOutfile) {
-        panel.addTextEntry(beginRow, GeneralTextParam.OutDir, "Output directory", AbstractParameters.userDirStr, true, JFileChooser.DIRECTORIES_ONLY, true);
+        panel.addTextEntry(beginRow, GeneralTextParam.OutDir, "Output directory", CommonConstants.USERDIR_STR, true, JFileChooser.DIRECTORIES_ONLY, true);
         panel.addTextEntry(beginRow + 1, GeneralTextParam.OutFile, "Output file name", defOutfile, false, null, false);
     }
 
     protected void addIOSection(PropertiesPanel panel, int beginRow, String defaultConfig) {
-        panel.addTextEntry(beginRow, GeneralTextParam.CfgFile, "Configuration file", defaultConfig, true, JFileChooser.FILES_ONLY, true);
-        panel.addTextEntry(beginRow + 1, GeneralTextParam.WorkingDir, "Working directory", AbstractParameters.unsetStr, true, JFileChooser.DIRECTORIES_ONLY, true);
+        String defConfig = CommonConstants.DEF_CONFIG_DIR_STR + File.separator + defaultConfig;
+        panel.addTextEntry(beginRow, GeneralTextParam.CfgFile, "Configuration file", defConfig, true, JFileChooser.FILES_ONLY, true);
+        panel.addTextEntry(beginRow + 1, GeneralTextParam.WorkingDir, "Working directory", AbstractParameters.UNSET_STR, true, JFileChooser.DIRECTORIES_ONLY, true);
         panel.addSingleRadioButtonGroupEntry(beginRow + 2, "Log level", new String[]{"Nothing", "Errors", "+Warnings", "+Info"}, new GeneralBooleanParam[]{GeneralBooleanParam.LogLvl0, GeneralBooleanParam.LogLvl1, GeneralBooleanParam.LogLvl2, GeneralBooleanParam.LogLvl3}, 3);
-        panel.addTextEntry(beginRow + 3, GeneralTextParam.LogFile, "Log file name", AbstractParameters.outfilebaseName + ".log", false, null, true);
-        panel.addTextEntry(beginRow + 4, GeneralTextParam.TempFiles, "Temp files file name", AbstractParameters.outfilebaseName + ".zip", false, null, true);
+        panel.addTextEntry(beginRow + 3, GeneralTextParam.LogFile, "Log file name", AbstractParameters.OUTFILE_BASE_STR + CommonConstants.LOG_FILE_EXTENSION, false, null, true);
+        panel.addTextEntry(beginRow + 4, GeneralTextParam.TempFiles, "Temp files file name", AbstractParameters.OUTFILE_BASE_STR + CommonConstants.ZIP_FILE_EXTENSION, false, null, true);
     }
 
 }

@@ -34,19 +34,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.io.Files;
 
-import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
 import de.uni_potsdam.hpi.asg.common.iohelper.Zipper;
-import de.uni_potsdam.hpi.asg.common.technology.Balsa;
-import de.uni_potsdam.hpi.asg.common.technology.Genlib;
-import de.uni_potsdam.hpi.asg.common.technology.SyncTool;
-import de.uni_potsdam.hpi.asg.common.technology.Technology;
+import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public class TechnologyDirectory {
-    private static final Logger       logger              = LogManager.getLogger();
-
-    public static String              techfileExtension   = ".xml";
-    public static String              genlibfileExtension = ".lib";
-    public static String              zipfileExtension    = ".zip";
+    private static final Logger       logger = LogManager.getLogger();
 
     private File                      dir;
     private BiMap<String, Technology> techs;
@@ -58,9 +50,13 @@ public class TechnologyDirectory {
         this.balsaTechDir = balsaTechDir;
     }
 
-    public static TechnologyDirectory create(String dir, File balsaTechDir) {
-        return create(FileHelper.getInstance().replaceBasedir(dir), balsaTechDir);
+    public static TechnologyDirectory createDefault() {
+        return create(CommonConstants.DEF_TECH_DIR_FILE, CommonConstants.DEF_BALSA_TECH_DIR_FILE);
     }
+
+//    public static TechnologyDirectory create(String dir, File balsaTechDir) {
+//        return create(FileHelper.getInstance().replaceBasedir(dir), balsaTechDir);
+//    }
 
     public static TechnologyDirectory create(File dir, File balsaTechDir) {
         if(!dir.exists()) {
@@ -97,9 +93,9 @@ public class TechnologyDirectory {
             return null;
         }
 
-        Genlib genlib = new Genlib(name + genlibfileExtension);
+        Genlib genlib = new Genlib(name + CommonConstants.GENLIB_FILE_EXTENSION);
         File sourcefile = new File(genlibfile);
-        File targetfile = new File(dir, name + genlibfileExtension);
+        File targetfile = new File(dir, name + CommonConstants.GENLIB_FILE_EXTENSION);
         try {
             FileUtils.copyFile(sourcefile, targetfile);
         } catch(IOException e) {
@@ -110,7 +106,7 @@ public class TechnologyDirectory {
         SyncTool synctool = new SyncTool(searchPaths, libraries, postCompileCmds, verilogIncludes);
 
         Technology tech = new Technology(name, balsa, genlib, synctool);
-        if(!Technology.writeOut(tech, new File(dir, name + techfileExtension))) {
+        if(!Technology.writeOut(tech, new File(dir, name + CommonConstants.XMLTECH_FILE_EXTENSION))) {
             logger.error("Error while creating technology file");
             return null;
         }
@@ -210,23 +206,23 @@ public class TechnologyDirectory {
             logger.error("Failed to copy Balsa technology folder");
         }
 
-        File genlibfile = new File(dir, name + genlibfileExtension);
-        File genlibDstFile = new File(tmpDir, name + genlibfileExtension);
+        File genlibfile = new File(dir, name + CommonConstants.GENLIB_FILE_EXTENSION);
+        File genlibDstFile = new File(tmpDir, name + CommonConstants.GENLIB_FILE_EXTENSION);
         try {
             FileUtils.copyFile(genlibfile, genlibDstFile);
         } catch(IOException e) {
             logger.error("Failed to copy Genlib file");
         }
 
-        File techfile = new File(dir, name + techfileExtension);
-        File techDstFile = new File(tmpDir, name + techfileExtension);
+        File techfile = new File(dir, name + CommonConstants.XMLTECH_FILE_EXTENSION);
+        File techDstFile = new File(tmpDir, name + CommonConstants.XMLTECH_FILE_EXTENSION);
         try {
             FileUtils.copyFile(techfile, techDstFile);
         } catch(IOException e) {
             logger.error("Failed to copy technology file");
         }
 
-        File dstFile = new File(dstDir, name + zipfileExtension);
+        File dstFile = new File(dstDir, name + CommonConstants.EXPORT_TECH_FILE_EXTENSION);
         if(!Zipper.getInstance().zip(dstFile, tmpDir)) {
             logger.error("Failed to create export file");
         }
@@ -249,12 +245,12 @@ public class TechnologyDirectory {
             logger.error("Failed to remove Balsa technology folder");
         }
 
-        File genlibfile = new File(dir, name + genlibfileExtension);
+        File genlibfile = new File(dir, name + CommonConstants.GENLIB_FILE_EXTENSION);
         if(!genlibfile.delete()) {
             logger.error("Failed to remove Genlib file");
         }
 
-        File techfile = new File(dir, name + techfileExtension);
+        File techfile = new File(dir, name + CommonConstants.XMLTECH_FILE_EXTENSION);
         if(!techfile.delete()) {
             logger.error("Failed to remove technology file");
         }

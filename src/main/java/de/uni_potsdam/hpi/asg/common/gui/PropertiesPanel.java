@@ -216,7 +216,6 @@ public class PropertiesPanel extends JPanel {
                 } else if(e.getStateChange() == ItemEvent.DESELECTED) {
                     combobox.setEnabled(true);
                 } else {
-                    System.err.println("error");
                 }
             }
         });
@@ -260,7 +259,6 @@ public class PropertiesPanel extends JPanel {
                     textfield.setText("");
                     textfield.setEnabled(true);
                 } else {
-                    System.err.println("error");
                 }
             }
         });

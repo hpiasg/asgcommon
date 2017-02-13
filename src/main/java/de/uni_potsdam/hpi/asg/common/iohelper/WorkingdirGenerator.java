@@ -59,7 +59,7 @@ public class WorkingdirGenerator {
         while(!workingfile.mkdirs()) {
             workingfile = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
         }
-        workingdir = workingfile.getAbsolutePath() + FileHelper.getFileSeparator();
+        workingdir = workingfile.getAbsolutePath() + File.separator;
         FileHelper.getInstance().setWorkingdir(workingdir);
         if(invoker != null) {
             invoker.setWorkingdir(workingdir);

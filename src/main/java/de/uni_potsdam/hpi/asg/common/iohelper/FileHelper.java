@@ -35,6 +35,8 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
+
 public class FileHelper {
     private final static Logger logger = LogManager.getLogger();
 
@@ -60,10 +62,12 @@ public class FileHelper {
         return System.getProperty("line.separator");
     }
 
+    @Deprecated
     public static String getFileSeparator() {
         return File.separator;
     }
 
+    @Deprecated
     public static String getFileEx(Filetype type) {
         switch(type) {
             case balsa:
@@ -128,6 +132,7 @@ public class FileHelper {
         return copyfile(srFile, f1);
     }
 
+    @Deprecated
     public enum Filetype {
         verilog, breeze, balsa, stg, log
     }
@@ -245,7 +250,7 @@ public class FileHelper {
 
     public File replaceBasedir(String str) {
         String basedir = getBasedir();
-        String newstr = str.replaceAll("\\$BASEDIR", basedir);
+        String newstr = str.replaceAll(CommonConstants.BASEDIR_REGEX, basedir);
         return new File(newstr);
     }
 

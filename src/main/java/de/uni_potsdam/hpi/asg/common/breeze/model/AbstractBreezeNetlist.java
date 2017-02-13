@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.breeze.model;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -39,7 +39,7 @@ import de.uni_potsdam.hpi.asg.common.breeze.model.PortComponent.Direction;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezeComponentElement;
 import de.uni_potsdam.hpi.asg.common.breeze.parser.breezefile.BreezePartElement;
 import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
-import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper.Filetype;
+import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public abstract class AbstractBreezeNetlist {
     private static final Logger      logger = LogManager.getLogger();
@@ -194,7 +194,7 @@ public abstract class AbstractBreezeNetlist {
     }
 
     public boolean writeOut() {
-        String filename = name + FileHelper.getFileEx(Filetype.breeze);
+        String filename = name + CommonConstants.BREEZE_FILE_EXTENSION;
         String newline = FileHelper.getNewline();
         StringBuilder newbreeze = new StringBuilder();
         newbreeze.append("(breeze-part \"Test\"" + newline);

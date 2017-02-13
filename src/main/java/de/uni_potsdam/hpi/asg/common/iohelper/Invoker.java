@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.uni_potsdam.hpi.asg.common.iohelper.ProcessReturn.Status;
+import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public abstract class Invoker {
     private final static Logger logger = LogManager.getLogger();
@@ -186,12 +186,7 @@ public abstract class Invoker {
             return null;
         }
 
-        String basedir = System.getProperty("basedir");
-        if(SystemUtils.IS_OS_WINDOWS) {
-            basedir = basedir.replaceAll("\\\\", "/");
-        }
-
-        cmd = cmd.replaceAll("\\$BASEDIR", basedir);
+        cmd = cmd.replaceAll(CommonConstants.BASEDIR_REGEX, FileHelper.getInstance().getBasedir());
         return cmd.split(" ");
     }
 

@@ -23,12 +23,12 @@ import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractEnumParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractTextParam;
 import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
+import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public abstract class AbstractParameters {
-    public static String unsetStr        = "$UNSET";
-    public static String userDirStr      = "$USER-DIR";
-    public static String basedirStr      = "$BASEDIR";
-    public static String outfilebaseName = "$OUTFILE";
+    public static String UNSET_STR          = "$UNSET";
+    public static String OUTFILE_BASE_STR   = "$OUTFILE";
+    public static String OUTFILE_BASE_REGEX = "\\" + OUTFILE_BASE_STR;
 
     //@formatter:off
     public enum GeneralTextParam implements AbstractTextParam {
@@ -41,6 +41,12 @@ public abstract class AbstractParameters {
     }
     //@formatter:on
 
+    private String outfileEnding;
+
+    public AbstractParameters(String outfileEnding) {
+        this.outfileEnding = outfileEnding;
+    }
+
     protected AbstractRunFrame frame;
 
     public void setFrame(AbstractRunFrame frame) {
@@ -49,15 +55,15 @@ public abstract class AbstractParameters {
 
     public String getTextValue(AbstractTextParam param) {
         String str = frame.getTextValue(param);
-        if(str.equals(unsetStr)) {
+        if(str.equals(UNSET_STR)) {
             return null;
         }
-        if(str.equals(userDirStr)) {
+        if(str.equals(CommonConstants.USERDIR_STR)) {
             return System.getProperty("user.dir");
         }
-        String retVal = str.replaceAll("\\" + basedirStr, FileHelper.getInstance().getBasedir());
+        String retVal = str.replaceAll(CommonConstants.BASEDIR_REGEX, FileHelper.getInstance().getBasedir());
         if(param != GeneralTextParam.OutFile) {
-            retVal = retVal.replaceAll("\\" + outfilebaseName, frame.getTextValue(GeneralTextParam.OutFile).replaceAll(".v", ""));
+            retVal = retVal.replaceAll(OUTFILE_BASE_REGEX, frame.getTextValue(GeneralTextParam.OutFile).replaceAll(outfileEnding, ""));
         }
         return retVal;
     }

@@ -21,7 +21,7 @@ package de.uni_potsdam.hpi.asg.common.misc;
 
 import java.io.File;
 
-import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
+import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 
 public class CommonConstants {
 
@@ -35,11 +35,11 @@ public class CommonConstants {
 
     // default directories
     public static final String DEF_TECH_DIR_STR           = "$BASEDIR/tech";
-    public static final File   DEF_TECH_DIR_FILE          = FileHelper.getInstance().replaceBasedir(DEF_TECH_DIR_STR);
-    public static final File   DEF_BALSA_TECH_DIR_FILE    = FileHelper.getInstance().replaceBasedir("$BASEDIR/tools/balsa/share/tech");
+    public static final File   DEF_TECH_DIR_FILE          = BasedirHelper.replaceBasedirAsFile(DEF_TECH_DIR_STR);
+    public static final File   DEF_BALSA_TECH_DIR_FILE    = BasedirHelper.replaceBasedirAsFile("$BASEDIR/tools/balsa/share/tech");
     public static final String DEF_CONFIG_DIR_STR         = "$BASEDIR/config";
-    public static final File   DEF_CONFIG_DIR_FILE        = FileHelper.getInstance().replaceBasedir(DEF_CONFIG_DIR_STR);
-    public static final File   DEF_BIN_DIR_FILE           = FileHelper.getInstance().replaceBasedir("$BASEDIR/bin");
+    public static final File   DEF_CONFIG_DIR_FILE        = BasedirHelper.replaceBasedirAsFile(DEF_CONFIG_DIR_STR);
+    public static final File   DEF_BIN_DIR_FILE           = BasedirHelper.replaceBasedirAsFile("$BASEDIR/bin");
 
     // output files
     public static final String ZIP_FILE_EXTENSION         = ".zip";

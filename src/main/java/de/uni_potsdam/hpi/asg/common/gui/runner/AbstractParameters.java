@@ -22,7 +22,7 @@ package de.uni_potsdam.hpi.asg.common.gui.runner;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractEnumParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractTextParam;
-import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
+import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public abstract class AbstractParameters {
@@ -61,7 +61,7 @@ public abstract class AbstractParameters {
         if(str.equals(CommonConstants.USERDIR_STR)) {
             return System.getProperty("user.dir");
         }
-        String retVal = str.replaceAll(CommonConstants.BASEDIR_REGEX, FileHelper.getInstance().getBasedir());
+        String retVal = BasedirHelper.replaceBasedir(str);
         if(param != GeneralTextParam.OutFile) {
             retVal = retVal.replaceAll(OUTFILE_BASE_REGEX, frame.getTextValue(GeneralTextParam.OutFile).replaceAll(outfileEnding, ""));
         }

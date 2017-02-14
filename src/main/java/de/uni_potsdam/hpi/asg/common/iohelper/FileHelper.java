@@ -31,7 +31,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -62,11 +61,17 @@ public class FileHelper {
         return System.getProperty("line.separator");
     }
 
+    /**
+     * @deprecated Use {@link File#separator} instead
+     */
     @Deprecated
     public static String getFileSeparator() {
         return File.separator;
     }
 
+    /**
+     * @deprecated Use {@link CommonConstants} instead
+     */
     @Deprecated
     public static String getFileEx(Filetype type) {
         switch(type) {
@@ -132,6 +137,9 @@ public class FileHelper {
         return copyfile(srFile, f1);
     }
 
+    /**
+     * @deprecated Use {@link CommonConstants} instead
+     */
     @Deprecated
     public enum Filetype {
         verilog, breeze, balsa, stg, log
@@ -242,24 +250,13 @@ public class FileHelper {
         return f;
     }
 
-    public File getBasedirFile(String filename) {
-        String basedir = getBasedir();
-        String newfilename = basedir + getFileSeparator() + filename;
-        return new File(newfilename);
-    }
-
-    public File replaceBasedir(String str) {
-        String basedir = getBasedir();
-        String newstr = str.replaceAll(CommonConstants.BASEDIR_REGEX, basedir);
-        return new File(newstr);
-    }
-
-    public String getBasedir() {
-        String basedir = System.getProperty("basedir");
-        if(SystemUtils.IS_OS_WINDOWS) {
-            basedir = basedir.replaceAll("\\\\", "/");
-        }
-        return basedir;
+    /**
+     * @deprecated Use {@link BasedirHelper#getFileInBasedir(String)} instead
+     */
+    @Deprecated
+    public static File getBasedirFile(String filename) {
+        String basedir = BasedirHelper.getBasedir();
+        return new File(basedir, filename);
     }
 
     public void deleteFileR(File file) {

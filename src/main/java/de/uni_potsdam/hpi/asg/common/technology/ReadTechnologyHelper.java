@@ -24,7 +24,7 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
+import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 
 public class ReadTechnologyHelper {
     private static final Logger logger = LogManager.getLogger();
@@ -42,7 +42,7 @@ public class ReadTechnologyHelper {
         }
 
         if(cfgTech != null) {
-            File cfgTechFile = FileHelper.getInstance().replaceBasedir(cfgTech);
+            File cfgTechFile = BasedirHelper.replaceBasedirAsFile(cfgTech);
             if(cfgTechFile.exists()) {
                 logger.debug("Using config technology file: " + cfgTechFile.getAbsolutePath());
                 return Technology.readIn(cfgTechFile);

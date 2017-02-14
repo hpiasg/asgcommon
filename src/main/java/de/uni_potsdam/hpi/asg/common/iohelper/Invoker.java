@@ -29,7 +29,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.uni_potsdam.hpi.asg.common.iohelper.ProcessReturn.Status;
-import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public abstract class Invoker {
     private final static Logger logger = LogManager.getLogger();
@@ -186,7 +185,7 @@ public abstract class Invoker {
             return null;
         }
 
-        cmd = cmd.replaceAll(CommonConstants.BASEDIR_REGEX, FileHelper.getInstance().getBasedir());
+        cmd = BasedirHelper.replaceBasedir(cmd);
         return cmd.split(" ");
     }
 

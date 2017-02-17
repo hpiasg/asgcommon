@@ -49,7 +49,11 @@ public abstract class AbstractRunFrame extends PropertiesFrame {
     }
 
     protected void addOutSection(PropertiesPanel panel, int beginRow, String defOutfile) {
-        panel.addTextEntry(beginRow, GeneralTextParam.OutDir, "Output directory", CommonConstants.USERDIR_STR, true, JFileChooser.DIRECTORIES_ONLY, true);
+        addOutSection(panel, beginRow, defOutfile, AbstractParameters.DEF_OUT_DIR);
+    }
+
+    protected void addOutSection(PropertiesPanel panel, int beginRow, String defOutfile, String defOutDir) {
+        panel.addTextEntry(beginRow, GeneralTextParam.OutDir, "Output directory", defOutDir, true, JFileChooser.DIRECTORIES_ONLY, true);
         panel.addTextEntry(beginRow + 1, GeneralTextParam.OutFile, "Output file name", defOutfile, false, null, false);
     }
 
@@ -61,5 +65,4 @@ public abstract class AbstractRunFrame extends PropertiesFrame {
         panel.addTextEntry(beginRow + 3, GeneralTextParam.LogFile, "Log file name", AbstractParameters.OUTFILE_BASE_STR + CommonConstants.LOG_FILE_EXTENSION, false, null, true);
         panel.addTextEntry(beginRow + 4, GeneralTextParam.TempFiles, "Temp files file name", AbstractParameters.OUTFILE_BASE_STR + CommonConstants.ZIP_FILE_EXTENSION, false, null, true);
     }
-
 }

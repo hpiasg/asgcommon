@@ -26,9 +26,12 @@ import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public abstract class AbstractParameters {
-    public static String UNSET_STR          = "$UNSET";
-    public static String OUTFILE_BASE_STR   = "$OUTFILE";
-    public static String OUTFILE_BASE_REGEX = "\\" + OUTFILE_BASE_STR;
+
+    public static final String UNSET_STR          = "$UNSET";
+    public static final String OUTFILE_BASE_STR   = "$OUTFILE";
+    public static final String OUTFILE_BASE_REGEX = "\\" + OUTFILE_BASE_STR;
+
+    public static final String DEF_OUT_DIR        = CommonConstants.USERDIR_STR;
 
     //@formatter:off
     public enum GeneralTextParam implements AbstractTextParam {

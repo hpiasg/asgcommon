@@ -50,14 +50,14 @@ public abstract class AbstractParameters {
         this.outfileEnding = outfileEnding;
     }
 
-    protected AbstractRunFrame frame;
+    protected AbstractRunPanel mainpanel;
 
-    public void setFrame(AbstractRunFrame frame) {
-        this.frame = frame;
+    public void setFrame(AbstractRunPanel frame) {
+        this.mainpanel = frame;
     }
 
     public String getTextValue(AbstractTextParam param) {
-        String str = frame.getTextValue(param);
+        String str = mainpanel.getTextValue(param);
         if(str.equals(UNSET_STR)) {
             return null;
         }
@@ -66,13 +66,13 @@ public abstract class AbstractParameters {
         }
         String retVal = BasedirHelper.replaceBasedir(str);
         if(param != GeneralTextParam.OutFile) {
-            retVal = retVal.replaceAll(OUTFILE_BASE_REGEX, frame.getTextValue(GeneralTextParam.OutFile).replaceAll(outfileEnding, ""));
+            retVal = retVal.replaceAll(OUTFILE_BASE_REGEX, mainpanel.getTextValue(GeneralTextParam.OutFile).replaceAll(outfileEnding, ""));
         }
         return retVal;
     }
 
     public boolean getBooleanValue(AbstractBooleanParam param) {
-        return frame.getBooleanValue(param);
+        return mainpanel.getBooleanValue(param);
     }
 
     public abstract String getEnumValue(AbstractEnumParam param);

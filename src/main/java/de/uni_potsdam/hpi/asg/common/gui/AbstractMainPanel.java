@@ -24,21 +24,21 @@ import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractEnumParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractTextParam;
 
-public class PropertiesDialog extends JDialog {
-    private static final long                           serialVersionUID = 881001475437430592L;
+public abstract class AbstractMainPanel extends JPanel {
+    private static final long                           serialVersionUID = 3803172863281872813L;
 
     protected Map<AbstractTextParam, JTextField>        textfields;
     protected Map<AbstractBooleanParam, AbstractButton> buttons;
     protected Map<AbstractEnumParam, JComboBox<String>> enumfields;
 
-    public PropertiesDialog() {
+    public AbstractMainPanel() {
         textfields = new HashMap<>();
         buttons = new HashMap<>();
         enumfields = new HashMap<>();

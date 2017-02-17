@@ -19,29 +19,26 @@ package de.uni_potsdam.hpi.asg.common.gui.runner;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.awt.event.WindowAdapter;
 import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import de.uni_potsdam.hpi.asg.common.gui.PropertiesFrame;
+import de.uni_potsdam.hpi.asg.common.gui.AbstractMainPanel;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel;
 import de.uni_potsdam.hpi.asg.common.gui.runner.AbstractParameters.GeneralBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.runner.AbstractParameters.GeneralTextParam;
 import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
-public abstract class AbstractRunFrame extends PropertiesFrame {
+public abstract class AbstractRunPanel extends AbstractMainPanel {
     private static final long    serialVersionUID = -8028988850607540856L;
 
     protected AbstractParameters params;
     protected boolean            errorOccured;
 
-    public AbstractRunFrame(String title, AbstractParameters params, WindowAdapter adapt) {
-        super(title);
+    public AbstractRunPanel(AbstractParameters params) {
         this.params = params;
         this.params.setFrame(this);
         this.errorOccured = false;
-        this.addWindowListener(adapt);
     }
 
     public boolean hasErrorOccured() {

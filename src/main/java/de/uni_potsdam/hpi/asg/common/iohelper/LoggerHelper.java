@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -20,23 +20,65 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
  */
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 
 public class LoggerHelper {
 
-    public static Logger initLogger(int outputlevel, File logfile, boolean debug) {
-        if(logfile == null) {
-            logfile = new File("log.txt");
-        }
-        System.setProperty("logFilename", logfile.getAbsolutePath());
-        Logger logger = LogManager.getLogger();
+    private static final URL GUI_CONFIG     = LoggerHelper.class.getResource("/asg_log4j2_gui.xml");
+    private static final URL CMDLINE_CONFIG = LoggerHelper.class.getResource("/asg_log4j2_cmdline.xml");
 
+    public enum Mode {
+        cmdline, gui
+    }
+
+    public static Logger initLogger(int outputlevel, File logfile, boolean debug, Mode mode) {
+        if(mode == null) {
+            return null;
+        }
+        switch(mode) {
+            case cmdline:
+                return createCmdLineLogger(outputlevel, logfile, debug);
+            case gui:
+                return createGuiLogger(outputlevel, debug);
+        }
+        return null;
+    }
+
+    private static Logger createGuiLogger(int outputlevel, boolean debug) {
+        try {
+            Configurator.initialize(null, (ClassLoader)null, GUI_CONFIG.toURI());
+        } catch(URISyntaxException e) {
+            return null;
+        }
+        return configureLogger(outputlevel, debug);
+    }
+
+    public static Logger initLogger(int outputlevel, File logfile, boolean debug) {
+        handleLogfile(logfile);
+        return configureLogger(outputlevel, debug);
+    }
+
+    private static Logger createCmdLineLogger(int outputlevel, File logfile, boolean debug) {
+        handleLogfile(logfile);
+        try {
+            Configurator.initialize(null, (ClassLoader)null, CMDLINE_CONFIG.toURI());
+        } catch(URISyntaxException e) {
+            return null;
+        }
+        return configureLogger(outputlevel, debug);
+    }
+
+    public static Logger configureLogger(int outputlevel, boolean debug) {
+        Logger logger = LogManager.getLogger();
         LoggerContext context = (LoggerContext)LogManager.getContext(false);
         Configuration config = context.getConfiguration();
         LoggerConfig rootConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
@@ -82,6 +124,13 @@ public class LoggerHelper {
         logger.debug("Logger initialised");
 
         return logger;
+    }
+
+    private static void handleLogfile(File logfile) {
+        if(logfile == null) {
+            logfile = new File("log.txt");
+        }
+        System.setProperty("logFilename", logfile.getAbsolutePath());
     }
 
     public static void setLogLevel(Logger logger, Level level) {

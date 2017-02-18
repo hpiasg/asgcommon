@@ -19,38 +19,22 @@ package de.uni_potsdam.hpi.asg.common.gui.runner;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.text.DefaultCaret;
 
 public class TerminalFrame extends JFrame {
     private static final long serialVersionUID = 7172520905059189886L;
 
-    private JTextArea         text;
+    private TerminalPanel     panel;
 
     public TerminalFrame(String title, String commandline, Process p) {
         super(title);
-
-        this.getContentPane().setLayout(new BorderLayout());
-
-        JTextField cmdField = new JTextField(commandline);
-        cmdField.setEditable(false);
-        this.getContentPane().add(cmdField, BorderLayout.PAGE_START);
-
-        text = new JTextArea();
-        text.setEditable(false);
-        text.setFont(new Font("monospaced", Font.PLAIN, 12));
-        JScrollPane spane = new JScrollPane(text);
-        DefaultCaret caret = (DefaultCaret)text.getCaret();
-        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        this.getContentPane().add(spane, BorderLayout.CENTER);
-
+        panel = new TerminalPanel(commandline);
+        this.getContentPane().add(panel);
         this.pack();
         this.setSize(new Dimension(900, 500));
         this.setLocationRelativeTo(null);
@@ -59,6 +43,21 @@ public class TerminalFrame extends JFrame {
     }
 
     public JTextArea getText() {
-        return text;
+        return panel.getText();
+    }
+
+    private class TerminalWindowAdapter extends WindowAdapter {
+
+        private Process process;
+
+        public TerminalWindowAdapter(Process process) {
+            this.process = process;
+        }
+
+        @Override
+        public void windowClosed(WindowEvent e) {
+            super.windowClosed(e);
+            process.destroy();
+        }
     }
 }

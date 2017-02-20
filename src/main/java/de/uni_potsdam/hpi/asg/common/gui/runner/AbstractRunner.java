@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.JFrame;
+import javax.swing.JTextArea;
 
 import de.uni_potsdam.hpi.asg.common.gui.runner.AbstractParameters.GeneralBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.runner.AbstractParameters.GeneralTextParam;
@@ -37,6 +38,10 @@ public abstract class AbstractRunner {
     }
 
     protected void exec(List<String> cmd, String label) {
+        exec(cmd, label, null);
+    }
+
+    protected void exec(List<String> cmd, String label, JTextArea text) {
         StringBuilder str = new StringBuilder();
         for(String s : cmd) {
             str.append(s + " ");
@@ -50,11 +55,14 @@ public abstract class AbstractRunner {
             e.printStackTrace();
         }
 
-        TerminalFrame tframe = new TerminalFrame(label, str.toString(), process);
-        tframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        tframe.setVisible(true);
+        if(text == null) {
+            TerminalFrame tframe = new TerminalFrame(label, str.toString(), process);
+            tframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            tframe.setVisible(true);
+            text = tframe.getText();
+        }
 
-        IOStreamReader ioreader = new IOStreamReader(process, tframe.getText());
+        IOStreamReader ioreader = new IOStreamReader(process, text);
         Thread streamThread = new Thread(ioreader);
         streamThread.start();
     }

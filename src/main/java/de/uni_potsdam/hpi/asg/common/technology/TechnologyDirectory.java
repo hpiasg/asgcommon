@@ -275,4 +275,8 @@ public class TechnologyDirectory {
     public File getBalsaTechDir() {
         return balsaTechDir;
     }
+
+    public Technology getTechnology(String name) {
+        return techs.get(name);
+    }
 }

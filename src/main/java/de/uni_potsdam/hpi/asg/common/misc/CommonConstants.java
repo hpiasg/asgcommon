@@ -36,6 +36,7 @@ public class CommonConstants {
     // default directories
     public static final String DEF_TECH_DIR_STR           = "$BASEDIR/tech";
     public static final File   DEF_TECH_DIR_FILE          = BasedirHelper.replaceBasedirAsFile(DEF_TECH_DIR_STR);
+    public static final File   DEF_BALSA_BIN_DIR_FILE     = BasedirHelper.replaceBasedirAsFile("$BASEDIR/tools/balsa/bin");
     public static final File   DEF_BALSA_TECH_DIR_FILE    = BasedirHelper.replaceBasedirAsFile("$BASEDIR/tools/balsa/share/tech");
     public static final String DEF_CONFIG_DIR_STR         = "$BASEDIR/config";
     public static final File   DEF_CONFIG_DIR_FILE        = BasedirHelper.replaceBasedirAsFile(DEF_CONFIG_DIR_STR);

@@ -26,8 +26,6 @@ import org.apache.commons.lang3.SystemUtils;
 import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public class BasedirHelper {
-    //no logger! (setup)
-
     private BasedirHelper() {
     }
 

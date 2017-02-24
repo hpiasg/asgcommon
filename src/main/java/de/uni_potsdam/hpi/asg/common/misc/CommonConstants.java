@@ -51,6 +51,7 @@ public class CommonConstants {
     public static final String EXPORT_TECH_FILE_EXTENSION = ".zip";
 
     // misc files
+    public static final String BALSA_FILE_EXTENSION       = ".balsa";
     public static final String BREEZE_FILE_EXTENSION      = ".breeze";
     public static final String VERILOG_FILE_EXTENSION     = ".v";
     public static final String STG_FILE_EXTENSION         = ".g";

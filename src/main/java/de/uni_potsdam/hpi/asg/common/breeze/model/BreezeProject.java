@@ -32,12 +32,16 @@ public class BreezeProject extends AbstractBreezeProject {
     private static final Logger logger = LogManager.getLogger();
 
     public static BreezeProject create(File rootfile, String componentconfig, boolean skipUndefinedComponents, boolean skipSubComponents) {
+        return create(rootfile, componentconfig, skipUndefinedComponents, skipSubComponents, null);
+    }
+
+    public static BreezeProject create(File rootfile, String componentconfig, boolean skipUndefinedComponents, boolean skipSubComponents, File copyintodir) {
         BreezeProject retVal = new BreezeProject();
         if(!retVal.readComponentsList(componentconfig)) {
             return null;
         }
         try {
-            if(!BreezeNetlist.create(rootfile, skipUndefinedComponents, skipSubComponents, retVal)) {
+            if(!BreezeNetlist.create(rootfile, skipUndefinedComponents, skipSubComponents, retVal, copyintodir)) {
                 logger.error("Could not create Breeze netlist for " + rootfile);
                 return null;
             }

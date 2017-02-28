@@ -45,14 +45,23 @@ public class BreezeNetlist extends AbstractBreezeNetlist {
         super(name, project);
     }
 
-    @SuppressWarnings("unchecked")
     public static boolean create(File file, boolean skipUndefinedComponents, boolean skipSubComponents, BreezeProject project) {
-        String newfilename = "orig_" + file.getName();
-        if(!FileHelper.getInstance().copyfile(file, newfilename)) {
+        return create(file, skipUndefinedComponents, skipSubComponents, project, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean create(File file, boolean skipUndefinedComponents, boolean skipSubComponents, BreezeProject project, File copyintodir) {
+        File newfile = null;
+        if(copyintodir != null) {
+            newfile = new File(copyintodir, file.getName());
+        } else {
+            newfile = new File(WorkingdirGenerator.getInstance().getWorkingdir(), "orig_" + file.getName());
+        }
+        if(!FileHelper.getInstance().copyfile(file, newfile)) {
             return false;
         }
         try {
-            FileReader filereader = new FileReader(WorkingdirGenerator.getInstance().getWorkingdir() + newfilename);
+            FileReader filereader = new FileReader(newfile);
             BreezeParser parser = new BreezeParser(filereader);
             Object p = parser.ParseBreezeNet();
             if(p instanceof LinkedList<?>) {
@@ -67,7 +76,7 @@ public class BreezeNetlist extends AbstractBreezeNetlist {
                             }
                             File newbreeze = new File(file.getParentFile(), str + CommonConstants.BREEZE_FILE_EXTENSION);
                             if(newbreeze.exists()) {
-                                if(!BreezeNetlist.create(newbreeze, skipUndefinedComponents, skipSubComponents, project)) {
+                                if(!BreezeNetlist.create(newbreeze, skipUndefinedComponents, skipSubComponents, project, copyintodir)) {
                                     logger.error("Could not create Breeze netlist for " + newbreeze);
                                     return false;
                                 }
@@ -92,9 +101,9 @@ public class BreezeNetlist extends AbstractBreezeNetlist {
             }
             return true;
         } catch(ParseException e) {
-            logger.error("Error while parsing " + newfilename + " : " + e.getLocalizedMessage());
+            logger.error("Error while parsing " + newfile.getAbsolutePath() + " : " + e.getLocalizedMessage());
         } catch(FileNotFoundException e1) {
-            logger.error("File " + newfilename + " not found");
+            logger.error("File " + newfile.getAbsolutePath() + " not found");
         }
         return false;
     }

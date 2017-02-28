@@ -19,10 +19,13 @@ package de.uni_potsdam.hpi.asg.common.gui.runner;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.awt.Window;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
@@ -31,17 +34,22 @@ import de.uni_potsdam.hpi.asg.common.gui.runner.AbstractParameters.GeneralTextPa
 
 public abstract class AbstractRunner {
 
+    public enum TerminalMode {
+        textfield, frame, dialog
+    }
+
     private AbstractParameters params;
 
     public AbstractRunner(AbstractParameters params) {
         this.params = params;
     }
 
+    @Deprecated
     protected void exec(List<String> cmd, String label) {
-        exec(cmd, label, null);
+        exec(cmd, label, TerminalMode.frame, null, null);
     }
 
-    protected void exec(List<String> cmd, String label, JTextArea text) {
+    protected void exec(List<String> cmd, String label, TerminalMode mode, JTextArea text, Window parent) {
         StringBuilder str = new StringBuilder();
         for(String s : cmd) {
             str.append(s + " ");
@@ -55,16 +63,32 @@ public abstract class AbstractRunner {
             e.printStackTrace();
         }
 
-        if(text == null) {
-            TerminalFrame tframe = new TerminalFrame(label, str.toString(), process);
-            tframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            tframe.setVisible(true);
-            text = tframe.getText();
+        Window window = null;
+        switch(mode) {
+            case dialog:
+                TerminalDialog tdia = new TerminalDialog(parent, label, str.toString(), process);
+                tdia.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                window = tdia;
+                text = tdia.getText();
+                break;
+            case frame:
+                TerminalFrame tframe = new TerminalFrame(label, str.toString(), process);
+                tframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                window = tframe;
+                text = tframe.getText();
+                break;
+            case textfield:
+                break;
         }
 
-        IOStreamReader ioreader = new IOStreamReader(process, text);
-        Thread streamThread = new Thread(ioreader);
-        streamThread.start();
+        if(text != null) {
+            IOStreamReader ioreader = new IOStreamReader(process, text);
+            Thread streamThread = new Thread(ioreader);
+            streamThread.start();
+        }
+        if(window != null) {
+            window.setVisible(true);
+        }
     }
 
     protected void addStandardIOParams(List<String> cmd, String outfileOption) {

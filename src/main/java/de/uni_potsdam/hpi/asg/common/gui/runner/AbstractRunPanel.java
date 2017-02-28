@@ -55,11 +55,15 @@ public abstract class AbstractRunPanel extends AbstractMainPanel {
     }
 
     protected void addIOSection(PropertiesPanel panel, int beginRow, String defaultConfig) {
+        addIOSection(panel, beginRow, defaultConfig, AbstractParameters.OUTFILE_BASE_STR + CommonConstants.LOG_FILE_EXTENSION, AbstractParameters.OUTFILE_BASE_STR + CommonConstants.ZIP_FILE_EXTENSION);
+    }
+
+    protected void addIOSection(PropertiesPanel panel, int beginRow, String defaultConfig, String defLog, String defZip) {
         String defConfig = CommonConstants.DEF_CONFIG_DIR_STR + File.separator + defaultConfig;
         panel.addTextEntry(beginRow, GeneralTextParam.CfgFile, "Configuration file", defConfig, true, JFileChooser.FILES_ONLY, true);
         panel.addTextEntry(beginRow + 1, GeneralTextParam.WorkingDir, "Working directory", AbstractParameters.UNSET_STR, true, JFileChooser.DIRECTORIES_ONLY, true);
         panel.addSingleRadioButtonGroupEntry(beginRow + 2, "Log level", new String[]{"Nothing", "Errors", "+Warnings", "+Info"}, new GeneralBooleanParam[]{GeneralBooleanParam.LogLvl0, GeneralBooleanParam.LogLvl1, GeneralBooleanParam.LogLvl2, GeneralBooleanParam.LogLvl3}, 3);
-        panel.addTextEntry(beginRow + 3, GeneralTextParam.LogFile, "Log file name", AbstractParameters.OUTFILE_BASE_STR + CommonConstants.LOG_FILE_EXTENSION, false, null, true);
-        panel.addTextEntry(beginRow + 4, GeneralTextParam.TempFiles, "Temp files file name", AbstractParameters.OUTFILE_BASE_STR + CommonConstants.ZIP_FILE_EXTENSION, false, null, true);
+        panel.addTextEntry(beginRow + 3, GeneralTextParam.LogFile, "Log file name", defLog, false, null, true);
+        panel.addTextEntry(beginRow + 4, GeneralTextParam.TempFiles, "Temp files file name", defZip, false, null, true);
     }
 }

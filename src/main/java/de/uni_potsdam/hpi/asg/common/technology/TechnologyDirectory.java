@@ -81,7 +81,7 @@ public class TechnologyDirectory {
         return techs;
     }
 
-    public Technology createTechnology(String name, String balsafolder, String style, String genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes) {
+    public Technology createTechnology(String name, String balsafolder, String style, String genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl) {
         Balsa balsa = new Balsa(style, name);
         File sourcedir = new File(balsafolder);
         File targetdir = new File(balsaTechDir, name);
@@ -103,7 +103,7 @@ public class TechnologyDirectory {
             return null;
         }
 
-        SyncTool synctool = new SyncTool(searchPaths, libraries, postCompileCmds, verilogIncludes);
+        SyncTool synctool = new SyncTool(searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl);
 
         Technology tech = new Technology(name, balsa, genlib, synctool);
         if(!Technology.writeOut(tech, new File(dir, name + CommonConstants.XMLTECH_FILE_EXTENSION))) {
@@ -187,8 +187,9 @@ public class TechnologyDirectory {
         String libraries = srcTech.getSynctool().getLibraries();
         List<String> postCompileCmds = srcTech.getSynctool().getPostCompileCmds();
         List<String> verilogIncludes = srcTech.getSynctool().getVerilogIncludes();
+        String layouttcl = srcTech.getSynctool().getLayouttcl();
 
-        return createTechnology(name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes);
+        return createTechnology(name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl);
     }
 
     public void exportTechnology(String name, File dstDir) {

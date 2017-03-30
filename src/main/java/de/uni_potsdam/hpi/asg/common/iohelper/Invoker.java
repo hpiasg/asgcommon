@@ -144,15 +144,14 @@ public abstract class Invoker {
     }
 
     protected boolean errorHandling(ProcessReturn ret) {
-        return errorHandling(ret, 0);
+        return errorHandling(ret, new ArrayList<Integer>(Arrays.asList(0)));
     }
 
-    //todo: io as debug!
-    private boolean errorHandling(ProcessReturn ret, int okcode) {
+    protected boolean errorHandling(ProcessReturn ret, List<Integer> okcodes) {
         if(ret != null) {
             switch(ret.getStatus()) {
                 case ok:
-                    if(ret.getCode() != okcode) {
+                    if(!okcodes.contains(ret.getCode())) {
                         logger.error("An error was reported while executing " + ret.getCommand());
                         logger.debug("Params: " + ret.getParams());
                         logger.debug("Exit code: " + ret.getCode() + " Output:");

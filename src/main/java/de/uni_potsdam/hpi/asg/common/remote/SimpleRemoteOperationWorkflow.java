@@ -104,7 +104,7 @@ public abstract class SimpleRemoteOperationWorkflow {
     }
 
     private boolean upload(Set<String> uploadfiles) {
-        logger.info("Uploading files");
+        logger.debug("Uploading files");
         sftpcon = new SFTP(session);
         if(!sftpcon.uploadFiles(uploadfiles, rinfo.getRemoteFolder(), subdir)) {
             logger.error("Upload failed");
@@ -115,7 +115,7 @@ public abstract class SimpleRemoteOperationWorkflow {
     }
 
     private boolean download(String targetfolder, boolean remove) {
-        logger.info("Downloading files");
+        logger.debug("Downloading files");
         if(!sftpcon.downloadFiles(session, targetfolder, remove)) {
             return false;
         }
@@ -123,7 +123,7 @@ public abstract class SimpleRemoteOperationWorkflow {
     }
 
     private boolean execute(List<String> execScripts) {
-        logger.info("Running scripts");
+        logger.debug("Running scripts");
         int code = -1;
         for(String str : execScripts) {
             code = RunSHScript.run(session, str, sftpcon.getDirectory());

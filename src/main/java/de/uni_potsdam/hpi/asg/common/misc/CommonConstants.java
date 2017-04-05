@@ -22,6 +22,7 @@ package de.uni_potsdam.hpi.asg.common.misc;
 import java.io.File;
 
 import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
+import de.uni_potsdam.hpi.asg.common.iohelper.OperatingSystemHelper;
 
 public class CommonConstants {
 
@@ -40,6 +41,9 @@ public class CommonConstants {
     public static final String DEF_CONFIG_DIR_STR         = "$BASEDIR/config";
     public static final File   DEF_CONFIG_DIR_FILE        = BasedirHelper.replaceBasedirAsFile(DEF_CONFIG_DIR_STR);
     public static final File   DEF_BIN_DIR_FILE           = BasedirHelper.replaceBasedirAsFile("$BASEDIR/bin");
+
+    // script files
+    public static final String SCRIPT_FILE_EXTENSION      = OperatingSystemHelper.getScriptExtension();
 
     // output files
     public static final String ZIP_FILE_EXTENSION         = ".zip";

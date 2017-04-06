@@ -51,6 +51,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 public class PropertiesPanel extends JPanel {
@@ -65,16 +66,21 @@ public class PropertiesPanel extends JPanel {
     public interface AbstractEnumParam {
     }
 
+    public interface AbstractIntParam {
+    }
+
     protected Window                                    parent;
 
     protected Map<AbstractTextParam, JTextField>        textfields;
     protected Map<AbstractBooleanParam, AbstractButton> buttons;
     protected Map<AbstractEnumParam, JComboBox<String>> enumfields;
+    protected Map<AbstractIntParam, JSlider>            sliders;
 
     public PropertiesPanel(Window parent) {
         textfields = new HashMap<>();
         buttons = new HashMap<>();
         enumfields = new HashMap<>();
+        sliders = new HashMap<>();
         this.parent = parent;
     }
 
@@ -135,6 +141,11 @@ public class PropertiesPanel extends JPanel {
         gbc_checkbox.gridy = row;
         this.add(checkbox, gbc_checkbox);
         checkbox.setSelected(defaultvalue);
+    }
+
+    public void addSliderEntry(int row, AbstractIntParam paramName, String labelStr, int minValue, int maxValue, int defaultValue) {
+        addLabelCell(row, labelStr);
+        addSliderCell(row, paramName, minValue, maxValue, defaultValue);
     }
 
     public void addTextEntry(int row, AbstractTextParam paramName, String labelStr, final String defaultvalue) {
@@ -316,6 +327,20 @@ public class PropertiesPanel extends JPanel {
         return textfield;
     }
 
+    public JSlider addSliderCell(int row, AbstractIntParam paramName, int minValue, int maxValue, int defaultValue) {
+        final JSlider slider = new JSlider(minValue, maxValue, defaultValue);
+        sliders.put(paramName, slider);
+
+        GridBagConstraints gbc_slider = new GridBagConstraints();
+        gbc_slider.anchor = GridBagConstraints.LINE_START;
+        gbc_slider.fill = GridBagConstraints.HORIZONTAL;
+        gbc_slider.insets = new Insets(0, 0, 5, 5);
+        gbc_slider.gridx = 1;
+        gbc_slider.gridy = row;
+        this.add(slider, gbc_slider);
+        return slider;
+    }
+
     public void addHelpButtonCell(int row, final String helptext) {
         final JLabel helpbutton = new JLabel(new Icon() {
             @Override
@@ -365,5 +390,9 @@ public class PropertiesPanel extends JPanel {
 
     public Map<AbstractEnumParam, JComboBox<String>> getEnumfields() {
         return enumfields;
+    }
+
+    public Map<AbstractIntParam, JSlider> getSliders() {
+        return sliders;
     }
 }

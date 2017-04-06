@@ -25,10 +25,12 @@ import java.util.Map;
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractEnumParam;
+import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractIntParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractTextParam;
 
 public abstract class AbstractMainPanel extends JPanel {
@@ -37,17 +39,20 @@ public abstract class AbstractMainPanel extends JPanel {
     protected Map<AbstractTextParam, JTextField>        textfields;
     protected Map<AbstractBooleanParam, AbstractButton> buttons;
     protected Map<AbstractEnumParam, JComboBox<String>> enumfields;
+    protected Map<AbstractIntParam, JSlider>            sliders;
 
     public AbstractMainPanel() {
         textfields = new HashMap<>();
         buttons = new HashMap<>();
         enumfields = new HashMap<>();
+        sliders = new HashMap<>();
     }
 
     protected void getDataFromPanel(PropertiesPanel panel) {
         this.textfields.putAll(panel.getTextfields());
         this.buttons.putAll(panel.getButtons());
         this.enumfields.putAll(panel.getEnumfields());
+        this.sliders.putAll(panel.getSliders());
     }
 
     public String getTextValue(AbstractTextParam param) {
@@ -60,5 +65,9 @@ public abstract class AbstractMainPanel extends JPanel {
 
     public int getEnumValue(AbstractEnumParam param) {
         return enumfields.get(param).getSelectedIndex();
+    }
+
+    public int getIntValue(AbstractIntParam param) {
+        return sliders.get(param).getValue();
     }
 }

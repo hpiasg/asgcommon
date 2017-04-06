@@ -21,6 +21,7 @@ package de.uni_potsdam.hpi.asg.common.gui.runner;
 
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractBooleanParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractEnumParam;
+import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractIntParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractTextParam;
 import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
@@ -73,6 +74,10 @@ public abstract class AbstractParameters {
 
     public boolean getBooleanValue(AbstractBooleanParam param) {
         return mainpanel.getBooleanValue(param);
+    }
+
+    public int getIntValue(AbstractIntParam param) {
+        return mainpanel.getIntValue(param);
     }
 
     public abstract String getEnumValue(AbstractEnumParam param);

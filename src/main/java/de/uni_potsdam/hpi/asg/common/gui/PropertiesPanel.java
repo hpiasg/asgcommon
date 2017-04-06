@@ -38,6 +38,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
@@ -53,6 +54,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class PropertiesPanel extends JPanel {
     private static final long serialVersionUID = 7178726681556068358L;
@@ -337,6 +340,21 @@ public class PropertiesPanel extends JPanel {
         gbc_slider.insets = new Insets(0, 0, 5, 5);
         gbc_slider.gridx = 1;
         gbc_slider.gridy = row;
+
+        Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+        labelTable.put(defaultValue, new JLabel(Integer.toString(defaultValue)));
+        slider.setLabelTable(labelTable);
+        slider.setSnapToTicks(true);
+        slider.setPaintLabels(true);
+
+        slider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent event) {
+                Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
+                labelTable.put(slider.getValue(), new JLabel(Integer.toString(slider.getValue())));
+                slider.setLabelTable(labelTable);
+            }
+        });
+
         this.add(slider, gbc_slider);
         return slider;
     }

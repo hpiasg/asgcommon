@@ -54,10 +54,6 @@ public class TechnologyDirectory {
         return create(CommonConstants.DEF_TECH_DIR_FILE, CommonConstants.DEF_BALSA_TECH_DIR_FILE);
     }
 
-//    public static TechnologyDirectory create(String dir, File balsaTechDir) {
-//        return create(FileHelper.getInstance().replaceBasedir(dir), balsaTechDir);
-//    }
-
     public static TechnologyDirectory create(File dir, File balsaTechDir) {
         if(!dir.exists()) {
             dir.mkdirs();
@@ -81,23 +77,21 @@ public class TechnologyDirectory {
         return techs;
     }
 
-    public Technology createTechnology(String name, String balsafolder, String style, String genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl) {
+    public Technology createTechnology(String name, File balsafolder, String style, File genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl, File libertyfile, File additionalInfoFile) {
         Balsa balsa = new Balsa(style, name);
-        File sourcedir = new File(balsafolder);
         File targetdir = new File(balsaTechDir, name);
         targetdir.mkdirs();
         try {
-            FileUtils.copyDirectory(sourcedir, targetdir);
+            FileUtils.copyDirectory(balsafolder, targetdir);
         } catch(IOException e) {
             logger.error("Error while copying balsa technology directory");
             return null;
         }
 
         Genlib genlib = new Genlib(name + CommonConstants.GENLIB_FILE_EXTENSION);
-        File sourcefile = new File(genlibfile);
         File targetfile = new File(dir, name + CommonConstants.GENLIB_FILE_EXTENSION);
         try {
-            FileUtils.copyFile(sourcefile, targetfile);
+            FileUtils.copyFile(genlibfile, targetfile);
         } catch(IOException e) {
             logger.error("Error while copying genlib file");
             return null;
@@ -105,7 +99,25 @@ public class TechnologyDirectory {
 
         SyncTool synctool = new SyncTool(searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl);
 
-        Technology tech = new Technology(name, balsa, genlib, synctool);
+        String liberty = name + CommonConstants.LIBERTY_FILE_EXTENSION;
+        targetfile = new File(dir, liberty);
+        try {
+            FileUtils.copyFile(libertyfile, targetfile);
+        } catch(IOException e) {
+            logger.error("Error while copying liberty file");
+            return null;
+        }
+
+        String additionalInfo = name + CommonConstants.ADDINFO_FILE_EXTENSION;
+        targetfile = new File(dir, additionalInfo);
+        try {
+            FileUtils.copyFile(additionalInfoFile, targetfile);
+        } catch(IOException e) {
+            logger.error("Error while copying addInfo file");
+            return null;
+        }
+
+        Technology tech = new Technology(name, balsa, genlib, synctool, liberty, additionalInfo);
         if(!Technology.writeOut(tech, new File(dir, name + CommonConstants.XMLTECH_FILE_EXTENSION))) {
             logger.error("Error while creating technology file");
             return null;
@@ -178,10 +190,10 @@ public class TechnologyDirectory {
         }
 
         File balsaSourceFolder = new File(srcDir, srcTech.getBalsa().getTech());
-        String balsafolder = balsaSourceFolder.getAbsolutePath();
+        File balsafolder = balsaSourceFolder;
         String style = srcTech.getBalsa().getStyle();
 
-        String genlibfile = srcTech.getGenLib();
+        File genlibfile = srcTech.getGenLib();
 
         String searchPaths = srcTech.getSynctool().getSearchPaths();
         String libraries = srcTech.getSynctool().getLibraries();
@@ -189,7 +201,10 @@ public class TechnologyDirectory {
         List<String> verilogIncludes = srcTech.getSynctool().getVerilogIncludes();
         String layouttcl = srcTech.getSynctool().getLayouttcl();
 
-        return createTechnology(name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl);
+        File libertyfile = srcTech.getLibertyFile();
+        File addInfoFile = srcTech.getAdditionalInfoFile();
+
+        return createTechnology(name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl, libertyfile, addInfoFile);
     }
 
     public void exportTechnology(String name, File dstDir) {
@@ -223,6 +238,22 @@ public class TechnologyDirectory {
             logger.error("Failed to copy technology file");
         }
 
+        File libertyfile = new File(dir, name + CommonConstants.LIBERTY_FILE_EXTENSION);
+        File libertyDstFile = new File(tmpDir, name + CommonConstants.LIBERTY_FILE_EXTENSION);
+        try {
+            FileUtils.copyFile(libertyfile, libertyDstFile);
+        } catch(IOException e) {
+            logger.error("Failed to copy liberty file");
+        }
+
+        File addInfofile = new File(dir, name + CommonConstants.ADDINFO_FILE_EXTENSION);
+        File addInfoDstFile = new File(tmpDir, name + CommonConstants.ADDINFO_FILE_EXTENSION);
+        try {
+            FileUtils.copyFile(addInfofile, addInfoDstFile);
+        } catch(IOException e) {
+            logger.error("Failed to copy addInfo file");
+        }
+
         File dstFile = new File(dstDir, name + CommonConstants.EXPORT_TECH_FILE_EXTENSION);
         if(!Zipper.getInstance().zip(dstFile, tmpDir)) {
             logger.error("Failed to create export file");
@@ -254,6 +285,16 @@ public class TechnologyDirectory {
         File techfile = new File(dir, name + CommonConstants.XMLTECH_FILE_EXTENSION);
         if(!techfile.delete()) {
             logger.error("Failed to remove technology file");
+        }
+
+        File libertyfile = new File(dir, name + CommonConstants.LIBERTY_FILE_EXTENSION);
+        if(!libertyfile.delete()) {
+            logger.error("Failed to remove liberty file");
+        }
+
+        File addInfoFile = new File(dir, name + CommonConstants.ADDINFO_FILE_EXTENSION);
+        if(!addInfoFile.delete()) {
+            logger.error("Failed to remove addInfo file");
         }
 
         techs.remove(name);

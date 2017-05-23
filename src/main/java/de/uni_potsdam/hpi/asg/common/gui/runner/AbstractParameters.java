@@ -20,6 +20,7 @@ package de.uni_potsdam.hpi.asg.common.gui.runner;
  */
 
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractBooleanParam;
+import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractDoubleParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractEnumParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractIntParam;
 import de.uni_potsdam.hpi.asg.common.gui.PropertiesPanel.AbstractTextParam;
@@ -78,6 +79,10 @@ public abstract class AbstractParameters {
 
     public int getIntValue(AbstractIntParam param) {
         return mainpanel.getIntValue(param);
+    }
+
+    public double getDoubleValue(AbstractDoubleParam param) {
+        return mainpanel.getDoubleValue(param);
     }
 
     public abstract String getEnumValue(AbstractEnumParam param);

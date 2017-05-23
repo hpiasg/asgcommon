@@ -2,19 +2,19 @@ package de.uni_potsdam.hpi.asg.common.gui;
 
 /*
  * Copyright (C) 2017 Norman Kluge
- * 
+ *
  * This file is part of ASGcommon.
- * 
+ *
  * ASGcommon is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * ASGcommon is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,6 +22,7 @@ package de.uni_potsdam.hpi.asg.common.gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -53,7 +54,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -72,18 +75,23 @@ public class PropertiesPanel extends JPanel {
     public interface AbstractIntParam {
     }
 
+    public interface AbstractDoubleParam {
+    }
+
     protected Window                                    parent;
 
     protected Map<AbstractTextParam, JTextField>        textfields;
     protected Map<AbstractBooleanParam, AbstractButton> buttons;
     protected Map<AbstractEnumParam, JComboBox<String>> enumfields;
     protected Map<AbstractIntParam, JSlider>            sliders;
+    protected Map<AbstractDoubleParam, JSpinner>        spinners;
 
     public PropertiesPanel(Window parent) {
         textfields = new HashMap<>();
         buttons = new HashMap<>();
         enumfields = new HashMap<>();
         sliders = new HashMap<>();
+        spinners = new HashMap<>();
         this.parent = parent;
     }
 
@@ -149,6 +157,11 @@ public class PropertiesPanel extends JPanel {
     public void addSliderEntry(int row, AbstractIntParam paramName, String labelStr, int minValue, int maxValue, int defaultValue) {
         addLabelCell(row, labelStr);
         addSliderCell(row, paramName, minValue, maxValue, defaultValue);
+    }
+
+    public void addSpinnerEntry(int row, AbstractDoubleParam paramName, String labelStr, double step, double defaultValue) {
+        addLabelCell(row, labelStr);
+        addSpinnerCell(row, paramName, step, defaultValue);
     }
 
     public void addTextEntry(int row, AbstractTextParam paramName, String labelStr, final String defaultvalue) {
@@ -359,6 +372,22 @@ public class PropertiesPanel extends JPanel {
         return slider;
     }
 
+    public void addSpinnerCell(int row, AbstractDoubleParam paramName, double step, double defaultValue) {
+        SpinnerNumberModel model = new SpinnerNumberModel(defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, step);
+        JSpinner spinner = new JSpinner(model);
+        spinners.put(paramName, spinner);
+
+        GridBagConstraints gbc_spinner = new GridBagConstraints();
+        gbc_spinner.anchor = GridBagConstraints.LINE_START;
+        gbc_spinner.fill = GridBagConstraints.HORIZONTAL;
+        gbc_spinner.insets = new Insets(0, 0, 5, 5);
+        gbc_spinner.gridx = 1;
+        gbc_spinner.gridy = row;
+        spinner.setPreferredSize(new Dimension(300, 20));
+
+        this.add(spinner, gbc_spinner);
+    }
+
     public void addHelpButtonCell(int row, final String helptext) {
         final JLabel helpbutton = new JLabel(new Icon() {
             @Override
@@ -412,5 +441,9 @@ public class PropertiesPanel extends JPanel {
 
     public Map<AbstractIntParam, JSlider> getSliders() {
         return sliders;
+    }
+
+    public Map<AbstractDoubleParam, JSpinner> getSpinners() {
+        return spinners;
     }
 }

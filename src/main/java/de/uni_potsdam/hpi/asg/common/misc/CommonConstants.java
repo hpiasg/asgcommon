@@ -50,9 +50,11 @@ public class CommonConstants {
     public static final String LOG_FILE_EXTENSION         = ".log";
 
     // technology files
+    public static final String EXPORT_TECH_FILE_EXTENSION = ".tech";
     public static final String XMLTECH_FILE_EXTENSION     = ".xml";
-    public static final String GENLIB_FILE_EXTENSION      = ".lib";
-    public static final String EXPORT_TECH_FILE_EXTENSION = ".zip";
+    public static final String GENLIB_FILE_EXTENSION      = "_gen.lib";
+    public static final String LIBERTY_FILE_EXTENSION     = "_liberty.lib";
+    public static final String ADDINFO_FILE_EXTENSION     = "_addInfo.json";
 
     // misc files
     public static final String BALSA_FILE_EXTENSION       = ".balsa";

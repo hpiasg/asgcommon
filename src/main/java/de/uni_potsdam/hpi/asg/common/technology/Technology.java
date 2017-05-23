@@ -51,9 +51,13 @@ public class Technology implements Serializable {
     @XmlAttribute(name = "name")
     private String name;
     @XmlElement(name = "balsa")
-    private Balsa  balsa;
+    private Balsa balsa;
     @XmlElement(name = "genlib")
     private Genlib genlib;
+    @XmlElement(name = "liberty")
+    private String liberty;
+    @XmlElement(name = "addInfo")
+    private String additionalInfo;
     @XmlElement(name = "synctool")
     private SyncTool synctool;
     
@@ -64,11 +68,13 @@ public class Technology implements Serializable {
     protected Technology() {
     }
 
-    public Technology(String name, Balsa balsa, Genlib genlib, SyncTool synctool) {
+    public Technology(String name, Balsa balsa, Genlib genlib, SyncTool synctool, String liberty, String additionalInfo) {
         this.name = name;
         this.balsa = balsa;
         this.genlib = genlib;
         this.synctool = synctool;
+        this.liberty = liberty;
+        this.additionalInfo = additionalInfo;
     }
 
     public static Technology readInSilent(File file) {
@@ -130,8 +136,8 @@ public class Technology implements Serializable {
         return balsa;
     }
 
-    public String getGenLib() {
-        return folder.getAbsolutePath() + File.separator + genlib.getLibfile();
+    public File getGenLib() {
+        return new File(folder, genlib.getLibfile());
     }
 
     public SyncTool getSynctool() {
@@ -140,5 +146,13 @@ public class Technology implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public File getAdditionalInfoFile() {
+        return new File(folder, additionalInfo);
+    }
+
+    public File getLibertyFile() {
+        return new File(folder, liberty);
     }
 }

@@ -29,7 +29,9 @@ public class WorkingdirGenerator {
     private static final String        filesep  = System.getProperty("file.separator");
     private static final String        ostmpdir = System.getProperty("java.io.tmpdir");
 
+    @Deprecated
     private String                     workingdir;
+    private File                       workingDir;
 
     private static WorkingdirGenerator instance;
 
@@ -54,12 +56,12 @@ public class WorkingdirGenerator {
             String ostmpdir2 = ostmpdir.endsWith(filesep) ? ostmpdir.substring(0, ostmpdir.length() - 1) : ostmpdir;
             wdirstr = ostmpdir2 + filesep + defaultsubdir;
         }
-        File workingfile = new File(wdirstr);
+        workingDir = new File(wdirstr);
         int tmpnum = 0;
-        while(!workingfile.mkdirs()) {
-            workingfile = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
+        while(!workingDir.mkdirs()) {
+            workingDir = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
         }
-        workingdir = workingfile.getAbsolutePath() + File.separator;
+        workingdir = workingDir.getAbsolutePath() + File.separator;
         FileHelper.getInstance().setWorkingdir(workingdir);
         if(invoker != null) {
             invoker.setWorkingdir(workingdir);
@@ -77,8 +79,12 @@ public class WorkingdirGenerator {
         }
     }
 
+    @Deprecated
     public String getWorkingdir() {
         return workingdir;
     }
 
+    public File getWorkingDir() {
+        return workingDir;
+    }
 }

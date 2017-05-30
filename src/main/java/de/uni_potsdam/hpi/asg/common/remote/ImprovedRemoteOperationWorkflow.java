@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.remote;
 
 /*
- * Copyright (C) 2016 - 2017 Norman Kluge
+ * Copyright (C) 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -20,11 +20,9 @@ package de.uni_potsdam.hpi.asg.common.remote;
  */
 
 import java.io.File;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,33 +33,26 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
-
-@Deprecated
-public abstract class SimpleRemoteOperationWorkflow {
+public abstract class ImprovedRemoteOperationWorkflow {
     private static final Logger logger = LogManager.getLogger();
 
     private RemoteInformation   rinfo;
     private Session             session;
     private SFTP                sftpcon;
-    private String              subdir;
+    private String              remoteSubDir;
 
-    public SimpleRemoteOperationWorkflow(RemoteInformation rinfo, String subdir) {
+    public ImprovedRemoteOperationWorkflow(RemoteInformation rinfo, String remoteSubDir) {
         this.rinfo = rinfo;
-        this.subdir = subdir;
+        this.remoteSubDir = remoteSubDir;
     }
 
-    public boolean run(Set<String> uploadfiles, List<String> execScripts) {
-        return run(uploadfiles, execScripts, WorkingdirGenerator.getInstance().getWorkingdir(), true);
-    }
-
-    public boolean run(Set<String> uploadfiles, List<String> execScripts, String targetfolder, boolean remove) {
+    public boolean run(Set<File> uploadFiles, List<String> execScripts, Set<String> downloadIncludes, File localDir, boolean removeRemoteDir) {
         try {
             if(!connect()) {
                 logger.error("Connecting to host failed");
                 return false;
             }
-            if(!upload(uploadfiles)) {
+            if(!upload(uploadFiles)) {
                 logger.error("Uploading files failed");
                 return false;
             }
@@ -69,7 +60,7 @@ public abstract class SimpleRemoteOperationWorkflow {
                 logger.error("Executing scripts failed");
                 return false;
             }
-            if(!download(targetfolder, remove)) {
+            if(!download(localDir, downloadIncludes, removeRemoteDir)) {
                 logger.error("Downloading files failed");
                 return false;
             }
@@ -107,15 +98,11 @@ public abstract class SimpleRemoteOperationWorkflow {
         return true;
     }
 
-    private boolean upload(Set<String> uploadfiles) {
+    private boolean upload(Set<File> uploadFiles) {
         logger.debug("Uploading files");
         sftpcon = new SFTP(session);
-        Set<File> actuallyUploadFiles = new HashSet<>();
-        for(String str : uploadfiles) {
-            actuallyUploadFiles.add(new File(str));
-        }
         File remoteBaseDir = new File(rinfo.getRemoteFolder());
-        if(!sftpcon.uploadFiles(actuallyUploadFiles, remoteBaseDir, subdir)) {
+        if(!sftpcon.uploadFiles(uploadFiles, remoteBaseDir, remoteSubDir)) {
             logger.error("Upload failed");
             return false;
         }
@@ -123,10 +110,9 @@ public abstract class SimpleRemoteOperationWorkflow {
         return true;
     }
 
-    private boolean download(String targetfolder, boolean remove) {
+    private boolean download(File localDir, Set<String> includeFilenames, boolean removeRemoteDir) {
         logger.debug("Downloading files");
-        File localDir = new File(targetfolder);
-        if(!sftpcon.downloadFiles(localDir, remove)) {
+        if(!sftpcon.downloadFiles(localDir, includeFilenames, removeRemoteDir)) {
             return false;
         }
         return true;

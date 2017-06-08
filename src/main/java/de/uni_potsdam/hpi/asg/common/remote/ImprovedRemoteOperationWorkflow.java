@@ -33,6 +33,8 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import de.uni_potsdam.hpi.asg.common.remote.RunSHScript.TimedResult;
+
 public abstract class ImprovedRemoteOperationWorkflow {
     private static final Logger logger = LogManager.getLogger();
 
@@ -120,10 +122,9 @@ public abstract class ImprovedRemoteOperationWorkflow {
 
     private boolean execute(List<String> execScripts) {
         logger.debug("Running scripts");
-        int code = -1;
         for(String str : execScripts) {
-            code = RunSHScript.run(session, str, sftpcon.getRemoteDir().getAbsolutePath());
-            if(!executeCallBack(str, code)) {
+            TimedResult result = RunSHScript.runTimed(session, str, sftpcon.getRemoteDir().getAbsolutePath());
+            if(!executeCallBack(str, result)) {
                 logger.error("Running script " + str + " failed");
                 return false;
             }
@@ -131,6 +132,6 @@ public abstract class ImprovedRemoteOperationWorkflow {
         return true;
     }
 
-    protected abstract boolean executeCallBack(String script, int code);
+    protected abstract boolean executeCallBack(String script, TimedResult result);
 
 }

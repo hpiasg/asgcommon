@@ -41,6 +41,7 @@ public class CommonConstants {
     public static final String DEF_CONFIG_DIR_STR         = "$BASEDIR/config";
     public static final File   DEF_CONFIG_DIR_FILE        = BasedirHelper.replaceBasedirAsFile(DEF_CONFIG_DIR_STR);
     public static final File   DEF_BIN_DIR_FILE           = BasedirHelper.replaceBasedirAsFile("$BASEDIR/bin");
+    public static final File   DEF_TEMPLATE_DIR_FILE      = BasedirHelper.replaceBasedirAsFile("$BASEDIR/templates");
 
     // script files
     public static final String SCRIPT_FILE_EXTENSION      = OperatingSystemHelper.getScriptExtension();

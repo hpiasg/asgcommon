@@ -36,7 +36,9 @@ import com.jcraft.jsch.Session;
 import de.uni_potsdam.hpi.asg.common.remote.RunSHScript.TimedResult;
 
 public abstract class ImprovedRemoteOperationWorkflow {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger            = LogManager.getLogger();
+
+    private static final int    maxReconnectCount = 2;
 
     private RemoteInformation   rinfo;
     private Session             session;
@@ -50,10 +52,19 @@ public abstract class ImprovedRemoteOperationWorkflow {
 
     public boolean run(Set<File> uploadFiles, List<String> execScripts, Set<String> downloadIncludes, File localDir, boolean removeRemoteDir) {
         try {
-            if(!connect()) {
+            int reconnectCount = 0;
+            while(!connect()) {
+                if(reconnectCount > maxReconnectCount) {
+                    break;
+                }
+                Thread.sleep(5000);
+                reconnectCount++;
+            }
+            if(session == null || !session.isConnected()) {
                 logger.error("Connecting to host failed");
                 return false;
             }
+
             if(!upload(uploadFiles)) {
                 logger.error("Uploading files failed");
                 return false;
@@ -66,6 +77,8 @@ public abstract class ImprovedRemoteOperationWorkflow {
                 logger.error("Downloading files failed");
                 return false;
             }
+        } catch(InterruptedException e) {
+            return false;
         } finally {
             if(session != null && session.isConnected()) {
                 session.disconnect();
@@ -78,7 +91,7 @@ public abstract class ImprovedRemoteOperationWorkflow {
     private boolean connect() {
         try {
             if(!InetAddress.getByName(rinfo.getHost()).isReachable(1000)) {
-                logger.error("Host " + rinfo.getHost() + " not reachable");
+                logger.warn("Host " + rinfo.getHost() + " not reachable");
                 return false;
             }
             JSch jsch = new JSch();
@@ -88,13 +101,13 @@ public abstract class ImprovedRemoteOperationWorkflow {
             session.setConfig("StrictHostKeyChecking", "no");
             session.connect(30000);
         } catch(UnknownHostException e) {
-            logger.error("Host " + rinfo.getHost() + " unknown");
+            logger.warn("Host " + rinfo.getHost() + " unknown");
             return false;
         } catch(IOException e) {
-            logger.error("Host " + rinfo.getHost() + ": " + e.getLocalizedMessage());
+            logger.warn("Host " + rinfo.getHost() + ": " + e.getLocalizedMessage());
             return false;
         } catch(JSchException e) {
-            logger.error(e.getLocalizedMessage());
+            logger.warn(e.getLocalizedMessage());
             return false;
         }
         return true;

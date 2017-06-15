@@ -55,7 +55,7 @@ public class BreezeNetlist extends AbstractBreezeNetlist {
         if(copyintodir != null) {
             newfile = new File(copyintodir, file.getName());
         } else {
-            newfile = new File(WorkingdirGenerator.getInstance().getWorkingdir(), "orig_" + file.getName());
+            newfile = new File(WorkingdirGenerator.getInstance().getWorkingDir(), "orig_" + file.getName());
         }
         if(!FileHelper.getInstance().copyfile(file, newfile)) {
             return false;

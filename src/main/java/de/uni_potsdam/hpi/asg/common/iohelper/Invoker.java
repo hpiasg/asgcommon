@@ -93,7 +93,7 @@ public abstract class Invoker {
         return invoke(cmd, params, new File(workingdir), 0, debug);
     }
 
-    private ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {
+    protected ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {
         List<String> command = new ArrayList<String>();
         command.addAll(Arrays.asList(cmd));
         command.addAll(params);

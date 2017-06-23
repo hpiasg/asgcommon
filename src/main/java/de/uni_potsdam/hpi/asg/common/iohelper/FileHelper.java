@@ -21,25 +21,23 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.io.Files;
+
 public class FileHelper {
     private final static Logger logger = LogManager.getLogger();
 
     private static FileHelper   instance;
 
-    private String              workingdir;
+    private File                workingDir;
 
     private FileHelper() {
     }
@@ -51,8 +49,8 @@ public class FileHelper {
         return FileHelper.instance;
     }
 
-    public void setWorkingdir(String workingdir) {
-        this.workingdir = workingdir;
+    public void setWorkingdir(File workingDir) {
+        this.workingDir = workingDir;
     }
 
     public static String getNewline() {
@@ -61,48 +59,27 @@ public class FileHelper {
 
     public boolean copyfile(File srFile, File dtFile) {
         try {
-            // i dont know why, but sometimes FileInputStream doesnt find files with /a/b/c/../../b1
-            // with canonical path, this works
-            File newSrFile = new File(srFile.getCanonicalPath());
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = new FileInputStream(newSrFile);
-                out = new FileOutputStream(dtFile);
-
-                byte[] buf = new byte[1024];
-                int len;
-                while((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-                return true;
-            } finally {
-                if(in != null) {
-                    in.close();
-                }
-                if(out != null) {
-                    out.close();
-                }
-            }
+            Files.copy(srFile, dtFile);
+            return true;
         } catch(IOException e) {
             logger.error(e.getLocalizedMessage());
-            return false;
         }
+        return false;
     }
 
     public boolean copyfile(String srFile, String dtFile) {
-        File f1 = new File(workingdir + srFile);
-        File f2 = new File(workingdir + dtFile);
+        File f1 = new File(workingDir, srFile);
+        File f2 = new File(workingDir, dtFile);
         return copyfile(f1, f2);
     }
 
     public boolean copyfile(String srFile, File dtFile) {
-        File f1 = new File(workingdir + srFile);
+        File f1 = new File(workingDir, srFile);
         return copyfile(f1, dtFile);
     }
 
     public boolean copyfile(File srFile, String dtFile) {
-        File f1 = new File(workingdir + dtFile);
+        File f1 = new File(workingDir, dtFile);
         return copyfile(srFile, f1);
     }
 
@@ -123,16 +100,16 @@ public class FileHelper {
     }
 
     public List<String> readFile(String filename) {
-        File file = new File(workingdir + filename);
+        File file = new File(workingDir, filename);
         return readFile(file);
     }
 
     public boolean writeFile(String filename, List<String> text) {
-        return writeFile(new File(workingdir + filename), text);
+        return writeFile(new File(workingDir, filename), text);
     }
 
     public boolean writeFile(String filename, String text) {
-        return writeFile(new File(workingdir + filename), text);
+        return writeFile(new File(workingDir, filename), text);
     }
 
     public boolean writeFile(File file, List<String> text) {
@@ -165,7 +142,7 @@ public class FileHelper {
             StringBuilder text = new StringBuilder();
             List<String> modules = new ArrayList<String>();
             for(String filename : filelist) {
-                File file = new File(workingdir + filename);
+                File file = new File(workingDir, filename);
                 BufferedReader reader = new BufferedReader(new FileReader(file));
                 String line;
                 while((line = reader.readLine()) != null) {
@@ -196,35 +173,12 @@ public class FileHelper {
     }
 
     public File newTmpFile(String name) {
-        File f = new File(workingdir + name);
-        int id = 0;
-        while(f.exists()) {
-            String split[] = name.split("\\.");
-            String newname = null;
-            if(split.length == 2) {
-                newname = workingdir + split[0] + (id++) + "." + split[1];
-            } else {
-                newname = workingdir + name + (id++);
-            }
-            f = new File(newname);
+        String split[] = name.split("\\.");
+        try {
+            return File.createTempFile(split[0], split[1], workingDir);
+        } catch(IOException e) {
+            logger.error(e.getLocalizedMessage());
         }
-        return f;
+        return null;
     }
-
-    public void deleteFileR(File file) {
-        if(file.exists()) {
-            if(file.isFile()) {
-                file.delete();
-                return;
-            }
-            if(file.isDirectory()) {
-                String files[] = file.list();
-                for(String str : files) {
-                    deleteFileR(new File(file, str));
-                }
-                file.delete();
-            }
-        }
-    }
-
 }

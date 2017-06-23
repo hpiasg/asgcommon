@@ -38,7 +38,7 @@ public class Zipper {
 
     private static Zipper      instance;
 
-    private String             workingdir;
+    private File               workingDir;
 
     private Zipper() {
     };
@@ -50,12 +50,12 @@ public class Zipper {
         return instance;
     }
 
-    public void setWorkingdir(String workingdir) {
-        this.workingdir = workingdir;
+    public void setWorkingdir(File workingDir) {
+        this.workingDir = workingDir;
     }
 
     public boolean zip(File zipFile) {
-        return zip(zipFile, new File(workingdir));
+        return zip(zipFile, workingDir);
     }
 
     public boolean zip(File zipFile, File srcDir) {

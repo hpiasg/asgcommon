@@ -35,7 +35,7 @@ public abstract class Invoker {
 
     protected static Invoker    instance;
 
-    protected String            workingdir;
+    protected File              workingDir;
     protected List<Process>     subprocesses;
 
     protected Invoker() {
@@ -49,8 +49,8 @@ public abstract class Invoker {
         return instance;
     }
 
-    public void setWorkingdir(String workingdir) {
-        this.workingdir = workingdir;
+    public void setWorkingdir(File workingDir) {
+        this.workingDir = workingDir;
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, File folder) {
@@ -58,19 +58,19 @@ public abstract class Invoker {
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), 0, false);
+        return invoke(cmd, Arrays.asList(params), workingDir, 0, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, int timeout) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), timeout, false);
+        return invoke(cmd, Arrays.asList(params), workingDir, timeout, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params, int timeout) {
-        return invoke(cmd, params, new File(workingdir), timeout, false);
+        return invoke(cmd, params, workingDir, timeout, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params) {
-        return invoke(cmd, params, new File(workingdir), 0, false);
+        return invoke(cmd, params, workingDir, 0, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, File folder, boolean debug) {
@@ -78,19 +78,19 @@ public abstract class Invoker {
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, boolean debug) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), 0, debug);
+        return invoke(cmd, Arrays.asList(params), workingDir, 0, debug);
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, int timeout, boolean debug) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), timeout, debug);
+        return invoke(cmd, Arrays.asList(params), workingDir, timeout, debug);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params, int timeout, boolean debug) {
-        return invoke(cmd, params, new File(workingdir), timeout, debug);
+        return invoke(cmd, params, workingDir, timeout, debug);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params, boolean debug) {
-        return invoke(cmd, params, new File(workingdir), 0, debug);
+        return invoke(cmd, params, workingDir, 0, debug);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {

@@ -37,7 +37,6 @@ import com.jcraft.jsch.Session;
 
 import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
 
-@Deprecated
 public abstract class SimpleRemoteOperationWorkflow {
     private static final Logger logger = LogManager.getLogger();
 
@@ -52,7 +51,8 @@ public abstract class SimpleRemoteOperationWorkflow {
     }
 
     public boolean run(Set<String> uploadfiles, List<String> execScripts) {
-        return run(uploadfiles, execScripts, WorkingdirGenerator.getInstance().getWorkingdir(), true);
+        String targetfolder = WorkingdirGenerator.getInstance().getWorkingDir().getAbsolutePath();
+        return run(uploadfiles, execScripts, targetfolder, true);
     }
 
     public boolean run(Set<String> uploadfiles, List<String> execScripts, String targetfolder, boolean remove) {

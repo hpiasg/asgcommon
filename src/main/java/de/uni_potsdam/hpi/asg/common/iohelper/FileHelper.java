@@ -34,8 +34,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
-
 public class FileHelper {
     private final static Logger logger = LogManager.getLogger();
 
@@ -59,35 +57,6 @@ public class FileHelper {
 
     public static String getNewline() {
         return System.getProperty("line.separator");
-    }
-
-    /**
-     * @deprecated Use {@link File#separator} instead
-     */
-    @Deprecated
-    public static String getFileSeparator() {
-        return File.separator;
-    }
-
-    /**
-     * @deprecated Use {@link CommonConstants} instead
-     */
-    @Deprecated
-    public static String getFileEx(Filetype type) {
-        switch(type) {
-            case balsa:
-                return ".balsa";
-            case breeze:
-                return ".breeze";
-            case stg:
-                return ".g";
-            case verilog:
-                return ".v";
-            case log:
-                return ".log";
-            default:
-                return null;
-        }
     }
 
     public boolean copyfile(File srFile, File dtFile) {
@@ -135,14 +104,6 @@ public class FileHelper {
     public boolean copyfile(File srFile, String dtFile) {
         File f1 = new File(workingdir + dtFile);
         return copyfile(srFile, f1);
-    }
-
-    /**
-     * @deprecated Use {@link CommonConstants} instead
-     */
-    @Deprecated
-    public enum Filetype {
-        verilog, breeze, balsa, stg, log
     }
 
     public List<String> readFile(File file) {
@@ -248,15 +209,6 @@ public class FileHelper {
             f = new File(newname);
         }
         return f;
-    }
-
-    /**
-     * @deprecated Use {@link BasedirHelper#getFileInBasedir(String)} instead
-     */
-    @Deprecated
-    public static File getBasedirFile(String filename) {
-        String basedir = BasedirHelper.getBasedir();
-        return new File(basedir, filename);
     }
 
     public void deleteFileR(File file) {

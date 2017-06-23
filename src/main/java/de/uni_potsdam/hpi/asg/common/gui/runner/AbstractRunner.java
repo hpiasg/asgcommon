@@ -44,11 +44,6 @@ public abstract class AbstractRunner {
         this.params = params;
     }
 
-    @Deprecated
-    protected void exec(List<String> cmd, String label) {
-        exec(cmd, label, TerminalMode.frame, null, null);
-    }
-
     protected void exec(List<String> cmd, String label, TerminalMode mode, JTextArea text, Window parent) {
         StringBuilder str = new StringBuilder();
         for(String s : cmd) {

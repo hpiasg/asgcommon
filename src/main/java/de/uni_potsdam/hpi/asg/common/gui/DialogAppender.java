@@ -36,6 +36,7 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 
 @Plugin(name = "DialogAppender", category = "Core", elementType = "appender", printObject = true)
 public class DialogAppender extends AbstractAppender {
+    private static final long serialVersionUID = 1L;
 
     protected DialogAppender(String name, Filter filter, Layout<? extends Serializable> layout) {
         super(name, filter, layout);

@@ -42,12 +42,6 @@ public class Balsa implements Serializable {
         this.tech = tech;
     }
 
-    @Override
-    @Deprecated
-    public String toString() {
-        return tech + "/" + style;
-    }
-
     public String getStyle() {
         return style;
     }

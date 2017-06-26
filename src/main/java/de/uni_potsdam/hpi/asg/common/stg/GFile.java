@@ -193,25 +193,37 @@ public class GFile {
         Transition trans = null;
         Place p = null;
 
-        String[] split = line.split(" ");
+        List<String> linesplit = splitTransitionLine(line);
+        if(linesplit.isEmpty()) {
+            logger.error("No Transitions/Places found in line " + line);
+            return false;
+        }
+        if(linesplit.size() == 1) {
+            logger.error("Only one Transition/Place found in line " + line);
+            return false;
+        }
 
-        m = transPattern.matcher(split[0]);
-        m2 = dummyPattern.matcher(split[0]);
+        String firstElement = linesplit.get(0);
+
+        m = transPattern.matcher(firstElement);
+        m2 = dummyPattern.matcher(firstElement);
         if(m.matches()) {
             firstT = stg.getTransitionOrAdd(m.group(1), getEdge(m.group(2)), getId(m.group(3)));
         } else if(m2.matches()) {
             if(stg.getSignal(m2.group(1)) != null) {
                 firstT = stg.getTransitionOrAdd(m2.group(1), null, getId(m2.group(2)));
             } else {
-                firstP = stg.getPlaceOrAdd(split[0]);
+                firstP = stg.getPlaceOrAdd(firstElement);
             }
         } else {
-            System.err.println("First element in line " + line + " could not be parsed");
+            logger.error("First element in line " + line + " could not be parsed");
+            return false;
         }
 
-        for(int i = 1; i < split.length; i++) {
-            m = transPattern.matcher(split[i]);
-            m2 = dummyPattern.matcher(split[i]);
+        for(int i = 1; i < linesplit.size(); i++) {
+            String ithElement = linesplit.get(i);
+            m = transPattern.matcher(ithElement);
+            m2 = dummyPattern.matcher(ithElement);
 
             // Transition?
             trans = null;
@@ -222,7 +234,7 @@ public class GFile {
                 if(stg.getSignal(m2.group(1)) != null) {
                     trans = stg.getTransitionOrAdd(m2.group(1), null, getId(m2.group(2)));
                 } else {
-                    p = stg.getPlaceOrAdd(split[i]);
+                    p = stg.getPlaceOrAdd(ithElement);
                 }
             } else {
                 logger.error("Element " + i + " in line " + line + " could not be parsed");
@@ -257,6 +269,27 @@ public class GFile {
             }
         }
         return true;
+    }
+
+    private static List<String> splitTransitionLine(String line) {
+        int pos = 0;
+        List<String> retVal = new ArrayList<>();
+        StringBuilder currTransition = new StringBuilder();
+        while(pos < line.length()) {
+            if(line.charAt(pos) == ' ') {
+                if(currTransition.length() > 0) {
+                    retVal.add(currTransition.toString());
+                    currTransition = new StringBuilder();
+                }
+            } else {
+                currTransition.append(line.charAt(pos));
+            }
+            pos++;
+        }
+        if(currTransition.length() > 0) {
+            retVal.add(currTransition.toString());
+        }
+        return retVal;
     }
 
     private static int getId(String str) {

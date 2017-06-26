@@ -48,7 +48,7 @@ public class GFile {
     private static final Pattern markingPattern      = Pattern.compile(".marking\\s*\\{\\s*(.*)\\s*\\}\\s*");
     private static final Pattern transPattern        = Pattern.compile("(\\w+)([+-])/?(\\d*)");
     private static final Pattern dummyPattern        = Pattern.compile("(\\w+)/?(\\d*)");
-    private static final Pattern markingTransPattern = Pattern.compile("<(.*),(.*)>");
+    private static final Pattern markingTransPattern = Pattern.compile("\\s*([a-zA-Z0-9_+-]+)\\s*,\\s*([a-zA-Z0-9_+-]+)\\s*");
     private static final Pattern interfacePattern    = Pattern.compile("(.inputs|.outputs|.internal|.dummy)\\s*(.*)");
 
     private static int           tmpPlaceId          = 0;
@@ -149,7 +149,9 @@ public class GFile {
                 graphmode = false;
                 coordmode = false;
                 if(!markings) {
-                    parseMarking(stg, line);
+                    if(!parseMarking(stg, line)) {
+                        return null;
+                    }
                 } else {
                     logger.error("Marking section doubled in " + file.getAbsolutePath());
                     return null;
@@ -272,11 +274,14 @@ public class GFile {
         }
     }
 
-    private static void parseMarking(STG stg, String line) {
+    private static boolean parseMarking(STG stg, String line) {
         List<Place> markedPlaces = new ArrayList<Place>();
         Matcher m0 = markingPattern.matcher(line);
         if(m0.matches()) {
-            String[] splitted = m0.group(1).split(" ");
+            List<String> splitted = pickMarkings(m0.group(1));
+            if(splitted == null) {
+                return false;
+            }
             Matcher m = null;
             Matcher m2 = null;
             Matcher m3 = null;
@@ -292,6 +297,7 @@ public class GFile {
                         t1 = stg.getTransition(m3.group(1), null, getId(m3.group(2)));
                     } else {
                         logger.error("Marking element #1 not parseable from marking " + str);
+                        return false;
                     }
                     m2 = transPattern.matcher(m.group(2));
                     m3 = dummyPattern.matcher(m.group(2));
@@ -301,6 +307,7 @@ public class GFile {
                         t2 = stg.getTransition(m3.group(1), null, getId(m3.group(2)));
                     } else {
                         logger.error("Marking element #2 not parseable from marking " + str);
+                        return false;
                     }
                     Place place = null;
                     for(Place p : t1.getPostset()) {
@@ -316,12 +323,15 @@ public class GFile {
                     }
                     if(place == null) {
                         logger.error("Transitions of marking have no place in between: " + str);
+                        return false;
                     }
                     markedPlaces.add(place);
                 } else {
-                    Place p = stg.getPlace(str);
+                    String trimmed = str.trim();
+                    Place p = stg.getPlace(trimmed);
                     if(p == null) {
                         logger.error("Place for marking not found: " + str);
+                        return false;
                     }
                     markedPlaces.add(p);
                 }
@@ -329,8 +339,47 @@ public class GFile {
             stg.setInitMarking(markedPlaces);
         } else {
             logger.error("Not a valid marking set: " + line);
-            return;
+            return false;
         }
+        return true;
+    }
+
+    public static List<String> pickMarkings(String markings) {
+        int pos = 0;
+        List<String> retVal = new ArrayList<>();
+        StringBuilder currMarking = null;
+        while(pos < markings.length()) {
+            if(markings.charAt(pos) == '<') {
+                // < trans,trans> syntax
+                pos++;
+                currMarking = new StringBuilder();
+                while(markings.charAt(pos) != '>') {
+                    currMarking.append(markings.charAt(pos));
+                    pos++;
+                    if(pos >= markings.length()) {
+                        // should end with a '>' otherwise its incorrect syntax
+                        return null;
+                    }
+                }
+                retVal.add(currMarking.toString());
+            } else if(markings.charAt(pos) == ' ') {
+                // whitespace, do nothing
+            } else {
+                // place syntax
+                currMarking = new StringBuilder();
+                while(markings.charAt(pos) != ' ') {
+                    currMarking.append(markings.charAt(pos));
+                    pos++;
+                    if(pos >= markings.length()) {
+                        // end reached
+                        break;
+                    }
+                }
+                retVal.add(currMarking.toString());
+            }
+            pos++;
+        }
+        return retVal;
     }
 
     public static boolean writeGFile(STG stg, File file) {

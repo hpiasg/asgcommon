@@ -48,7 +48,7 @@ public class GFile {
     private static final Pattern markingPattern      = Pattern.compile(".marking\\s*\\{\\s*(.*)\\s*\\}\\s*");
     private static final Pattern transPattern        = Pattern.compile("(\\w+)([+-])/?(\\d*)");
     private static final Pattern dummyPattern        = Pattern.compile("(\\w+)/?(\\d*)");
-    private static final Pattern markingTransPattern = Pattern.compile("\\s*([a-zA-Z0-9_+-]+)\\s*,\\s*([a-zA-Z0-9_+-]+)\\s*");
+    private static final Pattern markingTransPattern = Pattern.compile("\\s*([a-zA-Z0-9_/+-]+)\\s*,\\s*([a-zA-Z0-9_/+-]+)\\s*");
     private static final Pattern interfacePattern    = Pattern.compile("(.inputs|.outputs|.internal|.dummy)\\s*(.*)");
 
     private static int           tmpPlaceId          = 0;

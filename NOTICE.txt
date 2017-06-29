@@ -1,4 +1,4 @@
-ASGcommon
+ASGcommon v3.0
 Copyright (C) 2004-2017 Universitaet Augsburg, Hasso-Plattner-Institut fuer Softwaresystemtechnik GmbH
 
 This product includes software developed at Universitaet Augsburg.
@@ -11,17 +11,17 @@ This software makes use of the following libraries:
 
 Apache Commons IO v2.5
 https://commons.apache.org/proper/commons-io/
-Copyright 2002-2016 The Apache Software Foundatio
+Copyright 2002-2016 The Apache Software Foundation
 Licensed under Apache License, Version 2.0
 
 Apache Commons Lang v3.6
 https://commons.apache.org/proper/commons-lang/
-Copyright 2001-2016 The Apache Software Foundatio
+Copyright 2001-2016 The Apache Software Foundation
 Licensed under Apache License, Version 2.0
 
 Apache Commons Pool v2.4.2
 https://commons.apache.org/proper/commons-pool/
-Copyright 2001-2015 The Apache Software Foundatio
+Copyright 2001-2015 The Apache Software Foundation
 Licensed under Apache License, Version 2.0
 
 Apache log4j(TM) v2.1

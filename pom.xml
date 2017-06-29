@@ -34,9 +34,6 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
 			<email>norman.kluge@hpi.de</email>
 		</developer>
 	</developers>
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
 	<inceptionYear>2012</inceptionYear>
 	<licenses>
 		<license>
@@ -44,6 +41,9 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
 			<url>http://www.gnu.org/licenses/gpl.txt</url>
 		</license>
 	</licenses>
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

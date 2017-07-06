@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.technology;
+package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,28 +19,26 @@ package de.uni_potsdam.hpi.asg.common.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Serializable;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name = "statistics")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Genlib implements Serializable {
+public class Statistics {
 
-    private static final long serialVersionUID = -7764726802415284856L;
+    //@formatter:off
+    @XmlElement(name = "remoteTime")
+    private long remoteTime;
+    //@formatter:on
 
-    @XmlElement(name = "libfile")
-    private String            libfile;
-
-    protected Genlib() {
+    public long getRemoteTime() {
+        return remoteTime;
     }
 
-    public Genlib(String libfile) {
-        this.libfile = libfile;
+    public void setRemoteTime(long remoteTime) {
+        this.remoteTime = remoteTime;
     }
 
-    public String getLibfile() {
-        return libfile;
-    }
 }

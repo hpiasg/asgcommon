@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.technology;
+package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2017 Florian Meinel
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,28 +19,17 @@ package de.uni_potsdam.hpi.asg.common.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Serializable;
+import org.apache.commons.lang3.SystemUtils;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+public class OperatingSystemHelper {
 
-@XmlAccessorType(XmlAccessType.NONE)
-public class Genlib implements Serializable {
+    private static final String WINDOWS_SCRIPT_FILE_EXTENSION = ".bat";
+    private static final String UNIX_SCRIPT_FILE_EXTENSION    = "";
 
-    private static final long serialVersionUID = -7764726802415284856L;
-
-    @XmlElement(name = "libfile")
-    private String            libfile;
-
-    protected Genlib() {
-    }
-
-    public Genlib(String libfile) {
-        this.libfile = libfile;
-    }
-
-    public String getLibfile() {
-        return libfile;
+    public static String getScriptExtension() {
+        if(SystemUtils.IS_OS_WINDOWS) {
+            return WINDOWS_SCRIPT_FILE_EXTENSION;
+        }
+        return UNIX_SCRIPT_FILE_EXTENSION;
     }
 }

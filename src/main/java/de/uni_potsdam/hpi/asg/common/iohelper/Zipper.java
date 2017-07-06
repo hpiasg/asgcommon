@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -38,7 +38,7 @@ public class Zipper {
 
     private static Zipper      instance;
 
-    private String             workingdir;
+    private File               workingDir;
 
     private Zipper() {
     };
@@ -50,12 +50,12 @@ public class Zipper {
         return instance;
     }
 
-    public void setWorkingdir(String workingdir) {
-        this.workingdir = workingdir;
+    public void setWorkingdir(File workingDir) {
+        this.workingDir = workingDir;
     }
 
     public boolean zip(File zipFile) {
-        return zip(zipFile, new File(workingdir));
+        return zip(zipFile, workingDir);
     }
 
     public boolean zip(File zipFile, File srcDir) {
@@ -116,7 +116,10 @@ public class Zipper {
             while((ze = zis.getNextEntry()) != null) {
                 String filename = ze.getName();
                 File newFile = new File(trgDir, filename);
-
+                if(ze.isDirectory()) {
+                    newFile.mkdir();
+                    continue;
+                }
                 File parent = new File(newFile.getParent());
                 parent.mkdirs();
 

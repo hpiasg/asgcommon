@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.remote;
 
 /*
- * Copyright (C) 2016 - 2017 Norman Kluge
+ * Copyright (C) 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -20,11 +20,9 @@ package de.uni_potsdam.hpi.asg.common.remote;
  */
 
 import java.io.File;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,33 +33,39 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
+import de.uni_potsdam.hpi.asg.common.remote.RunSHScript.TimedResult;
 
-public abstract class SimpleRemoteOperationWorkflow {
-    private static final Logger logger = LogManager.getLogger();
+public abstract class ImprovedRemoteOperationWorkflow {
+    private static final Logger logger            = LogManager.getLogger();
+
+    private static final int    maxReconnectCount = 2;
 
     private RemoteInformation   rinfo;
     private Session             session;
     private SFTP                sftpcon;
-    private String              subdir;
+    private String              remoteSubDir;
 
-    public SimpleRemoteOperationWorkflow(RemoteInformation rinfo, String subdir) {
+    public ImprovedRemoteOperationWorkflow(RemoteInformation rinfo, String remoteSubDir) {
         this.rinfo = rinfo;
-        this.subdir = subdir;
+        this.remoteSubDir = remoteSubDir;
     }
 
-    public boolean run(Set<String> uploadfiles, List<String> execScripts) {
-        String targetfolder = WorkingdirGenerator.getInstance().getWorkingDir().getAbsolutePath();
-        return run(uploadfiles, execScripts, targetfolder, true);
-    }
-
-    public boolean run(Set<String> uploadfiles, List<String> execScripts, String targetfolder, boolean remove) {
+    public boolean run(Set<File> uploadFiles, List<String> execScripts, Set<String> downloadIncludes, File localDir, boolean removeRemoteDir) {
         try {
-            if(!connect()) {
+            int reconnectCount = 0;
+            while(!connect()) {
+                if(reconnectCount > maxReconnectCount) {
+                    break;
+                }
+                Thread.sleep(5000);
+                reconnectCount++;
+            }
+            if(session == null || !session.isConnected()) {
                 logger.error("Connecting to host failed");
                 return false;
             }
-            if(!upload(uploadfiles)) {
+
+            if(!upload(uploadFiles)) {
                 logger.error("Uploading files failed");
                 return false;
             }
@@ -69,10 +73,12 @@ public abstract class SimpleRemoteOperationWorkflow {
                 logger.error("Executing scripts failed");
                 return false;
             }
-            if(!download(targetfolder, remove)) {
+            if(!download(localDir, downloadIncludes, removeRemoteDir)) {
                 logger.error("Downloading files failed");
                 return false;
             }
+        } catch(InterruptedException e) {
+            return false;
         } finally {
             if(session != null && session.isConnected()) {
                 session.disconnect();
@@ -85,7 +91,7 @@ public abstract class SimpleRemoteOperationWorkflow {
     private boolean connect() {
         try {
             if(!InetAddress.getByName(rinfo.getHost()).isReachable(1000)) {
-                logger.error("Host " + rinfo.getHost() + " not reachable");
+                logger.warn("Host " + rinfo.getHost() + " not reachable");
                 return false;
             }
             JSch jsch = new JSch();
@@ -95,27 +101,23 @@ public abstract class SimpleRemoteOperationWorkflow {
             session.setConfig("StrictHostKeyChecking", "no");
             session.connect(30000);
         } catch(UnknownHostException e) {
-            logger.error("Host " + rinfo.getHost() + " unknown");
+            logger.warn("Host " + rinfo.getHost() + " unknown");
             return false;
         } catch(IOException e) {
-            logger.error("Host " + rinfo.getHost() + ": " + e.getLocalizedMessage());
+            logger.warn("Host " + rinfo.getHost() + ": " + e.getLocalizedMessage());
             return false;
         } catch(JSchException e) {
-            logger.error(e.getLocalizedMessage());
+            logger.warn(e.getLocalizedMessage());
             return false;
         }
         return true;
     }
 
-    private boolean upload(Set<String> uploadfiles) {
+    private boolean upload(Set<File> uploadFiles) {
         logger.debug("Uploading files");
         sftpcon = new SFTP(session);
-        Set<File> actuallyUploadFiles = new HashSet<>();
-        for(String str : uploadfiles) {
-            actuallyUploadFiles.add(new File(str));
-        }
         File remoteBaseDir = new File(rinfo.getRemoteFolder());
-        if(!sftpcon.uploadFiles(actuallyUploadFiles, remoteBaseDir, subdir)) {
+        if(!sftpcon.uploadFiles(uploadFiles, remoteBaseDir, remoteSubDir)) {
             logger.error("Upload failed");
             return false;
         }
@@ -123,10 +125,9 @@ public abstract class SimpleRemoteOperationWorkflow {
         return true;
     }
 
-    private boolean download(String targetfolder, boolean remove) {
+    private boolean download(File localDir, Set<String> includeFilenames, boolean removeRemoteDir) {
         logger.debug("Downloading files");
-        File localDir = new File(targetfolder);
-        if(!sftpcon.downloadFiles(localDir, remove)) {
+        if(!sftpcon.downloadFiles(localDir, includeFilenames, removeRemoteDir)) {
             return false;
         }
         return true;
@@ -134,10 +135,9 @@ public abstract class SimpleRemoteOperationWorkflow {
 
     private boolean execute(List<String> execScripts) {
         logger.debug("Running scripts");
-        int code = -1;
         for(String str : execScripts) {
-            code = RunSHScript.run(session, str, sftpcon.getRemoteDir().getAbsolutePath());
-            if(!executeCallBack(str, code)) {
+            TimedResult result = RunSHScript.runTimed(session, str, sftpcon.getRemoteDir().getAbsolutePath());
+            if(!executeCallBack(str, result)) {
                 logger.error("Running script " + str + " failed");
                 return false;
             }
@@ -145,6 +145,6 @@ public abstract class SimpleRemoteOperationWorkflow {
         return true;
     }
 
-    protected abstract boolean executeCallBack(String script, int code);
+    protected abstract boolean executeCallBack(String script, TimedResult result);
 
 }

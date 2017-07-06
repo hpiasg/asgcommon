@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2015 Norman Kluge
+ * Copyright (C) 2015 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -20,7 +20,9 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
  */
 
 import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +31,7 @@ public class WorkingdirGenerator {
     private static final String        filesep  = System.getProperty("file.separator");
     private static final String        ostmpdir = System.getProperty("java.io.tmpdir");
 
-    private String                     workingdir;
+    private File                       workingDir;
 
     private static WorkingdirGenerator instance;
 
@@ -43,7 +45,7 @@ public class WorkingdirGenerator {
         return instance;
     }
 
-    public String create(File cmdlinedir, String configdir, String defaultsubdir, Invoker invoker) {
+    public File create(File cmdlinedir, String configdir, String defaultsubdir, Invoker invoker) {
         // Temp dir
         String wdirstr = null;
         if(cmdlinedir != null) {
@@ -54,31 +56,32 @@ public class WorkingdirGenerator {
             String ostmpdir2 = ostmpdir.endsWith(filesep) ? ostmpdir.substring(0, ostmpdir.length() - 1) : ostmpdir;
             wdirstr = ostmpdir2 + filesep + defaultsubdir;
         }
-        File workingfile = new File(wdirstr);
+        workingDir = new File(wdirstr);
         int tmpnum = 0;
-        while(!workingfile.mkdir()) {
-            workingfile = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
+        while(!workingDir.mkdirs()) {
+            workingDir = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
         }
-        workingdir = workingfile.getAbsolutePath() + FileHelper.getFileSeparator();
-        FileHelper.getInstance().setWorkingdir(workingdir);
+        FileHelper.getInstance().setWorkingdir(workingDir);
         if(invoker != null) {
-            invoker.setWorkingdir(workingdir);
+            invoker.setWorkingdir(workingDir);
         }
-        Zipper.getInstance().setWorkingdir(workingdir);
-        logger.debug("Tmp dir: " + workingdir);
+        Zipper.getInstance().setWorkingdir(workingDir);
+        logger.debug("Tmp dir: " + workingDir.getAbsolutePath());
 
-        return workingdir;
+        return workingDir;
     }
 
     public void delete() {
-        if(workingdir != null) {
-            FileHelper.getInstance().deleteFileR(new File(workingdir));
-            workingdir = null;
+        if(workingDir != null) {
+            try {
+                FileUtils.deleteDirectory(workingDir);
+            } catch(IOException e) {
+                logger.error(e.getLocalizedMessage());
+            }
         }
     }
 
-    public String getWorkingdir() {
-        return workingdir;
+    public File getWorkingDir() {
+        return workingDir;
     }
-
 }

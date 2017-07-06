@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.technology;
+package de.uni_potsdam.hpi.asg.common.gui;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,28 +19,24 @@ package de.uni_potsdam.hpi.asg.common.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Serializable;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+public class WatchForCloseWindowAdapter extends WindowAdapter {
 
-@XmlAccessorType(XmlAccessType.NONE)
-public class Genlib implements Serializable {
+    private boolean closed;
 
-    private static final long serialVersionUID = -7764726802415284856L;
-
-    @XmlElement(name = "libfile")
-    private String            libfile;
-
-    protected Genlib() {
+    public WatchForCloseWindowAdapter() {
+        this.closed = false;
     }
 
-    public Genlib(String libfile) {
-        this.libfile = libfile;
+    @Override
+    public void windowClosed(WindowEvent e) {
+        super.windowClosed(e);
+        closed = true;
     }
 
-    public String getLibfile() {
-        return libfile;
+    public boolean isClosed() {
+        return closed;
     }
 }

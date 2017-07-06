@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2016 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,9 +35,11 @@ public abstract class Invoker {
 
     protected static Invoker    instance;
 
-    protected String            workingdir;
+    protected File              workingDir;
+    protected List<Process>     subprocesses;
 
     protected Invoker() {
+        subprocesses = new ArrayList<>();
     }
 
     public static Invoker getInstance() {
@@ -48,8 +49,8 @@ public abstract class Invoker {
         return instance;
     }
 
-    public void setWorkingdir(String workingdir) {
-        this.workingdir = workingdir;
+    public void setWorkingdir(File workingDir) {
+        this.workingDir = workingDir;
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, File folder) {
@@ -57,19 +58,19 @@ public abstract class Invoker {
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), 0, false);
+        return invoke(cmd, Arrays.asList(params), workingDir, 0, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, int timeout) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), timeout, false);
+        return invoke(cmd, Arrays.asList(params), workingDir, timeout, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params, int timeout) {
-        return invoke(cmd, params, new File(workingdir), timeout, false);
+        return invoke(cmd, params, workingDir, timeout, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params) {
-        return invoke(cmd, params, new File(workingdir), 0, false);
+        return invoke(cmd, params, workingDir, 0, false);
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, File folder, boolean debug) {
@@ -77,22 +78,22 @@ public abstract class Invoker {
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, boolean debug) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), 0, debug);
+        return invoke(cmd, Arrays.asList(params), workingDir, 0, debug);
     }
 
     protected ProcessReturn invoke(String[] cmd, String[] params, int timeout, boolean debug) {
-        return invoke(cmd, Arrays.asList(params), new File(workingdir), timeout, debug);
+        return invoke(cmd, Arrays.asList(params), workingDir, timeout, debug);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params, int timeout, boolean debug) {
-        return invoke(cmd, params, new File(workingdir), timeout, debug);
+        return invoke(cmd, params, workingDir, timeout, debug);
     }
 
     protected ProcessReturn invoke(String[] cmd, List<String> params, boolean debug) {
-        return invoke(cmd, params, new File(workingdir), 0, debug);
+        return invoke(cmd, params, workingDir, 0, debug);
     }
 
-    private ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {
+    protected ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {
         List<String> command = new ArrayList<String>();
         command.addAll(Arrays.asList(cmd));
         command.addAll(params);
@@ -105,6 +106,7 @@ public abstract class Invoker {
             builder.directory(folder);
             builder.environment(); // bugfix setting env in test-mode (why this works? i dont know..)
             process = builder.start();
+            subprocesses.add(process);
 
             Thread timeoutThread = null;
             if(timeout > 0) {
@@ -142,15 +144,14 @@ public abstract class Invoker {
     }
 
     protected boolean errorHandling(ProcessReturn ret) {
-        return errorHandling(ret, 0);
+        return errorHandling(ret, new ArrayList<Integer>(Arrays.asList(0)));
     }
 
-    //todo: io as debug!
-    private boolean errorHandling(ProcessReturn ret, int okcode) {
+    protected boolean errorHandling(ProcessReturn ret, List<Integer> okcodes) {
         if(ret != null) {
             switch(ret.getStatus()) {
                 case ok:
-                    if(ret.getCode() != okcode) {
+                    if(!okcodes.contains(ret.getCode())) {
                         logger.error("An error was reported while executing " + ret.getCommand());
                         logger.debug("Params: " + ret.getParams());
                         logger.debug("Exit code: " + ret.getCode() + " Output:");
@@ -183,12 +184,13 @@ public abstract class Invoker {
             return null;
         }
 
-        String basedir = System.getProperty("basedir");
-        if(SystemUtils.IS_OS_WINDOWS) {
-            basedir = basedir.replaceAll("\\\\", "/");
-        }
-
-        cmd = cmd.replaceAll("\\$BASEDIR", basedir);
+        cmd = BasedirHelper.replaceBasedir(cmd);
         return cmd.split(" ");
+    }
+
+    public void killSubprocesses() {
+        for(Process p : subprocesses) {
+            p.destroy();
+        }
     }
 }

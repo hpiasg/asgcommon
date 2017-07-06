@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2016 Norman Kluge
+ * Copyright (C) 2016 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -41,7 +41,20 @@ public class SyncTool implements Serializable {
     private List<String> postCompileCmds;
     @XmlElement(name = "veriloginclude")
     private List<String> verilogIncludes;
+    @XmlElement(name = "layouttcl")
+    private String layouttcl;
     //@formatter:on
+
+    protected SyncTool() {
+    }
+
+    public SyncTool(String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl) {
+        this.searchPaths = searchPaths;
+        this.libraries = libraries;
+        this.postCompileCmds = postCompileCmds;
+        this.verilogIncludes = verilogIncludes;
+        this.layouttcl = layouttcl;
+    }
 
     public String getLibraries() {
         return libraries;
@@ -57,5 +70,9 @@ public class SyncTool implements Serializable {
 
     public List<String> getVerilogIncludes() {
         return verilogIncludes;
+    }
+
+    public String getLayouttcl() {
+        return layouttcl;
     }
 }

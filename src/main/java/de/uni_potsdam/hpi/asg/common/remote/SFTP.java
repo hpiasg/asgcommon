@@ -43,51 +43,46 @@ public class SFTP {
     private static final Logger logger = LogManager.getLogger();
 
     private Session             session;
-    private String              directory;
+    private File                remoteDir;
 
     public SFTP(Session session) {
         this.session = session;
     }
 
-    public boolean uploadFiles(Set<String> sourcefiles, String targetfolder, String tempname) {
+    public boolean uploadFiles(Set<File> localFiles, File remoteBaseDir, String remoteSubDir) {
         try {
-            if(targetfolder == null) {
-                logger.error("Targetfolder is not defined");
+            if(remoteBaseDir == null) {
+                logger.error("Remote dir is not defined");
                 return false;
             }
-
-            String newTargetBase = targetfolder;
-            if(!targetfolder.endsWith("/")) {
-                newTargetBase += "/";
-            }
-            newTargetBase += tempname;
-            int tmpnum = 0;
 
             ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
             channel.connect();
 
-            String newTarget = newTargetBase;
+            int tmpnum = 0;
+            remoteDir = new File(remoteBaseDir, remoteSubDir + Integer.toString(tmpnum));
             boolean mkdirsuccess = false;
             while(!mkdirsuccess) {
                 try {
-                    channel.mkdir(newTarget);
+                    channel.mkdir(remoteDir.getAbsolutePath());
                     mkdirsuccess = true;
                 } catch(SftpException e) {
-                    newTarget = newTargetBase + Integer.toString(tmpnum++);
+                    remoteDir = new File(remoteBaseDir, remoteSubDir + Integer.toString(++tmpnum));
                 }
             }
-            directory = newTarget;
-            channel.cd(newTarget);
 
-            for(String filename : sourcefiles) {
-                File file = new File(filename);
+            channel.cd(remoteDir.getAbsolutePath());
+
+            for(File file : localFiles) {
                 if(file.exists() && file.isFile()) {
                     if(file.getName().startsWith("__")) {
                         continue;
                     }
-                    channel.put(new FileInputStream(file), file.getName());
+                    try(FileInputStream stream = new FileInputStream(file)) {
+                        channel.put(stream, file.getName());
+                    }
                 } else {
-                    logger.warn("Omitting " + filename);
+                    logger.warn("Omitting " + file.getName());
                 }
             }
             channel.disconnect();
@@ -101,14 +96,21 @@ public class SFTP {
         } catch(FileNotFoundException e) {
             logger.error(e.getLocalizedMessage());
             return false;
+        } catch(IOException e) {
+            logger.error(e.getLocalizedMessage());
+            return false;
         }
     }
 
-    public boolean downloadFiles(Session session, String target, boolean remove) {
+    public boolean downloadFiles(File localDir, boolean removeRemote) {
+        return downloadFiles(localDir, null, removeRemote);
+    }
+
+    public boolean downloadFiles(File localDir, Set<String> includeFilenames, boolean removeRemote) {
         try {
             ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
             channel.connect();
-            channel.cd(directory);
+            channel.cd(remoteDir.getAbsolutePath());
 
             byte[] buffer = new byte[1024];
             BufferedInputStream bis = null;
@@ -119,13 +121,18 @@ public class SFTP {
             @SuppressWarnings("unchecked")
             Vector<LsEntry> files = (Vector<LsEntry>)channel.ls(".");
             for(LsEntry entry : files) {
+                if(includeFilenames != null) {
+                    if(!includeFilenames.contains(entry.getFilename())) {
+                        continue;
+                    }
+                }
                 if(entry.getAttrs().getSize() > (1024 * 1024 * 50)) {
                     logger.info(entry.getFilename() + " is larger than 50MB. skipped");
                     continue;
                 }
                 if(!entry.getAttrs().isDir()) {
                     bis = new BufferedInputStream(channel.get(entry.getFilename()));
-                    newFile = new File(target + entry.getFilename());
+                    newFile = new File(localDir, entry.getFilename());
                     os = new FileOutputStream(newFile);
                     bos = new BufferedOutputStream(os);
                     while((readCount = bis.read(buffer)) > 0) {
@@ -136,9 +143,9 @@ public class SFTP {
                 }
             }
 
-            if(remove) {
+            if(removeRemote) {
                 logger.debug("Removing temp dir");
-                deleteFileRec(channel, directory);
+                deleteFileRec(channel, remoteDir.getAbsolutePath());
             }
 
             channel.disconnect();
@@ -176,7 +183,7 @@ public class SFTP {
         }
     }
 
-    public String getDirectory() {
-        return directory;
+    public File getRemoteDir() {
+        return remoteDir;
     }
 }

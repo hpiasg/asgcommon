@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2014 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -34,10 +34,12 @@ public class Balsa implements Serializable {
     @XmlElement(name = "tech")
     private String            tech;
 
-    @Override
-    @Deprecated
-    public String toString() {
-        return tech + "/" + style;
+    protected Balsa() {
+    }
+
+    public Balsa(String style, String tech) {
+        this.style = style;
+        this.tech = tech;
     }
 
     public String getStyle() {

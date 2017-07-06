@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2016 Norman Kluge
+ * Copyright (C) 2012 - 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -20,10 +20,14 @@ package de.uni_potsdam.hpi.asg.common.technology;
  */
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXParseException;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -46,9 +51,13 @@ public class Technology implements Serializable {
     @XmlAttribute(name = "name")
     private String name;
     @XmlElement(name = "balsa")
-    private Balsa  balsa;
+    private Balsa balsa;
     @XmlElement(name = "genlib")
     private Genlib genlib;
+    @XmlElement(name = "liberty")
+    private String liberty;
+    @XmlElement(name = "addInfo")
+    private String additionalInfo;
     @XmlElement(name = "synctool")
     private SyncTool synctool;
     
@@ -56,10 +65,32 @@ public class Technology implements Serializable {
 
     //@formatter:on
 
+    protected Technology() {
+    }
+
+    public Technology(String name, Balsa balsa, Genlib genlib, SyncTool synctool, String liberty, String additionalInfo) {
+        this.name = name;
+        this.balsa = balsa;
+        this.genlib = genlib;
+        this.synctool = synctool;
+        this.liberty = liberty;
+        this.additionalInfo = additionalInfo;
+    }
+
+    public static Technology readInSilent(File file) {
+        return readInInternal(file, false);
+    }
+
     public static Technology readIn(File file) {
+        return readInInternal(file, true);
+    }
+
+    private static Technology readInInternal(File file, boolean verbose) {
         try {
             if(!file.exists()) {
-                logger.error("Technologyfile " + file.getAbsolutePath() + " not found");
+                if(verbose) {
+                    logger.error("Technologyfile " + file.getAbsolutePath() + " not found");
+                }
                 return null;
             }
             JAXBContext jaxbContext = JAXBContext.newInstance(Technology.class);
@@ -68,8 +99,36 @@ public class Technology implements Serializable {
             retVal.folder = file.getParentFile();
             return retVal;
         } catch(JAXBException e) {
-            logger.error(e.getLocalizedMessage());
+            if(verbose) {
+                if(e.getLinkedException() instanceof SAXParseException) {
+                    SAXParseException e2 = (SAXParseException)e.getLinkedException();
+                    logger.error("File: " + file.getAbsolutePath() + ", Line: " + e2.getLineNumber() + ", Col: " + e2.getColumnNumber());
+                    logger.error(e2.getLocalizedMessage());
+                    return null;
+                } else {
+                    logger.error(e.getLocalizedMessage());
+                }
+            }
             return null;
+        }
+    }
+
+    public static boolean writeOut(Technology tech, File file) {
+        try {
+            Writer fw = new FileWriter(file);
+            JAXBContext context = JAXBContext.newInstance(Technology.class);
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            m.marshal(tech, fw);
+            return true;
+        } catch(JAXBException e) {
+            System.out.println(e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
+            return false;
+        } catch(IOException e) {
+            System.out.println(e.getLocalizedMessage());
+            logger.error(e.getLocalizedMessage());
+            return false;
         }
     }
 
@@ -77,8 +136,8 @@ public class Technology implements Serializable {
         return balsa;
     }
 
-    public String getGenLib() {
-        return folder.getAbsolutePath() + File.separator + genlib.getLibfile();
+    public File getGenLib() {
+        return new File(folder, genlib.getLibfile());
     }
 
     public SyncTool getSynctool() {
@@ -87,5 +146,13 @@ public class Technology implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public File getAdditionalInfoFile() {
+        return new File(folder, additionalInfo);
+    }
+
+    public File getLibertyFile() {
+        return new File(folder, liberty);
     }
 }

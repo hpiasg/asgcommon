@@ -20,51 +20,98 @@ package de.uni_potsdam.hpi.asg.common.invoker;
  */
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.uni_potsdam.hpi.asg.common.invoker.config.ExternalToolsConfig;
 import de.uni_potsdam.hpi.asg.common.invoker.config.ExternalToolsConfigFile;
+import de.uni_potsdam.hpi.asg.common.invoker.config.ToolConfig;
+import de.uni_potsdam.hpi.asg.common.invoker.local.LocalInvoker;
+import de.uni_potsdam.hpi.asg.common.invoker.local.ProcessReturn;
+import de.uni_potsdam.hpi.asg.common.invoker.remote.ImprovedRemoteOperationWorkflow;
+import de.uni_potsdam.hpi.asg.common.invoker.remote.RunSHScript.TimedResult;
 import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
 
-public class ExternalToolsInvoker {
-    private final static Logger         logger = LogManager.getLogger();
+public abstract class ExternalToolsInvoker extends AbstractScriptGenerator {
+    private final static Logger        logger = LogManager.getLogger();
 
-    private static ExternalToolsInvoker instance;
+    private static ExternalToolsConfig config;
+    private static boolean             tooldebug;
 
-    private File                        workingDir;
-    private ExternalToolsConfig         config;
+    private String                     cmdname;
 
-    public static ExternalToolsInvoker getInstance() {
-        if(instance == null) {
-            logger.error("ExternalToolsInvoker not set. Run init!");
-        }
-        return instance;
-    }
+    //overwrite with setters if needed
+    private File                       workingDir;                     // default: WorkingDirGenerator value
+    private int                        timeout;                        // default: 0 (=off)
+    private List<Integer>              okCodes;                        // default: {0}
 
-    public static boolean init(File configFile) {
-        ExternalToolsInvoker tmpInst = new ExternalToolsInvoker();
-
-        if(WorkingdirGenerator.getInstance() == null) {
-            logger.error("WorkingDirGenerator not initialised! Init it before Invoker");
-            return false;
-        }
-        tmpInst.workingDir = WorkingdirGenerator.getInstance().getWorkingDir();
-
+    public static boolean init(File configFile, boolean tooldebug) {
         if(configFile == null) {
             logger.error("No tools config file");
             return false;
         }
-        tmpInst.config = ExternalToolsConfigFile.readIn(configFile);
-        if(tmpInst.config == null) {
+        config = ExternalToolsConfigFile.readIn(configFile);
+        if(config == null) {
             return false;
         }
 
-        ExternalToolsInvoker.instance = tmpInst;
         return true;
     }
 
-    private ExternalToolsInvoker() {
+    protected ExternalToolsInvoker(String cmdname) {
+        this.cmdname = cmdname;
+        this.workingDir = WorkingdirGenerator.getInstance().getWorkingDir();
+        this.timeout = 0;
+        this.okCodes = new ArrayList<Integer>(Arrays.asList(0));
+    }
+
+    protected abstract boolean remoteExecutionCallBack(String script, TimedResult result);
+
+    protected boolean run(List<String> params) {
+        ToolConfig cfg = config.getToolConfig(cmdname);
+        if(cfg == null) {
+            logger.error("Config for tool '" + cmdname + "' not found");
+            return false;
+        }
+        if(cfg.getRemoteconfig() == null) {
+            //local
+            return runLocal(params, cfg);
+        } else {
+            //remote
+            return runRemote(params, cfg);
+        }
+    }
+
+    private boolean runRemote(List<String> params, ToolConfig cfg) {
+        ImprovedRemoteOperationWorkflow flow = new ImprovedRemoteOperationWorkflow(null, cmdname) {
+            @Override
+            protected boolean executeCallBack(String script, TimedResult result) {
+                return remoteExecutionCallBack(script, result);
+            }
+        };
+        //TODO: files
+        return flow.run(null, null, null, workingDir, false);
+    }
+
+    private boolean runLocal(List<String> params, ToolConfig cfg) {
+        String[] cmd = LocalInvoker.convertCmd(cfg.getCmdline());
+        ProcessReturn ret = LocalInvoker.invoke(cmd, params, workingDir, timeout, tooldebug);
+        return LocalInvoker.errorHandling(ret, okCodes);
+    }
+
+    protected void setWorkingDir(File workingDir) {
+        this.workingDir = workingDir;
+    }
+
+    protected void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    protected void setOkCodes(List<Integer> okCodes) {
+        this.okCodes = okCodes;
     }
 }

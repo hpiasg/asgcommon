@@ -35,17 +35,18 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import de.uni_potsdam.hpi.asg.common.invoker.config.RemoteConfig;
 import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
 
 public abstract class SimpleRemoteOperationWorkflow {
     private static final Logger logger = LogManager.getLogger();
 
-    private RemoteInformation   rinfo;
+    private RemoteConfig        rinfo;
     private Session             session;
     private SFTP                sftpcon;
     private String              subdir;
 
-    public SimpleRemoteOperationWorkflow(RemoteInformation rinfo, String subdir) {
+    public SimpleRemoteOperationWorkflow(RemoteConfig rinfo, String subdir) {
         this.rinfo = rinfo;
         this.subdir = subdir;
     }
@@ -84,21 +85,21 @@ public abstract class SimpleRemoteOperationWorkflow {
 
     private boolean connect() {
         try {
-            if(!InetAddress.getByName(rinfo.getHost()).isReachable(1000)) {
-                logger.error("Host " + rinfo.getHost() + " not reachable");
+            if(!InetAddress.getByName(rinfo.getHostname()).isReachable(1000)) {
+                logger.error("Host " + rinfo.getHostname() + " not reachable");
                 return false;
             }
             JSch jsch = new JSch();
-            session = jsch.getSession(rinfo.getUsername(), rinfo.getHost(), 22);
+            session = jsch.getSession(rinfo.getUsername(), rinfo.getHostname(), 22);
             session.setPassword(rinfo.getPassword());
             session.setUserInfo(new ASGUserInfo());
             session.setConfig("StrictHostKeyChecking", "no");
             session.connect(30000);
         } catch(UnknownHostException e) {
-            logger.error("Host " + rinfo.getHost() + " unknown");
+            logger.error("Host " + rinfo.getHostname() + " unknown");
             return false;
         } catch(IOException e) {
-            logger.error("Host " + rinfo.getHost() + ": " + e.getLocalizedMessage());
+            logger.error("Host " + rinfo.getHostname() + ": " + e.getLocalizedMessage());
             return false;
         } catch(JSchException e) {
             logger.error(e.getLocalizedMessage());
@@ -114,7 +115,7 @@ public abstract class SimpleRemoteOperationWorkflow {
         for(String str : uploadfiles) {
             actuallyUploadFiles.add(new File(str));
         }
-        File remoteBaseDir = new File(rinfo.getRemoteFolder());
+        File remoteBaseDir = new File(rinfo.getWorkingDir());
         if(!sftpcon.uploadFiles(actuallyUploadFiles, remoteBaseDir, subdir)) {
             logger.error("Upload failed");
             return false;

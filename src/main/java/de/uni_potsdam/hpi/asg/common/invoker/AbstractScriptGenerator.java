@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.invoker.remote;
+package de.uni_potsdam.hpi.asg.common.invoker;
 
 /*
  * Copyright (C) 2017 Norman Kluge
@@ -25,20 +25,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.uni_potsdam.hpi.asg.common.invoker.remote.ImprovedRemoteOperationWorkflow;
-import de.uni_potsdam.hpi.asg.common.invoker.remote.RemoteInformation;
 import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
 import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
-public abstract class AbstractScript extends ImprovedRemoteOperationWorkflow {
+public abstract class AbstractScriptGenerator {
     private static final Logger              logger               = LogManager.getLogger();
 
     private static final Pattern             templateBeginPattern = Pattern.compile("#\\+([a-z_]+)_begin\\+#");
@@ -46,24 +44,20 @@ public abstract class AbstractScript extends ImprovedRemoteOperationWorkflow {
 
     private static Map<String, List<String>> templates;
 
-    private File                             outputDir;
-
-    private boolean                          removeRemoteDir;
     private Set<File>                        uploadFiles;
     private List<String>                     execFileNames;
     private Set<String>                      downloadIncludeFileNames;
 
-    public AbstractScript(RemoteInformation rinfo, String subdir, File outputDir, boolean removeRemoteDir) {
-        super(rinfo, subdir);
+    public AbstractScriptGenerator() {
         this.uploadFiles = new HashSet<>();
         this.execFileNames = new ArrayList<>();
         this.downloadIncludeFileNames = new HashSet<>();
-        this.removeRemoteDir = removeRemoteDir;
-        this.outputDir = outputDir;
     }
 
     public static boolean readTemplateFiles(String templatesStartString) {
-        templates = new HashMap<String, List<String>>();
+        if(templates == null) {
+            templates = new HashMap<String, List<String>>();
+        }
         for(File f : CommonConstants.DEF_TEMPLATE_DIR_FILE.listFiles()) {
             if(f.isDirectory()) {
                 continue;
@@ -113,13 +107,6 @@ public abstract class AbstractScript extends ImprovedRemoteOperationWorkflow {
             }
         }
 
-        return true;
-    }
-
-    public boolean execute() {
-        if(!this.run(uploadFiles, execFileNames, downloadIncludeFileNames, outputDir, removeRemoteDir)) {
-            return false;
-        }
         return true;
     }
 

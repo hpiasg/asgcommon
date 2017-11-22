@@ -31,70 +31,10 @@ import org.apache.logging.log4j.Logger;
 import de.uni_potsdam.hpi.asg.common.invoker.local.ProcessReturn.Status;
 import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 
-public abstract class Invoker {
+public abstract class LocalInvoker {
     private final static Logger logger = LogManager.getLogger();
 
-    protected static Invoker    instance;
-
-    protected File              workingDir;
-    protected List<Process>     subprocesses;
-
-    protected Invoker() {
-        subprocesses = new ArrayList<>();
-    }
-
-    public static Invoker getInstance() {
-        if(instance == null) {
-            logger.warn("Invoker not set");
-        }
-        return instance;
-    }
-
-    public void setWorkingdir(File workingDir) {
-        this.workingDir = workingDir;
-    }
-
-    protected ProcessReturn invoke(String[] cmd, String[] params, File folder) {
-        return invoke(cmd, Arrays.asList(params), folder, 0, false);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, String[] params) {
-        return invoke(cmd, Arrays.asList(params), workingDir, 0, false);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, String[] params, int timeout) {
-        return invoke(cmd, Arrays.asList(params), workingDir, timeout, false);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, List<String> params, int timeout) {
-        return invoke(cmd, params, workingDir, timeout, false);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, List<String> params) {
-        return invoke(cmd, params, workingDir, 0, false);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, String[] params, File folder, boolean debug) {
-        return invoke(cmd, Arrays.asList(params), folder, 0, debug);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, String[] params, boolean debug) {
-        return invoke(cmd, Arrays.asList(params), workingDir, 0, debug);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, String[] params, int timeout, boolean debug) {
-        return invoke(cmd, Arrays.asList(params), workingDir, timeout, debug);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, List<String> params, int timeout, boolean debug) {
-        return invoke(cmd, params, workingDir, timeout, debug);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, List<String> params, boolean debug) {
-        return invoke(cmd, params, workingDir, 0, debug);
-    }
-
-    protected ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {
+    public static ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {
         List<String> command = new ArrayList<String>();
         command.addAll(Arrays.asList(cmd));
         command.addAll(params);
@@ -107,7 +47,8 @@ public abstract class Invoker {
             builder.directory(folder);
             builder.environment(); // bugfix setting env in test-mode (why this works? i dont know..)
             process = builder.start();
-            subprocesses.add(process);
+            //TODO: reimplement
+//            subprocesses.add(process);
 
             Thread timeoutThread = null;
             if(timeout > 0) {
@@ -144,11 +85,11 @@ public abstract class Invoker {
         return retVal;
     }
 
-    protected boolean errorHandling(ProcessReturn ret) {
-        return errorHandling(ret, new ArrayList<Integer>(Arrays.asList(0)));
-    }
+//    public static boolean errorHandling(ProcessReturn ret) {
+//        return errorHandling(ret, new ArrayList<Integer>(Arrays.asList(0)));
+//    }
 
-    protected boolean errorHandling(ProcessReturn ret, List<Integer> okcodes) {
+    public static boolean errorHandling(ProcessReturn ret, List<Integer> okcodes) {
         if(ret != null) {
             switch(ret.getStatus()) {
                 case ok:
@@ -180,7 +121,7 @@ public abstract class Invoker {
         return true;
     }
 
-    protected String[] convertCmd(String cmd) {
+    public static String[] convertCmd(String cmd) {
         if(cmd == null) {
             return null;
         }
@@ -189,9 +130,9 @@ public abstract class Invoker {
         return cmd.split(" ");
     }
 
-    public void killSubprocesses() {
-        for(Process p : subprocesses) {
-            p.destroy();
-        }
-    }
+//    public void killSubprocesses() {
+//        for(Process p : subprocesses) {
+//            p.destroy();
+//        }
+//    }
 }

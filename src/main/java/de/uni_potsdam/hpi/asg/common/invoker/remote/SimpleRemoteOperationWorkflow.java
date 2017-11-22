@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.remote;
+package de.uni_potsdam.hpi.asg.common.invoker.remote;
 
 /*
  * Copyright (C) 2016 - 2017 Norman Kluge

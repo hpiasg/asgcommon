@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.remote;
+package de.uni_potsdam.hpi.asg.common.invoker.remote;
 
 /*
  * Copyright (C) 2017 Norman Kluge
@@ -33,10 +33,10 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.uni_potsdam.hpi.asg.common.invoker.remote.ImprovedRemoteOperationWorkflow;
+import de.uni_potsdam.hpi.asg.common.invoker.remote.RemoteInformation;
 import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
 import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
-import de.uni_potsdam.hpi.asg.common.remote.ImprovedRemoteOperationWorkflow;
-import de.uni_potsdam.hpi.asg.common.remote.RemoteInformation;
 
 public abstract class AbstractScript extends ImprovedRemoteOperationWorkflow {
     private static final Logger              logger               = LogManager.getLogger();

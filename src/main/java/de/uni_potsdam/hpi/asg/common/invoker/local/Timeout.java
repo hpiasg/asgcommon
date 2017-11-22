@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.iohelper;
+package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 /*
  * Copyright (C) 2012 - 2015 Norman Kluge

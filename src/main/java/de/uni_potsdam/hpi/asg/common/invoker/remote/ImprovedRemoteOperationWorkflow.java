@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.remote;
+package de.uni_potsdam.hpi.asg.common.invoker.remote;
 
 /*
  * Copyright (C) 2017 Norman Kluge
@@ -33,7 +33,7 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
-import de.uni_potsdam.hpi.asg.common.remote.RunSHScript.TimedResult;
+import de.uni_potsdam.hpi.asg.common.invoker.remote.RunSHScript.TimedResult;
 
 public abstract class ImprovedRemoteOperationWorkflow {
     private static final Logger logger            = LogManager.getLogger();

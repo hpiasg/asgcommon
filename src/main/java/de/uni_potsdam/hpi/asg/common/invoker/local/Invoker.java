@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.iohelper;
+package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 /*
  * Copyright (C) 2012 - 2017 Norman Kluge
@@ -28,7 +28,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.uni_potsdam.hpi.asg.common.iohelper.ProcessReturn.Status;
+import de.uni_potsdam.hpi.asg.common.invoker.local.ProcessReturn.Status;
+import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 
 public abstract class Invoker {
     private final static Logger logger = LogManager.getLogger();

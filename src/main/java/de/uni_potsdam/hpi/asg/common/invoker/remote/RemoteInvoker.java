@@ -201,8 +201,8 @@ public class RemoteInvoker {
             ret.setStatus(Status.ok);
             ret.setExitCode(channel.getExitStatus());
             ret.setOutput(out.toString());
-            ret.setUserTime(userTime);
-            ret.setSystemTime(systemTime);
+            ret.setRemoteUserTime(userTime);
+            ret.setRemoteSystemTime(systemTime);
 
             return ret;
         } catch(JSchException e) {

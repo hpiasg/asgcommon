@@ -55,8 +55,8 @@ public class LocalInvoker {
         if(!stat.evaluate()) {
             return null;
         }
-        ret.setUserTime(stat.getUserTime());
-        ret.setSystemTime(stat.getSystemTime());
+        ret.setLocalUserTime(stat.getUserTime());
+        ret.setLocalSystemTime(stat.getSystemTime());
         return ret;
     }
 

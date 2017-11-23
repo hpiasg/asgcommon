@@ -32,8 +32,11 @@ public class InvokeReturn {
     private int          exitCode;
     private String       output;
 
-    private long         userTime;
-    private long         systemTime;
+    private long         localUserTime;
+    private long         localSystemTime;
+
+    private long         remoteUserTime;
+    private long         remoteSystemTime;
 
     public InvokeReturn(List<String> cmdline) {
         this.cmdline = cmdline;
@@ -44,8 +47,12 @@ public class InvokeReturn {
         this.status = status;
     }
 
-    public long getCPUTime() {
-        return systemTime + userTime;
+    public long getLocalCPUTime() {
+        return localSystemTime + localUserTime;
+    }
+
+    public long getRemoteCPUTime() {
+        return remoteSystemTime + remoteUserTime;
     }
 
     public List<String> getCmdline() {
@@ -68,27 +75,43 @@ public class InvokeReturn {
         return status;
     }
 
-    public void setUserTime(long userTime) {
-        this.userTime = userTime;
-    }
-
-    public long getUserTime() {
-        return userTime;
-    }
-
-    public void setSystemTime(long systemTime) {
-        this.systemTime = systemTime;
-    }
-
-    public long getSystemTime() {
-        return systemTime;
-    }
-
     public void setOutput(String output) {
         this.output = output;
     }
 
     public String getOutput() {
         return output;
+    }
+
+    public long getLocalSystemTime() {
+        return localSystemTime;
+    }
+
+    public long getLocalUserTime() {
+        return localUserTime;
+    }
+
+    public long getRemoteSystemTime() {
+        return remoteSystemTime;
+    }
+
+    public long getRemoteUserTime() {
+        return remoteUserTime;
+    }
+
+    public void setLocalSystemTime(long localSystemTime) {
+        this.localSystemTime = localSystemTime;
+    }
+
+    public void setLocalUserTime(long localUserTime) {
+        this.localUserTime = localUserTime;
+    }
+
+    public void setRemoteSystemTime(long remoteSystemTime) {
+        this.remoteSystemTime = remoteSystemTime;
+    }
+
+    public void setRemoteUserTime(long remoteUserTime) {
+        this.remoteUserTime = remoteUserTime;
     }
 }

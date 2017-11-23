@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,12 +32,10 @@ import de.uni_potsdam.hpi.asg.common.invoker.config.ExternalToolsConfig;
 import de.uni_potsdam.hpi.asg.common.invoker.config.ExternalToolsConfigFile;
 import de.uni_potsdam.hpi.asg.common.invoker.config.ToolConfig;
 import de.uni_potsdam.hpi.asg.common.invoker.local.LocalInvoker;
-import de.uni_potsdam.hpi.asg.common.invoker.local.ProcessReturn;
-import de.uni_potsdam.hpi.asg.common.invoker.remote.ImprovedRemoteOperationWorkflow;
-import de.uni_potsdam.hpi.asg.common.invoker.remote.RunSHScript.TimedResult;
+import de.uni_potsdam.hpi.asg.common.invoker.remote.RemoteInvoker;
 import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
 
-public abstract class ExternalToolsInvoker extends AbstractScriptGenerator {
+public abstract class ExternalToolsInvoker {
     private final static Logger        logger = LogManager.getLogger();
 
     private static ExternalToolsConfig config;
@@ -47,7 +46,11 @@ public abstract class ExternalToolsInvoker extends AbstractScriptGenerator {
     //overwrite with setters if needed
     private File                       workingDir;                     // default: WorkingDirGenerator value
     private int                        timeout;                        // default: 0 (=off)
-    private List<Integer>              okCodes;                        // default: {0}
+    private String                     remoteSubDir;                   // default: work
+    private boolean                    removeRemoteDir;                // default: true
+
+    protected Set<File>                uploadFiles;
+    protected Set<String>              downloadIncludes;
 
     public static boolean init(File configFile, boolean tooldebug) {
         if(configFile == null) {
@@ -66,42 +69,84 @@ public abstract class ExternalToolsInvoker extends AbstractScriptGenerator {
         this.cmdname = cmdname;
         this.workingDir = WorkingdirGenerator.getInstance().getWorkingDir();
         this.timeout = 0;
-        this.okCodes = new ArrayList<Integer>(Arrays.asList(0));
+        this.remoteSubDir = "work";
+        this.removeRemoteDir = true;
     }
 
-    protected abstract boolean remoteExecutionCallBack(String script, TimedResult result);
-
-    protected boolean run(List<String> params) {
+    protected InvokeReturn run(List<String> params) {
         ToolConfig cfg = config.getToolConfig(cmdname);
         if(cfg == null) {
             logger.error("Config for tool '" + cmdname + "' not found");
-            return false;
+            return null;
         }
         if(cfg.getRemoteconfig() == null) {
             //local
+            if(!localIsImplemented()) {
+                logger.error("Local operation not implemented for " + cfg.getName());
+                return null;
+            }
             return runLocal(params, cfg);
         } else {
             //remote
+            if(!remoteIsImplemented()) {
+                logger.error("Remote operation not implemented for " + cfg.getName());
+                return null;
+            }
             return runRemote(params, cfg);
         }
     }
 
-    private boolean runRemote(List<String> params, ToolConfig cfg) {
-        ImprovedRemoteOperationWorkflow flow = new ImprovedRemoteOperationWorkflow(null, cmdname) {
-            @Override
-            protected boolean executeCallBack(String script, TimedResult result) {
-                return remoteExecutionCallBack(script, result);
-            }
-        };
-        //TODO: files
-        return flow.run(null, null, null, workingDir, false);
+    protected abstract boolean localIsImplemented();
+
+    protected abstract boolean remoteIsImplemented();
+
+    private InvokeReturn runRemote(List<String> params, ToolConfig cfg) {
+        List<String> cmdline = new ArrayList<>();
+        cmdline.addAll(Arrays.asList(cfg.getCmdline().split(" ")));
+        cmdline.addAll(params);
+        RemoteInvoker inv = new RemoteInvoker(cfg.getRemoteconfig(), remoteSubDir, workingDir, removeRemoteDir, timeout);
+        return inv.invoke(uploadFiles, cmdline, downloadIncludes);
     }
 
-    private boolean runLocal(List<String> params, ToolConfig cfg) {
-        String[] cmd = LocalInvoker.convertCmd(cfg.getCmdline());
-        ProcessReturn ret = LocalInvoker.invoke(cmd, params, workingDir, timeout, tooldebug);
-        return LocalInvoker.errorHandling(ret, okCodes);
+    private InvokeReturn runLocal(List<String> params, ToolConfig cfg) {
+        List<String> cmdline = new ArrayList<>();
+        cmdline.addAll(LocalInvoker.convertCmd(cfg.getCmdline()));
+        cmdline.addAll(params);
+        LocalInvoker inv = new LocalInvoker(workingDir, timeout, tooldebug);
+        return inv.invoke(cmdline);
     }
+
+//    public static boolean errorHandling(ProcessReturn ret, List<Integer> okcodes) {
+//        if(ret != null) {
+//            switch(ret.getStatus()) {
+//                case ok:
+//                    if(!okcodes.contains(ret.getCode())) {
+//                        logger.error("An error was reported while executing " + ret.getCommand());
+//                        logger.debug("Params: " + ret.getParams());
+//                        logger.debug("Exit code: " + ret.getCode() + " Output:");
+//                        logger.debug("##########");
+//                        logger.debug(ret.getStream());
+//                        logger.debug("##########");
+//                        return false;
+//                    }
+//                    break;
+//                case timeout:
+//                    logger.error("Timeout while executing " + ret.getCommand());
+//                    logger.debug("Params: " + ret.getParams());
+//                    logger.debug("Timout after " + ret.getTimeout() / 1000 + "s");
+//                    return false;
+//                case ioexception:
+//                case noio:
+//                    logger.error("I/O error while executing " + ret.getCommand());
+//                    logger.debug("Params: " + ret.getParams());
+//                    return false;
+//            }
+//        } else {
+//            logger.error("Something went really wrong while executing something. I don't even know what the command line was");
+//            return false;
+//        }
+//        return true;
+//    }
 
     protected void setWorkingDir(File workingDir) {
         this.workingDir = workingDir;
@@ -111,7 +156,11 @@ public abstract class ExternalToolsInvoker extends AbstractScriptGenerator {
         this.timeout = timeout;
     }
 
-    protected void setOkCodes(List<Integer> okCodes) {
-        this.okCodes = okCodes;
+    public void setRemoteSubDir(String remoteSubDir) {
+        this.remoteSubDir = remoteSubDir;
+    }
+
+    public void setRemoveRemoteDir(boolean removeRemoteDir) {
+        this.removeRemoteDir = removeRemoteDir;
     }
 }

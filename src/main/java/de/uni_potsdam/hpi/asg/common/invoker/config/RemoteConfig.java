@@ -34,6 +34,8 @@ public class RemoteConfig {
     @XmlElement(required = true)
     private String hostname;
     @XmlElement(required = true)
+    private int port;
+    @XmlElement(required = true)
     private String username;
     @XmlElement(required = true)
     private String password;
@@ -46,6 +48,10 @@ public class RemoteConfig {
 
     public String getHostname() {
         return hostname;
+    }
+
+    public int getPort() {
+        return port;
     }
 
     public String getUsername() {

@@ -21,6 +21,7 @@ package de.uni_potsdam.hpi.asg.common.invoker.remote;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -29,64 +30,81 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+import de.uni_potsdam.hpi.asg.common.invoker.InvokeReturn;
+import de.uni_potsdam.hpi.asg.common.invoker.TimeStat;
+import de.uni_potsdam.hpi.asg.common.invoker.InvokeReturn.Status;
 import de.uni_potsdam.hpi.asg.common.invoker.config.RemoteConfig;
-import de.uni_potsdam.hpi.asg.common.invoker.remote.RunSHScript.TimedResult;
 
-public abstract class ImprovedRemoteOperationWorkflow {
+public class RemoteInvoker {
     private static final Logger logger            = LogManager.getLogger();
 
     private static final int    maxReconnectCount = 2;
+    private static final int    reconnectWaitTime = 5000;
+    private static final int    sessionTimeout    = 30000;
 
     private RemoteConfig        rinfo;
+    private int                 timeout;
     private Session             session;
     private SFTP                sftpcon;
     private String              remoteSubDir;
+    private File                localDir;
+    private boolean             removeRemoteDir;
 
-    public ImprovedRemoteOperationWorkflow(RemoteConfig rinfo, String remoteSubDir) {
+    public RemoteInvoker(RemoteConfig rinfo, String remoteSubDir, File localDir, boolean removeRemoteDir, int timeout) {
         this.rinfo = rinfo;
         this.remoteSubDir = remoteSubDir;
+        this.localDir = localDir;
+        this.removeRemoteDir = removeRemoteDir;
+        this.timeout = timeout;
     }
 
-    public boolean run(Set<File> uploadFiles, List<String> execScripts, Set<String> downloadIncludes, File localDir, boolean removeRemoteDir) {
+    public InvokeReturn invoke(Set<File> uploadFiles, List<String> command, Set<String> downloadIncludes) {
+        InvokeReturn ret = null;
         try {
             int reconnectCount = 0;
             while(!connect()) {
                 if(reconnectCount > maxReconnectCount) {
                     break;
                 }
-                Thread.sleep(5000);
+                Thread.sleep(reconnectWaitTime);
                 reconnectCount++;
             }
             if(session == null || !session.isConnected()) {
                 logger.error("Connecting to host failed");
-                return false;
+                return ret;
             }
 
             if(!upload(uploadFiles)) {
                 logger.error("Uploading files failed");
-                return false;
+                return ret;
             }
-            if(!execute(execScripts)) {
+            ret = execute(command);
+            if(ret == null) {
                 logger.error("Executing scripts failed");
-                return false;
+                return ret;
+            }
+            if(ret.getStatus() != Status.ok) {
+                logger.error("Executing scripts failed 2");
+                return ret;
             }
             if(!download(localDir, downloadIncludes, removeRemoteDir)) {
                 logger.error("Downloading files failed");
-                return false;
+                return ret;
             }
         } catch(InterruptedException e) {
-            return false;
+            return ret;
         } finally {
             if(session != null && session.isConnected()) {
                 session.disconnect();
             }
         }
 
-        return true;
+        return ret;
     }
 
     private boolean connect() {
@@ -96,11 +114,11 @@ public abstract class ImprovedRemoteOperationWorkflow {
                 return false;
             }
             JSch jsch = new JSch();
-            session = jsch.getSession(rinfo.getUsername(), rinfo.getHostname(), 22);
+            session = jsch.getSession(rinfo.getUsername(), rinfo.getHostname(), rinfo.getPort());
             session.setPassword(rinfo.getPassword());
             session.setUserInfo(new ASGUserInfo());
             session.setConfig("StrictHostKeyChecking", "no");
-            session.connect(30000);
+            session.connect(sessionTimeout);
         } catch(UnknownHostException e) {
             logger.warn("Host " + rinfo.getHostname() + " unknown");
             return false;
@@ -134,18 +152,66 @@ public abstract class ImprovedRemoteOperationWorkflow {
         return true;
     }
 
-    private boolean execute(List<String> execScripts) {
+    private InvokeReturn execute(List<String> cmd) {
         logger.debug("Running scripts");
-        for(String str : execScripts) {
-            TimedResult result = RunSHScript.runTimed(session, str, sftpcon.getRemoteDir().getAbsolutePath());
-            if(!executeCallBack(str, result)) {
-                logger.error("Running script " + str + " failed");
-                return false;
+        try {
+            TimeStat stat = TimeStat.create();
+            if(stat == null) {
+                return null;
             }
+
+            StringBuilder command = new StringBuilder();
+            command.append("cd " + sftpcon.getRemoteDir().getAbsolutePath() + ";");
+            command.append(stat.getRemoteCmdStr() + " ");
+            for(String str : cmd) {
+                command.append(str + " ");
+            }
+
+            ChannelExec channel = (ChannelExec)session.openChannel("exec");
+            channel.setCommand(command.toString());
+
+            OutputStream out = stat.getStream();
+            if(out == null) {
+                return null;
+            }
+            channel.setOutputStream(out);
+            channel.setErrStream(out);
+
+            int x = 0;
+            channel.connect();
+            while(channel.isConnected()) {
+                Thread.sleep(1000);
+                x++;
+                if(x >= (timeout / 1000)) {
+                    channel.disconnect();
+                    return null;
+                }
+            }
+
+            channel.disconnect();
+
+            long userTime = 0;
+            long systemTime = 0;
+            if(stat.evaluate()) {
+                userTime = stat.getUserTime();
+                systemTime = stat.getSystemTime();
+            }
+
+            InvokeReturn ret = new InvokeReturn(cmd);
+            ret.setStatus(Status.ok);
+            ret.setExitCode(channel.getExitStatus());
+            ret.setOutput(out.toString());
+            ret.setUserTime(userTime);
+            ret.setSystemTime(systemTime);
+
+            return ret;
+        } catch(JSchException e) {
+            e.printStackTrace();
+            return null;
+        } catch(InterruptedException e) {
+            InvokeReturn ret = new InvokeReturn(cmd);
+            ret.setStatus(Status.timeout);
+            return ret;
         }
-        return true;
     }
-
-    protected abstract boolean executeCallBack(String script, TimedResult result);
-
 }

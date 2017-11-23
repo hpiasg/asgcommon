@@ -21,30 +21,52 @@ package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.uni_potsdam.hpi.asg.common.invoker.local.ProcessReturn.Status;
+import de.uni_potsdam.hpi.asg.common.invoker.InvokeReturn;
+import de.uni_potsdam.hpi.asg.common.invoker.TimeStat;
+import de.uni_potsdam.hpi.asg.common.invoker.InvokeReturn.Status;
 import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 
-public abstract class LocalInvoker {
+public class LocalInvoker {
     private final static Logger logger = LogManager.getLogger();
 
-    public static ProcessReturn invoke(String[] cmd, List<String> params, File folder, int timeout, boolean debug) {
-        List<String> command = new ArrayList<String>();
-        command.addAll(Arrays.asList(cmd));
-        command.addAll(params);
-        ProcessReturn retVal = new ProcessReturn(Arrays.asList(cmd), params);
+    private File                workingDir;
+    private int                 timeout;
+    private boolean             tooldebug;
+
+    public LocalInvoker(File workingDir, int timeout, boolean tooldebug) {
+        this.workingDir = workingDir;
+        this.timeout = timeout;
+        this.tooldebug = tooldebug;
+    }
+
+    public InvokeReturn invoke(List<String> command) {
+        TimeStat stat = TimeStat.create();
+        if(stat == null) {
+            return null;
+        }
+        command.addAll(0, stat.getLocalCmd());
+        InvokeReturn ret = run(command);
+        if(!stat.evaluate()) {
+            return null;
+        }
+        ret.setUserTime(stat.getUserTime());
+        ret.setSystemTime(stat.getSystemTime());
+        return ret;
+    }
+
+    public InvokeReturn run(List<String> command) {
+        InvokeReturn retVal = new InvokeReturn(command);
         Process process = null;
         try {
             logger.debug("Exec command: " + command.toString());
-            //System.out.println(timeout + ": " + command.toString());
             ProcessBuilder builder = new ProcessBuilder(command);
-            builder.directory(folder);
+            builder.directory(workingDir);
             builder.environment(); // bugfix setting env in test-mode (why this works? i dont know..)
             process = builder.start();
             //TODO: reimplement
@@ -56,7 +78,7 @@ public abstract class LocalInvoker {
                 timeoutThread.setName("Timout for " + command.toString());
                 timeoutThread.start();
             }
-            IOStreamReader ioreader = new IOStreamReader(process, debug);
+            IOStreamReader ioreader = new IOStreamReader(process, tooldebug);
             Thread streamThread = new Thread(ioreader);
             streamThread.setName("StreamReader for " + command.toString());
             streamThread.start();
@@ -71,12 +93,11 @@ public abstract class LocalInvoker {
                 //System.out.println("out = null");
                 retVal.setStatus(Status.noio);
             }
-            retVal.setCode(process.exitValue());
-            retVal.setStream(out);
+            retVal.setExitCode(process.exitValue());
+            retVal.setOutput(out);
             retVal.setStatus(Status.ok);
         } catch(InterruptedException e) {
             process.destroy();
-            retVal.setTimeout(timeout);
             retVal.setStatus(Status.timeout);
         } catch(IOException e) {
             logger.error(e.getLocalizedMessage());
@@ -85,49 +106,13 @@ public abstract class LocalInvoker {
         return retVal;
     }
 
-//    public static boolean errorHandling(ProcessReturn ret) {
-//        return errorHandling(ret, new ArrayList<Integer>(Arrays.asList(0)));
-//    }
-
-    public static boolean errorHandling(ProcessReturn ret, List<Integer> okcodes) {
-        if(ret != null) {
-            switch(ret.getStatus()) {
-                case ok:
-                    if(!okcodes.contains(ret.getCode())) {
-                        logger.error("An error was reported while executing " + ret.getCommand());
-                        logger.debug("Params: " + ret.getParams());
-                        logger.debug("Exit code: " + ret.getCode() + " Output:");
-                        logger.debug("##########");
-                        logger.debug(ret.getStream());
-                        logger.debug("##########");
-                        return false;
-                    }
-                    break;
-                case timeout:
-                    logger.error("Timeout while executing " + ret.getCommand());
-                    logger.debug("Params: " + ret.getParams());
-                    logger.debug("Timout after " + ret.getTimeout() / 1000 + "s");
-                    return false;
-                case ioexception:
-                case noio:
-                    logger.error("I/O error while executing " + ret.getCommand());
-                    logger.debug("Params: " + ret.getParams());
-                    return false;
-            }
-        } else {
-            logger.error("Something went really wrong while executing something. I don't even know what the command line was");
-            return false;
-        }
-        return true;
-    }
-
-    public static String[] convertCmd(String cmd) {
+    public static List<String> convertCmd(String cmd) {
         if(cmd == null) {
             return null;
         }
 
         cmd = BasedirHelper.replaceBasedir(cmd);
-        return cmd.split(" ");
+        return Arrays.asList(cmd.split(" "));
     }
 
 //    public void killSubprocesses() {

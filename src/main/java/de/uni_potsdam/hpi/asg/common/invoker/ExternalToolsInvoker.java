@@ -42,6 +42,7 @@ public abstract class ExternalToolsInvoker {
     private static boolean             tooldebug;
 
     private String                     cmdname;
+    private ToolConfig                 cfg;
 
     //overwrite with setters if needed
     private File                       workingDir;                     // default: WorkingDirGenerator value
@@ -73,10 +74,17 @@ public abstract class ExternalToolsInvoker {
         this.removeRemoteDir = true;
     }
 
-    protected InvokeReturn run(List<String> params) {
-        ToolConfig cfg = config.getToolConfig(cmdname);
+    protected boolean init() {
+        cfg = config.getToolConfig(cmdname);
         if(cfg == null) {
             logger.error("Config for tool '" + cmdname + "' not found");
+            return false;
+        }
+        return true;
+    }
+
+    protected InvokeReturn run(List<String> params) {
+        if(cfg == null) {
             return null;
         }
         if(cfg.getRemoteconfig() == null) {
@@ -85,22 +93,30 @@ public abstract class ExternalToolsInvoker {
                 logger.error("Local operation not implemented for " + cfg.getName());
                 return null;
             }
-            return runLocal(params, cfg);
+            return runLocal(params);
         } else {
             //remote
             if(!remoteIsImplemented()) {
                 logger.error("Remote operation not implemented for " + cfg.getName());
                 return null;
             }
-            return runRemote(params, cfg);
+            return runRemote(params);
         }
+    }
+
+    protected boolean runsLocal() {
+        return cfg.getRemoteconfig() == null && localIsImplemented();
+    }
+
+    protected boolean runsRemote() {
+        return cfg.getRemoteconfig() != null && remoteIsImplemented();
     }
 
     protected abstract boolean localIsImplemented();
 
     protected abstract boolean remoteIsImplemented();
 
-    private InvokeReturn runRemote(List<String> params, ToolConfig cfg) {
+    private InvokeReturn runRemote(List<String> params) {
         List<String> cmdline = new ArrayList<>();
         cmdline.addAll(Arrays.asList(cfg.getCmdline().split(" ")));
         cmdline.addAll(params);
@@ -108,7 +124,7 @@ public abstract class ExternalToolsInvoker {
         return inv.invoke(uploadFiles, cmdline, downloadIncludes);
     }
 
-    private InvokeReturn runLocal(List<String> params, ToolConfig cfg) {
+    private InvokeReturn runLocal(List<String> params) {
         List<String> cmdline = new ArrayList<>();
         cmdline.addAll(LocalInvoker.convertCmd(cfg.getCmdline()));
         cmdline.addAll(params);

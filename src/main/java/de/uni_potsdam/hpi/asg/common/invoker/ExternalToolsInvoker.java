@@ -22,6 +22,7 @@ package de.uni_potsdam.hpi.asg.common.invoker;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,47 +75,66 @@ public abstract class ExternalToolsInvoker {
         this.removeRemoteDir = true;
     }
 
-    protected boolean init() {
+    protected InvokeReturn run(List<String> params) {
         cfg = config.getToolConfig(cmdname);
         if(cfg == null) {
             logger.error("Config for tool '" + cmdname + "' not found");
-            return false;
-        }
-        return true;
-    }
-
-    protected InvokeReturn run(List<String> params) {
-        if(cfg == null) {
             return null;
         }
         if(cfg.getRemoteconfig() == null) {
             //local
-            if(!localIsImplemented()) {
-                logger.error("Local operation not implemented for " + cfg.getName());
+            if(!localSetup()) {
+                logger.error("Local setup failed for " + cfg.getName());
                 return null;
             }
             return runLocal(params);
         } else {
             //remote
-            if(!remoteIsImplemented()) {
-                logger.error("Remote operation not implemented for " + cfg.getName());
+            uploadFiles = new HashSet<>();
+            downloadIncludes = new HashSet<>();
+            if(!remoteSetup()) {
+                logger.error("Remote setup failed for " + cfg.getName());
                 return null;
             }
             return runRemote(params);
         }
     }
 
-    protected boolean runsLocal() {
-        return cfg.getRemoteconfig() == null && localIsImplemented();
+    protected boolean errorHandling(InvokeReturn ret) {
+        return errorHandling(ret, Arrays.asList(0));
     }
 
-    protected boolean runsRemote() {
-        return cfg.getRemoteconfig() != null && remoteIsImplemented();
+    protected boolean errorHandling(InvokeReturn ret, List<Integer> okCodes) {
+        if(ret != null) {
+            switch(ret.getStatus()) {
+                case ok:
+                    if(!okCodes.contains(ret.getExitCode())) {
+                        logger.error("An error was reported while executing " + ret.getCmdline());
+                        logger.debug("Exit code: " + ret.getExitCode() + " Output:");
+                        logger.debug("##########");
+                        logger.debug(ret.getOutput());
+                        logger.debug("##########");
+                        return false;
+                    }
+                    break;
+                case timeout:
+                    logger.error("Timeout while executing " + ret.getCmdline());
+                    return false;
+                case ioexception:
+                case noio:
+                    logger.error("I/O error while executing " + ret.getCmdline());
+                    return false;
+            }
+        } else {
+            logger.error("Something went really wrong while executing something. I don't even know what the command line was");
+            return false;
+        }
+        return true;
     }
 
-    protected abstract boolean localIsImplemented();
+    protected abstract boolean localSetup();
 
-    protected abstract boolean remoteIsImplemented();
+    protected abstract boolean remoteSetup();
 
     private InvokeReturn runRemote(List<String> params) {
         List<String> cmdline = new ArrayList<>();
@@ -131,38 +151,6 @@ public abstract class ExternalToolsInvoker {
         LocalInvoker inv = new LocalInvoker(workingDir, timeout, tooldebug);
         return inv.invoke(cmdline);
     }
-
-//    public static boolean errorHandling(ProcessReturn ret, List<Integer> okcodes) {
-//        if(ret != null) {
-//            switch(ret.getStatus()) {
-//                case ok:
-//                    if(!okcodes.contains(ret.getCode())) {
-//                        logger.error("An error was reported while executing " + ret.getCommand());
-//                        logger.debug("Params: " + ret.getParams());
-//                        logger.debug("Exit code: " + ret.getCode() + " Output:");
-//                        logger.debug("##########");
-//                        logger.debug(ret.getStream());
-//                        logger.debug("##########");
-//                        return false;
-//                    }
-//                    break;
-//                case timeout:
-//                    logger.error("Timeout while executing " + ret.getCommand());
-//                    logger.debug("Params: " + ret.getParams());
-//                    logger.debug("Timout after " + ret.getTimeout() / 1000 + "s");
-//                    return false;
-//                case ioexception:
-//                case noio:
-//                    logger.error("I/O error while executing " + ret.getCommand());
-//                    logger.debug("Params: " + ret.getParams());
-//                    return false;
-//            }
-//        } else {
-//            logger.error("Something went really wrong while executing something. I don't even know what the command line was");
-//            return false;
-//        }
-//        return true;
-//    }
 
     protected void setWorkingDir(File workingDir) {
         this.workingDir = workingDir;

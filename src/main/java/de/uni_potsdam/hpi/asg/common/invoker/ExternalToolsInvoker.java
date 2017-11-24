@@ -20,12 +20,17 @@ package de.uni_potsdam.hpi.asg.common.invoker;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,6 +39,7 @@ import de.uni_potsdam.hpi.asg.common.invoker.config.ExternalToolsConfigFile;
 import de.uni_potsdam.hpi.asg.common.invoker.config.ToolConfig;
 import de.uni_potsdam.hpi.asg.common.invoker.local.LocalInvoker;
 import de.uni_potsdam.hpi.asg.common.invoker.remote.RemoteInvoker;
+import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
 import de.uni_potsdam.hpi.asg.common.iohelper.WorkingdirGenerator;
 
 public abstract class ExternalToolsInvoker {
@@ -42,17 +48,19 @@ public abstract class ExternalToolsInvoker {
     private static ExternalToolsConfig config;
     private static boolean             tooldebug;
 
-    private String                     cmdname;
-    private ToolConfig                 cfg;
+    private String                     cmdType;
+//    private String                     subDir;
+//    private ToolConfig                 cfg;
 
     //overwrite with setters if needed
-    private File                       workingDir;                     // default: WorkingDirGenerator value
-    private int                        timeout;                        // default: 0 (=off)
-    private String                     remoteSubDir;                   // default: work
-    private boolean                    removeRemoteDir;                // default: true
+    private File                       workingDir;                       // default: WorkingDirGenerator value
+    private int                        timeout;                          // default: 0 (=off)
+    private boolean                    removeRemoteDir;                  // default: true
 
-    protected Set<File>                uploadFiles;
-    protected Set<String>              downloadIncludes;
+    protected Set<File>                inputFilesToCopy;
+    protected Map<String, File>        outputFilesToExport;
+    protected Set<String>              outputFilesToCopyStartsWith;
+    protected Set<String>              outputFilesDownloadOnlyStartsWith;
 
     public static boolean init(File configFile, boolean tooldebug) {
         if(configFile == null) {
@@ -67,36 +75,29 @@ public abstract class ExternalToolsInvoker {
         return true;
     }
 
-    protected ExternalToolsInvoker(String cmdname) {
-        this.cmdname = cmdname;
+    protected ExternalToolsInvoker(String cmdType) {
+        this.cmdType = cmdType;
         this.workingDir = WorkingdirGenerator.getInstance().getWorkingDir();
         this.timeout = 0;
-        this.remoteSubDir = "work";
         this.removeRemoteDir = true;
+        inputFilesToCopy = new HashSet<>();
+        outputFilesToExport = new HashMap<>();
+        outputFilesToCopyStartsWith = new HashSet<>();
+        outputFilesDownloadOnlyStartsWith = new HashSet<>();
     }
 
-    protected InvokeReturn run(List<String> params) {
-        cfg = config.getToolConfig(cmdname);
+    protected InvokeReturn run(List<String> params, String subDir) {
+        ToolConfig cfg = config.getToolConfig(cmdType);
         if(cfg == null) {
-            logger.error("Config for tool '" + cmdname + "' not found");
+            logger.error("Config for tool '" + cmdType + "' not found");
             return null;
         }
         if(cfg.getRemoteconfig() == null) {
             //local
-            if(!localSetup()) {
-                logger.error("Local setup failed for " + cfg.getName());
-                return null;
-            }
-            return runLocal(params);
+            return runLocal(params, cfg, subDir);
         } else {
             //remote
-            uploadFiles = new HashSet<>();
-            downloadIncludes = new HashSet<>();
-            if(!remoteSetup()) {
-                logger.error("Remote setup failed for " + cfg.getName());
-                return null;
-            }
-            return runRemote(params);
+            return runRemote(params, cfg, subDir);
         }
     }
 
@@ -132,24 +133,118 @@ public abstract class ExternalToolsInvoker {
         return true;
     }
 
-    protected abstract boolean localSetup();
-
-    protected abstract boolean remoteSetup();
-
-    private InvokeReturn runRemote(List<String> params) {
+    private InvokeReturn runRemote(List<String> params, ToolConfig cfg, String subDir) {
+        // build command
         List<String> cmdline = new ArrayList<>();
         cmdline.addAll(Arrays.asList(cfg.getCmdline().split(" ")));
         cmdline.addAll(params);
-        RemoteInvoker inv = new RemoteInvoker(cfg.getRemoteconfig(), remoteSubDir, workingDir, removeRemoteDir, timeout);
-        return inv.invoke(uploadFiles, cmdline, downloadIncludes);
+
+        // create (local) directory
+        File localWorkingDir = createLocalTempDirectory(subDir);
+        if(localWorkingDir == null) {
+            return null;
+        }
+
+        // copy inputs
+        if(!copyInputFiles(localWorkingDir, cfg)) {
+            return null;
+        }
+
+        // create data structures for RemoteWorkflow
+        Set<File> uploadFiles = new HashSet<>();
+        uploadFiles.addAll(inputFilesToCopy);
+        Set<String> downloadIncludeFileStarts = new HashSet<>();
+        downloadIncludeFileStarts.addAll(outputFilesDownloadOnlyStartsWith);
+        downloadIncludeFileStarts.addAll(outputFilesToCopyStartsWith);
+        downloadIncludeFileStarts.addAll(outputFilesToExport.keySet());
+
+        // invoke
+        RemoteInvoker inv = new RemoteInvoker(cfg.getRemoteconfig(), subDir, workingDir, removeRemoteDir, timeout);
+        InvokeReturn ret = inv.invoke(uploadFiles, cmdline, downloadIncludeFileStarts);
+        if(ret == null) {
+            return null;
+        }
+
+        // copy outputs
+        if(!copyOutputFiles(localWorkingDir, cfg)) {
+            return null;
+        }
+
+        return ret;
     }
 
-    private InvokeReturn runLocal(List<String> params) {
+    private InvokeReturn runLocal(List<String> params, ToolConfig cfg, String subDir) {
+        // build command
         List<String> cmdline = new ArrayList<>();
         cmdline.addAll(LocalInvoker.convertCmd(cfg.getCmdline()));
         cmdline.addAll(params);
-        LocalInvoker inv = new LocalInvoker(workingDir, timeout, tooldebug);
-        return inv.invoke(cmdline);
+
+        // create directory
+        File localWorkingDir = createLocalTempDirectory(subDir);
+        if(localWorkingDir == null) {
+            return null;
+        }
+
+        // copy inputs
+        if(!copyInputFiles(localWorkingDir, cfg)) {
+            return null;
+        }
+
+        // invoke
+        LocalInvoker inv = new LocalInvoker(localWorkingDir, timeout, tooldebug);
+        InvokeReturn ret = inv.invoke(cmdline);
+        if(ret == null) {
+            return null;
+        }
+
+        // copy outputs
+        if(!copyOutputFiles(localWorkingDir, cfg)) {
+            return null;
+        }
+
+        return ret;
+    }
+
+    private boolean copyOutputFiles(File localWorkingDir, ToolConfig cfg) {
+        String[] outputFilesToCopyStartsWithArray = new String[outputFilesToCopyStartsWith.size()];
+        outputFilesToCopyStartsWithArray = outputFilesToCopyStartsWith.toArray(outputFilesToCopyStartsWithArray);
+        File[] dirFiles = localWorkingDir.listFiles();
+        for(File f : dirFiles) {
+            if(StringUtils.startsWithAny(f.getName(), outputFilesToCopyStartsWithArray)) {
+                if(!FileHelper.getInstance().copyfile(f, new File(workingDir, f.getName()))) {
+                    logger.error("Failed to copy output file '" + f.getName() + "' for " + cfg.getName());
+                    return false;
+                }
+            }
+            if(outputFilesToExport.containsKey(f.getName())) {
+                if(!FileHelper.getInstance().copyfile(f, outputFilesToExport.get(f.getName()))) {
+                    logger.error("Failed to copy output file '" + f.getName() + "' for " + cfg.getName());
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean copyInputFiles(File localWorkingDir, ToolConfig cfg) {
+        for(File f : inputFilesToCopy) {
+            if(!FileHelper.getInstance().copyfile(f, new File(localWorkingDir, f.getName()))) {
+                logger.error("Failed to copy input file '" + f.getName() + "' for " + cfg.getName());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private File createLocalTempDirectory(String subDir) {
+        File localWorkingDir = null;
+        try {
+            localWorkingDir = Files.createTempDirectory(workingDir.toPath(), subDir).toFile();
+        } catch(IOException e) {
+            logger.error("Failed to create Temp Directory");
+            return null;
+        }
+        return localWorkingDir;
     }
 
     protected void setWorkingDir(File workingDir) {
@@ -158,10 +253,6 @@ public abstract class ExternalToolsInvoker {
 
     protected void setTimeout(int timeout) {
         this.timeout = timeout;
-    }
-
-    public void setRemoteSubDir(String remoteSubDir) {
-        this.remoteSubDir = remoteSubDir;
     }
 
     public void setRemoveRemoteDir(boolean removeRemoteDir) {

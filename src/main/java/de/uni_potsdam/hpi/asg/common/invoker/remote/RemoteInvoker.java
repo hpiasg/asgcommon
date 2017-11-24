@@ -63,7 +63,7 @@ public class RemoteInvoker {
         this.timeout = timeout;
     }
 
-    public InvokeReturn invoke(Set<File> uploadFiles, List<String> command, Set<String> downloadIncludes) {
+    public InvokeReturn invoke(Set<File> uploadFiles, List<String> command, Set<String> downloadIncludeFileStarts) {
         InvokeReturn ret = null;
         try {
             int reconnectCount = 0;
@@ -92,7 +92,7 @@ public class RemoteInvoker {
                 logger.error("Executing scripts failed 2");
                 return ret;
             }
-            if(!download(localDir, downloadIncludes, removeRemoteDir)) {
+            if(!download(localDir, downloadIncludeFileStarts, removeRemoteDir)) {
                 logger.error("Downloading files failed");
                 return ret;
             }
@@ -144,9 +144,9 @@ public class RemoteInvoker {
         return true;
     }
 
-    private boolean download(File localDir, Set<String> includeFilenames, boolean removeRemoteDir) {
+    private boolean download(File localDir, Set<String> includeFileStarts, boolean removeRemoteDir) {
         logger.debug("Downloading files");
-        if(!sftpcon.downloadFiles(localDir, includeFilenames, removeRemoteDir)) {
+        if(!sftpcon.downloadFiles(localDir, includeFileStarts, removeRemoteDir)) {
             return false;
         }
         return true;

@@ -49,8 +49,6 @@ public abstract class ExternalToolsInvoker {
     private static boolean             tooldebug;
 
     private String                     cmdType;
-//    private String                     subDir;
-//    private ToolConfig                 cfg;
 
     //overwrite with setters if needed
     private File                       workingDir;                       // default: WorkingDirGenerator value
@@ -61,6 +59,15 @@ public abstract class ExternalToolsInvoker {
     protected Map<String, File>        outputFilesToExport;
     protected Set<String>              outputFilesToCopyStartsWith;
     protected Set<String>              outputFilesDownloadOnlyStartsWith;
+
+    /* TODO
+     *  
+    protected void addUploadFiles(File... args) {
+        for(File f : args) {
+            uploadFiles.add(f);
+        }
+    }
+     */
 
     public static boolean init(File configFile, boolean tooldebug) {
         if(configFile == null) {
@@ -87,17 +94,35 @@ public abstract class ExternalToolsInvoker {
     }
 
     protected InvokeReturn run(List<String> params, String subDir) {
+        return run(params, subDir, null);
+    }
+
+    protected InvokeReturn run(List<String> params, String subDir, AbstractScriptGenerator generator) {
         ToolConfig cfg = config.getToolConfig(cmdType);
         if(cfg == null) {
             logger.error("Config for tool '" + cmdType + "' not found");
             return null;
         }
+
+        // create (local) directory
+        File localWorkingDir = createLocalTempDirectory(subDir);
+        if(localWorkingDir == null) {
+            return null;
+        }
+
+        List<File> additionalUploadFiles = null;
+        if(generator != null) {
+            generator.generate(localWorkingDir);
+            additionalUploadFiles = new ArrayList<>();
+            additionalUploadFiles.addAll(generator.getUploadFiles());
+        }
+
         if(cfg.getRemoteconfig() == null) {
             //local
-            return runLocal(params, cfg, subDir);
+            return runLocal(params, cfg, localWorkingDir);
         } else {
             //remote
-            return runRemote(params, cfg, subDir);
+            return runRemote(params, cfg, localWorkingDir, subDir, additionalUploadFiles);
         }
     }
 
@@ -133,17 +158,11 @@ public abstract class ExternalToolsInvoker {
         return true;
     }
 
-    private InvokeReturn runRemote(List<String> params, ToolConfig cfg, String subDir) {
+    private InvokeReturn runRemote(List<String> params, ToolConfig cfg, File localWorkingDir, String subDir, List<File> additionalUploadFiles) {
         // build command
         List<String> cmdline = new ArrayList<>();
         cmdline.addAll(Arrays.asList(cfg.getCmdline().split(" ")));
         cmdline.addAll(params);
-
-        // create (local) directory
-        File localWorkingDir = createLocalTempDirectory(subDir);
-        if(localWorkingDir == null) {
-            return null;
-        }
 
         // copy inputs
         if(!copyInputFiles(localWorkingDir, cfg)) {
@@ -153,6 +172,9 @@ public abstract class ExternalToolsInvoker {
         // create data structures for RemoteWorkflow
         Set<File> uploadFiles = new HashSet<>();
         uploadFiles.addAll(inputFilesToCopy);
+        if(additionalUploadFiles != null) {
+            uploadFiles.addAll(additionalUploadFiles);
+        }
         Set<String> downloadIncludeFileStarts = new HashSet<>();
         downloadIncludeFileStarts.addAll(outputFilesDownloadOnlyStartsWith);
         downloadIncludeFileStarts.addAll(outputFilesToCopyStartsWith);
@@ -173,17 +195,11 @@ public abstract class ExternalToolsInvoker {
         return ret;
     }
 
-    private InvokeReturn runLocal(List<String> params, ToolConfig cfg, String subDir) {
+    private InvokeReturn runLocal(List<String> params, ToolConfig cfg, File localWorkingDir) {
         // build command
         List<String> cmdline = new ArrayList<>();
         cmdline.addAll(LocalInvoker.convertCmd(cfg.getCmdline()));
         cmdline.addAll(params);
-
-        // create directory
-        File localWorkingDir = createLocalTempDirectory(subDir);
-        if(localWorkingDir == null) {
-            return null;
-        }
 
         // copy inputs
         if(!copyInputFiles(localWorkingDir, cfg)) {
@@ -255,7 +271,7 @@ public abstract class ExternalToolsInvoker {
         this.timeout = timeout;
     }
 
-    public void setRemoveRemoteDir(boolean removeRemoteDir) {
+    protected void setRemoveRemoteDir(boolean removeRemoteDir) {
         this.removeRemoteDir = removeRemoteDir;
     }
 }

@@ -44,12 +44,11 @@ public abstract class AbstractScriptGenerator {
 
     private static Map<String, List<String>> templates;
 
-    private Set<File>                        uploadFiles;
-    private String                           execFileName;
+    private Set<File>                        generatedFiles;
     private Set<String>                      downloadIncludeFileNames;
 
     public AbstractScriptGenerator() {
-        this.uploadFiles = new HashSet<>();
+        this.generatedFiles = new HashSet<>();
         this.downloadIncludeFileNames = new HashSet<>();
     }
 
@@ -111,14 +110,10 @@ public abstract class AbstractScriptGenerator {
         return true;
     }
 
-    protected void addUploadFiles(File... args) {
+    protected void addGeneratedFiles(File... args) {
         for(File f : args) {
-            uploadFiles.add(f);
+            generatedFiles.add(f);
         }
-    }
-
-    protected void setExecFileName(String execFileName) {
-        this.execFileName = execFileName;
     }
 
     protected void addDownloadIncludeFileNames(String... args) {
@@ -179,15 +174,11 @@ public abstract class AbstractScriptGenerator {
         return true;
     }
 
-    public Set<File> getUploadFiles() {
-        return uploadFiles;
+    public Set<File> getGeneratedFiles() {
+        return generatedFiles;
     }
 
     public Set<String> getDownloadIncludeFileNames() {
         return downloadIncludeFileNames;
-    }
-
-    public String getExecFileName() {
-        return execFileName;
     }
 }

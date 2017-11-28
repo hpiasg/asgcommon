@@ -114,7 +114,8 @@ public abstract class ExternalToolsInvoker {
         if(generator != null) {
             generator.generate(localWorkingDir);
             additionalUploadFiles = new ArrayList<>();
-            additionalUploadFiles.addAll(generator.getUploadFiles());
+            additionalUploadFiles.addAll(generator.getGeneratedFiles());
+            outputFilesDownloadOnlyStartsWith.addAll(generator.getDownloadIncludeFileNames());
         }
 
         if(cfg.getRemoteconfig() == null) {

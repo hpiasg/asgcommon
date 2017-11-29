@@ -135,6 +135,10 @@ public abstract class AbstractScriptGenerator {
     }
 
     protected List<String> replaceInTemplate(String templateName, Map<String, String> replacements) {
+        if(templates == null) {
+            logger.error("No templates. Run readTemplateFiles");
+            return null;
+        }
         List<String> templateCode = templates.get(templateName);
         if(templateCode == null) {
             logger.error("Template code for '" + templateName + "' not found");

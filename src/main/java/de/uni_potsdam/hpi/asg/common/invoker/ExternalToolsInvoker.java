@@ -110,7 +110,7 @@ public abstract class ExternalToolsInvoker {
         }
 
         // create (local) directory
-        File localWorkingDir = createLocalTempDirectory(subDir);
+        File localWorkingDir = createLocalTempDirectory(subDir + "_");
         if(localWorkingDir == null) {
             return null;
         }

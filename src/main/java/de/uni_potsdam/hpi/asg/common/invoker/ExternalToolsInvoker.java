@@ -98,6 +98,11 @@ public abstract class ExternalToolsInvoker {
     }
 
     protected InvokeReturn run(List<String> params, String subDir, AbstractScriptGenerator generator) {
+        if(config == null) {
+            logger.error("No toolconfig. Run init");
+            return null;
+        }
+
         ToolConfig cfg = config.getToolConfig(cmdType);
         if(cfg == null) {
             logger.error("Config for tool '" + cmdType + "' not found");

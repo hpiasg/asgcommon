@@ -117,7 +117,9 @@ public abstract class ExternalToolsInvoker {
 
         List<File> additionalUploadFiles = null;
         if(generator != null) {
-            generator.generate(localWorkingDir);
+            if(!generator.generate(localWorkingDir)) {
+                return null;
+            }
             additionalUploadFiles = new ArrayList<>();
             additionalUploadFiles.addAll(generator.getGeneratedFiles());
             outputFilesDownloadOnlyStartsWith.addAll(generator.getDownloadIncludeFileNames());

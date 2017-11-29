@@ -183,7 +183,7 @@ public class RemoteInvoker {
             while(channel.isConnected()) {
                 Thread.sleep(1000);
                 x++;
-                if(x >= (timeout / 1000)) {
+                if(timeout != 0 && (x >= (timeout / 1000))) {
                     channel.disconnect();
                     return null;
                 }

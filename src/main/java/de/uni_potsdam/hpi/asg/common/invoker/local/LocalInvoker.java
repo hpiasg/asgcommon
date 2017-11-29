@@ -64,7 +64,7 @@ public class LocalInvoker {
         InvokeReturn retVal = new InvokeReturn(command);
         Process process = null;
         try {
-            logger.debug("Exec command: " + command.toString());
+            logger.debug("Exec command: " + command.toString().replace("\n", ""));
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.directory(workingDir);
             builder.environment(); // bugfix setting env in test-mode (why this works? i dont know..)

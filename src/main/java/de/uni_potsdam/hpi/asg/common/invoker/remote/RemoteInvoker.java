@@ -166,6 +166,7 @@ public class RemoteInvoker {
             for(String str : cmd) {
                 command.append(str + " ");
             }
+            logger.debug("Exec command: " + command.toString().replace("\n", ""));
 
             ChannelExec channel = (ChannelExec)session.openChannel("exec");
             channel.setCommand(command.toString());

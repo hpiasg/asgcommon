@@ -21,6 +21,7 @@ package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,11 +34,17 @@ import de.uni_potsdam.hpi.asg.common.invoker.InvokeReturn.Status;
 import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
 
 public class LocalInvoker {
-    private final static Logger logger = LogManager.getLogger();
+    private final static Logger  logger = LogManager.getLogger();
 
-    private File                workingDir;
-    private int                 timeout;
-    private boolean             tooldebug;
+    private static List<Process> subProcesses;
+
+    private File                 workingDir;
+    private int                  timeout;
+    private boolean              tooldebug;
+
+    static {
+        subProcesses = new ArrayList<>();
+    }
 
     public LocalInvoker(File workingDir, int timeout, boolean tooldebug) {
         this.workingDir = workingDir;
@@ -69,8 +76,7 @@ public class LocalInvoker {
             builder.directory(workingDir);
             builder.environment(); // bugfix setting env in test-mode (why this works? i dont know..)
             process = builder.start();
-            //TODO: reimplement
-//            subprocesses.add(process);
+            subProcesses.add(process);
 
             Thread timeoutThread = null;
             if(timeout > 0) {
@@ -115,9 +121,9 @@ public class LocalInvoker {
         return Arrays.asList(cmd.split(" "));
     }
 
-//    public void killSubprocesses() {
-//        for(Process p : subprocesses) {
-//            p.destroy();
-//        }
-//    }
+    public static void killSubProcesses() {
+        for(Process p : subProcesses) {
+            p.destroy();
+        }
+    }
 }

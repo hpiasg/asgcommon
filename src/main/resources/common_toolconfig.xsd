@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="toolsconfig" type="externalToolsConfig"/>
+
+  <xs:complexType name="externalToolsConfig">
+    <xs:sequence>
+      <xs:element name="tools" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="tool" type="toolConfig" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="remotes" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="remote" type="remoteConfig" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="toolConfig">
+    <xs:sequence>
+      <xs:element name="cmdline" type="xs:string"/>
+      <xs:element name="remote" type="xs:IDREF" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="remoteConfig">
+    <xs:sequence>
+      <xs:element name="hostname" type="xs:string"/>
+      <xs:element name="port" type="xs:int"/>
+      <xs:element name="username" type="xs:string"/>
+      <xs:element name="password" type="xs:string"/>
+      <xs:element name="workingdir" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+  </xs:complexType>
+</xs:schema>
+

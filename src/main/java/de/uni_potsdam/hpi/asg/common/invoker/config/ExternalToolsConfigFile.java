@@ -24,28 +24,48 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 public class ExternalToolsConfigFile {
     private static final Logger logger = LogManager.getLogger();
 
     public static ExternalToolsConfig readIn(File file) {
         try {
-            if(file.exists()) {
-                JAXBContext jaxbContext = JAXBContext.newInstance(ExternalToolsConfig.class);
-                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-                return (ExternalToolsConfig)jaxbUnmarshaller.unmarshal(file);
-            } else {
-                logger.error("File " + file.getAbsolutePath() + " not found");
+            if(!file.exists()) {
+                logger.error("Setup file not found");
                 return null;
             }
+            JAXBContext jaxbContext = JAXBContext.newInstance(ExternalToolsConfig.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+            System.setProperty("javax.xml.accessExternalDTD", "all");
+            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            Schema schema = sf.newSchema(new StreamSource(ExternalToolsConfig.class.getResourceAsStream("/" + ExternalToolsConfigSchemaGenerator.schemaFileName)));
+            jaxbUnmarshaller.setSchema(schema);
+
+            return (ExternalToolsConfig)jaxbUnmarshaller.unmarshal(file);
         } catch(JAXBException e) {
+            if(e.getLinkedException() instanceof SAXParseException) {
+                SAXParseException e2 = (SAXParseException)e.getLinkedException();
+                logger.error("File: " + file.getAbsolutePath() + ", Line: " + e2.getLineNumber() + ", Col: " + e2.getColumnNumber());
+                logger.error(e2.getLocalizedMessage());
+                return null;
+            }
+            logger.error(e.getLocalizedMessage());
+            return null;
+        } catch(SAXException e) {
             logger.error(e.getLocalizedMessage());
             return null;
         }

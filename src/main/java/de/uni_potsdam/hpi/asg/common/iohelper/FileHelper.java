@@ -137,41 +137,6 @@ public class FileHelper {
         }
     }
 
-    public String mergeFileContents(List<String> filelist) {
-        try {
-            StringBuilder text = new StringBuilder();
-            List<String> modules = new ArrayList<String>();
-            for(String filename : filelist) {
-                File file = new File(workingDir, filename);
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                String line;
-                while((line = reader.readLine()) != null) {
-                    if(line.startsWith("module")) {
-                        String modulename = line.split(" ")[1];
-                        if(modules.contains(modulename)) {
-                            while(!line.startsWith("endmodule")) {
-                                line = reader.readLine();
-                            }
-                        } else {
-                            modules.add(modulename);
-                            while(!line.startsWith("endmodule")) {
-                                text.append(line + FileHelper.getNewline());
-                                line = reader.readLine();
-                            }
-                            text.append(line + FileHelper.getNewline() + FileHelper.getNewline());
-                        }
-                    }
-                }
-                reader.close();
-            }
-
-            return text.toString();
-        } catch(IOException e) {
-            logger.error(e.getLocalizedMessage());
-            return null;
-        }
-    }
-
     public File newTmpFile(String name) {
         String split[] = name.split("\\.");
         try {

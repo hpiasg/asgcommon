@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.iohelper;
+package de.uni_potsdam.hpi.asg.common.invoker;
 
 /*
  * Copyright (C) 2017 Norman Kluge
@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
@@ -57,13 +58,24 @@ public class TimeStat {
         return "/usr/bin/time -f U:%U\\\\nS:%S\\\\n";
     }
 
-    public String[] getLocalCmd() {
+    public FileOutputStream getStream() {
+        if(stream == null) {
+            try {
+                stream = new FileOutputStream(file);
+            } catch(FileNotFoundException e) {
+                return null;
+            }
+        }
+        return stream;
+    }
+
+    public List<String> getLocalCmd() {
         //@formatter:off
-        return new String[] {
+        return Arrays.asList(
             "/usr/bin/time",
             "-f", "U:%U\nS:%S\n",
             "-o", file.getAbsolutePath()
-        };
+        );
         //@formatter:on
     }
 
@@ -89,16 +101,5 @@ public class TimeStat {
 
     public long getUserTime() {
         return userTime;
-    }
-
-    public FileOutputStream getStream() {
-        if(stream == null) {
-            try {
-                stream = new FileOutputStream(file);
-            } catch(FileNotFoundException e) {
-                return null;
-            }
-        }
-        return stream;
     }
 }

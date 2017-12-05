@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.iohelper;
+package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2017 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,23 +19,17 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Timeout implements Runnable {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-    private Thread t;
-    private int    timeout;
+public class ShutdownThread extends Thread {
+    private final static Logger logger = LogManager.getLogger();
 
-    public Timeout(Thread t, int timeout) {
-        this.t = t;
-        this.timeout = timeout;
-    }
-
+    @Override
     public void run() {
-        try {
-            Thread.sleep(timeout);
-            t.interrupt();
-            return;
-        } catch(InterruptedException e) {
-            return;
+        if(logger != null) {
+            logger.debug("Killing subprocesses");
         }
+        LocalInvoker.killSubProcesses();
     }
 }

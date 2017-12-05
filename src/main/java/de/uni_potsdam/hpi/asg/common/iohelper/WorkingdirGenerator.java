@@ -45,7 +45,7 @@ public class WorkingdirGenerator {
         return instance;
     }
 
-    public File create(File cmdlinedir, String configdir, String defaultsubdir, Invoker invoker) {
+    public File create(File cmdlinedir, String configdir, String defaultsubdir) {
         // Temp dir
         String wdirstr = null;
         if(cmdlinedir != null) {
@@ -62,9 +62,6 @@ public class WorkingdirGenerator {
             workingDir = new File(wdirstr + Integer.toString(tmpnum++) + filesep);
         }
         FileHelper.getInstance().setWorkingdir(workingDir);
-        if(invoker != null) {
-            invoker.setWorkingdir(workingDir);
-        }
         Zipper.getInstance().setWorkingdir(workingDir);
         logger.debug("Tmp dir: " + workingDir.getAbsolutePath());
 

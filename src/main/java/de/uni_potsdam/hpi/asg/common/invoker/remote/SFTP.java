@@ -1,4 +1,4 @@
-package de.uni_potsdam.hpi.asg.common.remote;
+package de.uni_potsdam.hpi.asg.common.invoker.remote;
 
 /*
  * Copyright (C) 2016 Norman Kluge
@@ -30,6 +30,7 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,14 +61,14 @@ public class SFTP {
             channel.connect();
 
             int tmpnum = 0;
-            remoteDir = new File(remoteBaseDir, remoteSubDir + Integer.toString(tmpnum));
+            remoteDir = new File(remoteBaseDir, remoteSubDir + "_" + Integer.toString(tmpnum));
             boolean mkdirsuccess = false;
             while(!mkdirsuccess) {
                 try {
                     channel.mkdir(remoteDir.getAbsolutePath());
                     mkdirsuccess = true;
                 } catch(SftpException e) {
-                    remoteDir = new File(remoteBaseDir, remoteSubDir + Integer.toString(++tmpnum));
+                    remoteDir = new File(remoteBaseDir, remoteSubDir + "_" + Integer.toString(++tmpnum));
                 }
             }
 
@@ -106,8 +107,14 @@ public class SFTP {
         return downloadFiles(localDir, null, removeRemote);
     }
 
-    public boolean downloadFiles(File localDir, Set<String> includeFilenames, boolean removeRemote) {
+    public boolean downloadFiles(File localDir, Set<String> includeFileStarts, boolean removeRemote) {
         try {
+            String[] includeFileStartsArray = null;
+            if(includeFileStarts != null) {
+                includeFileStartsArray = new String[includeFileStarts.size()];
+                includeFileStartsArray = includeFileStarts.toArray(includeFileStartsArray);
+            }
+
             ChannelSftp channel = (ChannelSftp)session.openChannel("sftp");
             channel.connect();
             channel.cd(remoteDir.getAbsolutePath());
@@ -121,8 +128,8 @@ public class SFTP {
             @SuppressWarnings("unchecked")
             Vector<LsEntry> files = (Vector<LsEntry>)channel.ls(".");
             for(LsEntry entry : files) {
-                if(includeFilenames != null) {
-                    if(!includeFilenames.contains(entry.getFilename())) {
+                if(includeFileStarts != null) {
+                    if(!StringUtils.startsWithAny(entry.getFilename(), includeFileStartsArray)) {
                         continue;
                     }
                 }

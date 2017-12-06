@@ -43,6 +43,10 @@ public class CommonConstants {
     public static final File   DEF_BIN_DIR_FILE           = BasedirHelper.replaceBasedirAsFile("$BASEDIR/bin");
     public static final File   DEF_TEMPLATE_DIR_FILE      = BasedirHelper.replaceBasedirAsFile("$BASEDIR/templates");
 
+    // default files
+    public static final String DEF_TOOL_CONFIG_FILE_NAME  = "toolconfig.xml";
+    public static final File   DEF_TOOL_CONFIG_FILE       = new File(CommonConstants.DEF_CONFIG_DIR_FILE, DEF_TOOL_CONFIG_FILE_NAME);
+
     // script files
     public static final String SCRIPT_FILE_EXTENSION      = OperatingSystemHelper.getScriptExtension();
 

@@ -158,6 +158,7 @@ public abstract class ExternalToolsInvoker {
     }
 
     protected boolean errorHandling(InvokeReturn ret, List<Integer> okCodes) {
+        boolean result = true;
         if(ret != null) {
             switch(ret.getStatus()) {
                 case ok:
@@ -167,22 +168,26 @@ public abstract class ExternalToolsInvoker {
                         logger.debug("##########");
                         logger.debug(ret.getOutput());
                         logger.debug("##########");
-                        return false;
+                        result = false;
                     }
+                    result = true;
                     break;
                 case timeout:
                     logger.error("Timeout while executing " + ret.getCmdline());
-                    return false;
+                    result = false;
+                    break;
                 case ioexception:
                 case noio:
                     logger.error("I/O error while executing " + ret.getCmdline());
-                    return false;
+                    result = false;
+                    break;
             }
         } else {
             logger.error("Something went really wrong while executing something. I don't even know what the command line was");
             return false;
         }
-        return true;
+        ret.setResult(result);
+        return result;
     }
 
     private InvokeReturn runRemote(List<String> params, ToolConfig cfg, File localWorkingDir, String subDir, List<File> additionalUploadFiles) {

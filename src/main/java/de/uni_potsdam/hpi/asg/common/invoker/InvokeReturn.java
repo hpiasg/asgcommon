@@ -32,9 +32,9 @@ public class InvokeReturn {
     private int          exitCode;
     private String       output;
 
+    private boolean      result;
     private long         localUserTime;
     private long         localSystemTime;
-
     private long         remoteUserTime;
     private long         remoteSystemTime;
 
@@ -113,5 +113,13 @@ public class InvokeReturn {
 
     public void setRemoteUserTime(long remoteUserTime) {
         this.remoteUserTime = remoteUserTime;
+    }
+
+    public void setResult(boolean result) {
+        this.result = result;
+    }
+
+    public boolean getResult() {
+        return result;
     }
 }

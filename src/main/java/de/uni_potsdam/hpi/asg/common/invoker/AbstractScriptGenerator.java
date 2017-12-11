@@ -58,7 +58,13 @@ public abstract class AbstractScriptGenerator {
         if(templates == null) {
             templates = new HashMap<String, List<String>>();
         }
-        for(File f : CommonConstants.DEF_TEMPLATE_DIR_FILE.listFiles()) {
+        File templateDir = CommonConstants.DEF_TEMPLATE_DIR_FILE;
+        if(!templateDir.exists()) {
+            logger.error("Template dir does not exists (and thus no templates found)");
+            return false;
+        }
+
+        for(File f : templateDir.listFiles()) {
             if(f.isDirectory()) {
                 continue;
             }

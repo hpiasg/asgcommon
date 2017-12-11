@@ -44,7 +44,7 @@ public class ExternalToolsConfigFile {
     public static ExternalToolsConfig readIn(File file) {
         try {
             if(!file.exists()) {
-                logger.error("Setup file not found");
+                logger.error("External tools config file not found");
                 return null;
             }
             JAXBContext jaxbContext = JAXBContext.newInstance(ExternalToolsConfig.class);
@@ -87,5 +87,4 @@ public class ExternalToolsConfigFile {
             return false;
         }
     }
-
 }

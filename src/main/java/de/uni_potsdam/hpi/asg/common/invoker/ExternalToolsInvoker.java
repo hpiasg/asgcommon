@@ -213,7 +213,7 @@ public abstract class ExternalToolsInvoker {
         downloadIncludeFileStarts.addAll(outputFilesToExport.keySet());
 
         // invoke
-        RemoteInvoker inv = new RemoteInvoker(cfg.getRemoteconfig(), subDir, workingDir, removeRemoteDir, timeout);
+        RemoteInvoker inv = new RemoteInvoker(cfg.getRemoteconfig(), subDir, localWorkingDir, removeRemoteDir, timeout);
         InvokeReturn ret = inv.invoke(uploadFiles, cmdline, downloadIncludeFileStarts);
         if(ret == null) {
             return null;

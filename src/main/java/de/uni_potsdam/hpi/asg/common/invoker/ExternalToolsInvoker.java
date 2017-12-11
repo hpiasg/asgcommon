@@ -55,19 +55,10 @@ public abstract class ExternalToolsInvoker {
     private int                        timeout;                          // default: 0 (=off)
     private boolean                    removeRemoteDir;                  // default: true
 
-    protected Set<File>                inputFilesToCopy;
-    protected Map<String, File>        outputFilesToExport;
-    protected Set<String>              outputFilesToCopyStartsWith;
-    protected Set<String>              outputFilesDownloadOnlyStartsWith;
-
-    /* TODO
-     *  
-    protected void addUploadFiles(File... args) {
-        for(File f : args) {
-            uploadFiles.add(f);
-        }
-    }
-     */
+    private Set<File>                  inputFilesToCopy;
+    private Map<String, File>          outputFilesToExport;
+    private Set<String>                outputFilesToCopyStartsWith;
+    private Set<String>                outputFilesDownloadOnlyStartsWith;
 
     public static boolean init(File configFile, boolean tooldebug) {
         if(configFile == null) {
@@ -91,6 +82,34 @@ public abstract class ExternalToolsInvoker {
         outputFilesToExport = new HashMap<>();
         outputFilesToCopyStartsWith = new HashSet<>();
         outputFilesDownloadOnlyStartsWith = new HashSet<>();
+    }
+
+    protected void addInputFilesToCopy(File... args) {
+        for(File f : args) {
+            inputFilesToCopy.add(f);
+        }
+    }
+
+    protected void addOutputFileToExport(String name, File file) {
+        outputFilesToExport.put(name, file);
+    }
+
+    protected void addOutputFilesToExport(File... args) {
+        for(File f : args) {
+            outputFilesToExport.put(f.getName(), f);
+        }
+    }
+
+    protected void addOutputFilesToCopyStartsWith(String... args) {
+        for(String s : args) {
+            outputFilesToCopyStartsWith.add(s);
+        }
+    }
+
+    protected void addOutputFilesDownloadOnlyStartsWith(String... args) {
+        for(String s : args) {
+            outputFilesDownloadOnlyStartsWith.add(s);
+        }
     }
 
     protected InvokeReturn run(List<String> params, String subDir) {

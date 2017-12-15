@@ -153,7 +153,6 @@ public class RemoteInvoker {
     }
 
     private InvokeReturn execute(List<String> cmd) {
-        logger.debug("Running scripts");
         try {
             TimeStat stat = TimeStat.create();
             if(stat == null) {

@@ -183,7 +183,7 @@ public abstract class ExternalToolsInvoker {
                     break;
             }
         } else {
-            logger.error("Something went really wrong while executing something. I don't even know what the command line was");
+//            logger.error("Something went really wrong while executing something. I don't even know what the command line was");
             return false;
         }
         ret.setResult(result);

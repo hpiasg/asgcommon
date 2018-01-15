@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -163,14 +163,16 @@ public abstract class ExternalToolsInvoker {
             switch(ret.getStatus()) {
                 case ok:
                     if(!okCodes.contains(ret.getExitCode())) {
-                        logger.error("An error was reported while executing " + ret.getCmdline());
-                        logger.debug("Exit code: " + ret.getExitCode() + " Output:");
                         logger.debug("##########");
+                        List<String> actualCommand = (ret.getCmdline().size() >= 6) ? ret.getCmdline().subList(5, ret.getCmdline().size()) : ret.getCmdline();
+                        logger.error("An error was reported while executing " + actualCommand.toString().replace("\n", ""));
+                        logger.debug("Exit code: " + ret.getExitCode() + " Output:");
                         logger.debug(ret.getOutput());
                         logger.debug("##########");
                         result = false;
+                    } else {
+                        result = true;
                     }
-                    result = true;
                     break;
                 case timeout:
                     logger.error("Timeout while executing " + ret.getCmdline());

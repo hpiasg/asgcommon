@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stggraph;
 
 /*
- * Copyright (C) 2014 - 2016 Norman Kluge
+ * Copyright (C) 2014 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -45,6 +45,8 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
 
     private static final long     showThreshold = 100;
 
+    private static int            tmpPlaceId    = 0;
+
     private Class<T>              tclass;
 
     protected STG                 stg;
@@ -83,6 +85,8 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         pool.setMaxTotal(-1);
         numsteps = 0;
 
+        checkTransitionsOutgoingPlaces();
+
         List<Place> marking = new ArrayList<Place>();
         marking.addAll(stg.getInitMarking());
         init = getNewSteps(marking, newSteps, null, null, prefillStates);
@@ -109,6 +113,15 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         logger.debug("Pool: " + pool.getCreatedCount() + " // Steps: " + numsteps);
 
         return true;
+    }
+
+    private void checkTransitionsOutgoingPlaces() {
+        for(Transition t : stg.getTransitions()) {
+            if(t.getPostset().isEmpty()) {
+                Place p = stg.getPlaceOrAdd("tmpOutP_" + (tmpPlaceId++));
+                t.addPostPlace(p);
+            }
+        }
     }
 
     private void fire(List<Place> marking, Transition fireTrans) {

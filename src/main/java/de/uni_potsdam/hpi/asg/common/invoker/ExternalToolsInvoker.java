@@ -69,6 +69,7 @@ public abstract class ExternalToolsInvoker {
         if(config == null) {
             return false;
         }
+        ExternalToolsInvoker.tooldebug = tooldebug;
 
         return true;
     }

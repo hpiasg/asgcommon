@@ -41,11 +41,12 @@ import de.uni_potsdam.hpi.asg.common.stggraph.AbstractState.Value;
 import gnu.trove.map.hash.THashMap;
 
 public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
-    private static final Logger   logger        = LogManager.getLogger();
+    private static final Logger   logger                       = LogManager.getLogger();
 
-    private static final long     showThreshold = 100;
+    private static final long     showThreshold                = 100;
 
-    private static int            tmpPlaceId    = 0;
+    private int                   tmpPlaceId                   = 0;
+    protected boolean             insertPlacesIntoEmptyPostset = false;
 
     private Class<T>              tclass;
 
@@ -85,7 +86,9 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         pool.setMaxTotal(-1);
         numsteps = 0;
 
-        checkTransitionsOutgoingPlaces();
+        if(insertPlacesIntoEmptyPostset) {
+            insertPlacesIntoEmptyPostset();
+        }
 
         List<Place> marking = new ArrayList<Place>();
         marking.addAll(stg.getInitMarking());
@@ -115,9 +118,10 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         return true;
     }
 
-    private void checkTransitionsOutgoingPlaces() {
+    private void insertPlacesIntoEmptyPostset() {
         for(Transition t : stg.getTransitions()) {
             if(t.getPostset().isEmpty()) {
+                logger.warn("Postset of " + t.toString() + " is empty. Inserting place");
                 Place p = stg.getPlaceOrAdd("tmpOutP_" + (tmpPlaceId++));
                 t.addPostPlace(p);
             }

@@ -137,27 +137,27 @@ public class HSComponentInst extends ComponentInst implements Comparable<HSCompo
         }
         switch(xmlchan.getType()) {
             case control_in:
+            case arbA_in:
+            case arbB_in:
+            case index_in: // actually it's data
                 controlIn.add(chan);
                 break;
             case control_out:
+            case arbA_out:
+            case arbB_out:
+            case extension_out: // actually it's data
                 controlOut.add(chan);
                 break;
             case data_in:
             case dataA_in:
             case dataB_in:
-            case decision_in:
-            case index_in:
-            case arbA_in:
-            case arbB_in:
+            case decision_in: // actually it's control
                 dataIn.add(chan);
                 break;
             case data_out:
-            case decision_out:
-            case arbA_out:
-            case arbB_out:
             case dataA_out:
             case dataB_out:
-            case extension_out:
+            case decision_out: // actually it's control
                 dataOut.add(chan);
                 break;
             default:

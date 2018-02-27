@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.config;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -43,7 +43,12 @@ public class ExternalToolsConfig {
 
     private Map<String, ToolConfig> toolsMap;
 
-    private ExternalToolsConfig() {
+    public ExternalToolsConfig(List<ToolConfig> tools, List<RemoteConfig> remoteconfigs) {
+        this.tools = tools;
+        this.remoteconfigs = remoteconfigs;
+    }
+
+    protected ExternalToolsConfig() {
     }
 
     public ToolConfig getToolConfig(String name) {

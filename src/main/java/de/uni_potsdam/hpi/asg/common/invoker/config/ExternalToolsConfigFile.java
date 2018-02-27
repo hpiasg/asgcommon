@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.config;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -71,9 +71,9 @@ public class ExternalToolsConfigFile {
         }
     }
 
-    public static boolean writeOut(ExternalToolsConfig cfg, String filename) {
+    public static boolean writeOut(ExternalToolsConfig cfg, File file) {
         try {
-            Writer fw = new FileWriter(filename);
+            Writer fw = new FileWriter(file);
             JAXBContext context = JAXBContext.newInstance(ExternalToolsConfig.class);
             Marshaller m = context.createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);

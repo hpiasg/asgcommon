@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.config;
 
 /*
- * Copyright (C) 2016 - 2017 Norman Kluge
+ * Copyright (C) 2016 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -43,7 +43,16 @@ public class RemoteConfig {
     private String workingdir;
     //@formatter:on
 
-    private RemoteConfig() {
+    public RemoteConfig(String id, String hostname, int port, String username, String password, String workingdir) {
+        this.id = id;
+        this.hostname = hostname;
+        this.port = port;
+        this.username = username;
+        this.password = password;
+        this.workingdir = workingdir;
+    }
+
+    protected RemoteConfig() {
     }
 
     public String getHostname() {

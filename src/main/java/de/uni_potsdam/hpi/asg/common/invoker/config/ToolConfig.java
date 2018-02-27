@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.config;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -37,7 +37,13 @@ public class ToolConfig {
     private RemoteConfig remoteconfig;
     //@formatter:on
 
-    private ToolConfig() {
+    public ToolConfig(String name, String cmdline, RemoteConfig remoteConfig) {
+        this.name = name;
+        this.cmdline = cmdline;
+        this.remoteconfig = remoteConfig;
+    }
+
+    protected ToolConfig() {
     }
 
     public String getName() {

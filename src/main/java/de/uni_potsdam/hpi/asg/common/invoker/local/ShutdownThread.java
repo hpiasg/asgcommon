@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -21,6 +21,8 @@ package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configurator;
 
 public class ShutdownThread extends Thread {
     private final static Logger logger = LogManager.getLogger();
@@ -31,5 +33,6 @@ public class ShutdownThread extends Thread {
             logger.debug("Killing subprocesses");
         }
         LocalInvoker.killSubProcesses();
+        Configurator.shutdown((LoggerContext)LogManager.getContext());
     }
 }

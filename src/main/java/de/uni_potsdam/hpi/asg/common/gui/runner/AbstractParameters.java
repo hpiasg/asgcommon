@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.gui.runner;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -37,7 +37,7 @@ public abstract class AbstractParameters {
 
     //@formatter:off
     public enum GeneralTextParam implements AbstractTextParam {
-        /*general*/ OutDir, OutFile, CfgFile, WorkingDir, LogFile, TempFiles
+        /*general*/ OutDir, OutFile, CfgFile, ToolCfgFile, WorkingDir, LogFile, TempFiles
     }
 
     public enum GeneralBooleanParam implements AbstractBooleanParam {

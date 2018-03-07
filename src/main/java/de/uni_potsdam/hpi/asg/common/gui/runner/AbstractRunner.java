@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.gui.runner;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -103,6 +103,12 @@ public abstract class AbstractRunner {
         if(cfgFile != null) {
             cmd.add("-cfg");
             cmd.add(cfgFile);
+        }
+
+        String toolCfgFile = params.getTextValue(GeneralTextParam.ToolCfgFile);
+        if(toolCfgFile != null) {
+            cmd.add("-toolcfg");
+            cmd.add(toolCfgFile);
         }
 
         String workDir = params.getTextValue(GeneralTextParam.WorkingDir);

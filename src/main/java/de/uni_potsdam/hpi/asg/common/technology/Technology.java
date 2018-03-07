@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -149,10 +149,16 @@ public class Technology implements Serializable {
     }
 
     public File getAdditionalInfoFile() {
+        if(additionalInfo == null) {
+            return null;
+        }
         return new File(folder, additionalInfo);
     }
 
     public File getLibertyFile() {
+        if(liberty == null) {
+            return null;
+        }
         return new File(folder, liberty);
     }
 }

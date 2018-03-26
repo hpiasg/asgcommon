@@ -32,11 +32,34 @@ import de.uni_potsdam.hpi.asg.common.stg.model.Transition;
 
 public class STGCopy {
 
-    public static STG getCopy(STG inStg) {
+    private STG                 inStg;
+    private STG                 outStg;
+
+    private Map<Signal, Signal> signalMap;
+    Map<Transition, Transition> transitionMap;
+    Map<Place, Place>           placeMap;
+
+    public STGCopy(STG inStg) {
+        this.inStg = inStg;
+    }
+
+    /**
+     * 
+     * @return a copy of the original STG (A single copy. Multiple calls will
+     *         result the same STG)
+     */
+    public STG getCopy() {
+        if(outStg == null) {
+            outStg = internalGetCopy();
+        }
+        return outStg;
+    }
+
+    private STG internalGetCopy() {
         STG outStg = new STG(inStg.getFile());
 
         // Signals
-        Map<Signal, Signal> signalMap = new HashMap<>();
+        signalMap = new HashMap<>();
         for(Signal inSig : inStg.getSignals()) {
             outStg.addSignal(inSig.getName(), inSig.getType());
             Signal outSig = outStg.getSignal(inSig.getName());
@@ -44,7 +67,7 @@ public class STGCopy {
         }
 
         // Transitions
-        Map<Transition, Transition> transitionMap = new HashMap<>();
+        transitionMap = new HashMap<>();
         for(Transition inTrans : inStg.getTransitions()) {
             Signal outSig = signalMap.get(inTrans.getSignal());
             Transition outTrans = outStg.getTransitionOrAdd(outSig.getName(), inTrans.getEdge(), inTrans.getId());
@@ -52,7 +75,7 @@ public class STGCopy {
         }
 
         // Places
-        Map<Place, Place> placeMap = new HashMap<>();
+        placeMap = new HashMap<>();
         for(Entry<String, Place> inPlaceEntry : inStg.getPlaces().entrySet()) {
             Place inPlace = inPlaceEntry.getValue();
             Place outPlace = outStg.getPlaceOrAdd(inPlace.getId());
@@ -78,5 +101,17 @@ public class STGCopy {
         outStg.setInitMarking(outInitMarking);
 
         return outStg;
+    }
+
+    public Map<Signal, Signal> getSignalMap() {
+        return signalMap;
+    }
+
+    public Map<Transition, Transition> getTransitionMap() {
+        return transitionMap;
+    }
+
+    public Map<Place, Place> getPlaceMap() {
+        return placeMap;
     }
 }

@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2015 Norman Kluge
+ * Copyright (C) 2014 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -59,10 +59,6 @@ public class Place {
         if(id.startsWith("tmp")) {
             return "<" + this.preset.get(0) + "," + this.postset.get(0) + ">";
         }
-        return id;
-    }
-
-    public String outputForGFile() {
         return id;
     }
 }

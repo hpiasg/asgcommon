@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg;
 
 /*
- * Copyright (C) 2014 - 2016 Norman Kluge
+ * Copyright (C) 2014 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -474,16 +474,16 @@ public class GFile {
             if(!entry.getValue().getPostset().isEmpty()) {
                 text.append(entry.getKey());
                 for(Transition t : entry.getValue().getPostset()) {
-                    text.append(" " + t.outputForGFile());
+                    text.append(" " + transitionToString(t));
                 }
                 text.append(newline);
             }
         }
         for(Transition t : stg.getTransitions()) {
             if(!t.getPostset().isEmpty()) {
-                text.append(t.outputForGFile());
+                text.append(transitionToString(t));
                 for(Place p : t.getPostset()) {
-                    text.append(" " + p.outputForGFile());
+                    text.append(" " + placeToString(p));
                 }
                 text.append(newline);
             }
@@ -491,11 +491,25 @@ public class GFile {
         text.append(newline);
         text.append(".marking { ");
         for(Place p : stg.getInitMarking()) {
-            text.append(p.outputForGFile() + " ");
+            text.append(placeToString(p) + " ");
         }
         text.append("}" + newline);
         text.append(".end");
 
         return FileHelper.getInstance().writeFile(file, text.toString());
+    }
+
+    private static String placeToString(Place p) {
+        return p.getId();
+    }
+
+    private static String transitionToString(Transition t) {
+        Signal signal = t.getSignal();
+        int id = t.getId();
+        Edge edge = t.getEdge();
+        if(signal.getType() == SignalType.dummy) {
+            return signal.toString() + ((id != 0) ? "/" + id : "");
+        }
+        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((id != 0) ? "/" + id : "");
     }
 }

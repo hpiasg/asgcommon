@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2015 Norman Kluge
+ * Copyright (C) 2014 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -100,12 +100,5 @@ public class Transition implements Comparable<Transition> {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String outputForGFile() {
-        if(signal.getType() == SignalType.dummy) {
-            return signal.toString() + ((id != 0) ? "/" + id : "");
-        }
-        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((id != 0) ? "/" + id : "");
     }
 }

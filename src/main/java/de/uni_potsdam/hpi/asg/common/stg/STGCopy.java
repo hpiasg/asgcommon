@@ -20,10 +20,11 @@ package de.uni_potsdam.hpi.asg.common.stg;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 import de.uni_potsdam.hpi.asg.common.stg.model.Place;
 import de.uni_potsdam.hpi.asg.common.stg.model.STG;
@@ -32,12 +33,12 @@ import de.uni_potsdam.hpi.asg.common.stg.model.Transition;
 
 public class STGCopy {
 
-    private STG                 inStg;
-    private STG                 outStg;
+    private STG                           inStg;
+    private STG                           outStg;
 
-    private Map<Signal, Signal> signalMap;
-    Map<Transition, Transition> transitionMap;
-    Map<Place, Place>           placeMap;
+    private BiMap<Signal, Signal>         signalMap;
+    private BiMap<Transition, Transition> transitionMap;
+    private BiMap<Place, Place>           placeMap;
 
     public STGCopy(STG inStg) {
         this.inStg = inStg;
@@ -46,7 +47,7 @@ public class STGCopy {
     /**
      * 
      * @return a copy of the original STG (A single copy. Multiple calls will
-     *         result the same STG)
+     *         yield the same STG)
      */
     public STG getCopy() {
         if(outStg == null) {
@@ -59,7 +60,7 @@ public class STGCopy {
         STG outStg = new STG(inStg.getFile());
 
         // Signals
-        signalMap = new HashMap<>();
+        signalMap = HashBiMap.create();
         for(Signal inSig : inStg.getSignals()) {
             outStg.addSignal(inSig.getName(), inSig.getType());
             Signal outSig = outStg.getSignal(inSig.getName());
@@ -67,7 +68,7 @@ public class STGCopy {
         }
 
         // Transitions
-        transitionMap = new HashMap<>();
+        transitionMap = HashBiMap.create();
         for(Transition inTrans : inStg.getTransitions()) {
             Signal outSig = signalMap.get(inTrans.getSignal());
             Transition outTrans = outStg.getTransitionOrAdd(outSig.getName(), inTrans.getEdge(), inTrans.getId());
@@ -75,7 +76,7 @@ public class STGCopy {
         }
 
         // Places
-        placeMap = new HashMap<>();
+        placeMap = HashBiMap.create();
         for(Entry<String, Place> inPlaceEntry : inStg.getPlaces().entrySet()) {
             Place inPlace = inPlaceEntry.getValue();
             Place outPlace = outStg.getPlaceOrAdd(inPlace.getId());
@@ -103,15 +104,15 @@ public class STGCopy {
         return outStg;
     }
 
-    public Map<Signal, Signal> getSignalMap() {
+    public BiMap<Signal, Signal> getSignalMap() {
         return signalMap;
     }
 
-    public Map<Transition, Transition> getTransitionMap() {
+    public BiMap<Transition, Transition> getTransitionMap() {
         return transitionMap;
     }
 
-    public Map<Place, Place> getPlaceMap() {
+    public BiMap<Place, Place> getPlaceMap() {
         return placeMap;
     }
 }

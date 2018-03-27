@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2015 Norman Kluge
+ * Copyright (C) 2014 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -72,6 +72,12 @@ public class Signal implements Comparable<Signal> {
         this.type = type;
     }
 
+    /**
+     * Should only be called by STG class. Use
+     * {@link STG#changeSignalName(Signal, String)} instead
+     * 
+     * @param name
+     */
     public void changeName(String name) {
         this.name = name;
     }

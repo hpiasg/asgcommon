@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2015 Norman Kluge
+ * Copyright (C) 2014 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -49,6 +49,12 @@ public class STG {
     public void addSignal(String name, SignalType type) {
         Signal sig = new Signal(name, type);
         signals.put(name, sig);
+    }
+
+    public void changeSignalName(Signal sig, String newName) {
+        this.signals.remove(sig.getName());
+        sig.changeName(newName);
+        this.signals.put(newName, sig);
     }
 
     public Place getPlace(String str) {

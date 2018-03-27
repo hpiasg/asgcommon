@@ -61,4 +61,8 @@ public class Place {
         }
         return id;
     }
+
+    public boolean isMarkedGraphPlace() {
+        return preset.size() == 1 && postset.size() == 1;
+    }
 }

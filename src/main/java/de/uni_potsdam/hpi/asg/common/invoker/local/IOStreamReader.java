@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -31,7 +31,8 @@ public class IOStreamReader implements Runnable {
     private final static Logger logger = LogManager.getLogger();
 
     private Process             p;
-    private String              result;
+    private String              outResult;
+    private String              errResult;
     private boolean             debug;
 
     public IOStreamReader(Process p) {
@@ -46,7 +47,28 @@ public class IOStreamReader implements Runnable {
 
     @Override
     public void run() {
-        result = getOutAndErrStream();
+        if(p != null) {
+            StringBuffer outStream = new StringBuffer();
+            StringBuffer errStream = new StringBuffer();
+            Thread tout = new Thread(new InnerReader(p.getInputStream(), outStream));
+            Thread terr = new Thread(new InnerReader(p.getErrorStream(), errStream));
+            tout.start();
+            terr.start();
+            try {
+                tout.join();
+                terr.join();
+            } catch(InterruptedException e) {
+                return;
+            }
+            if(outStream.length() > 0) {
+                outStream = outStream.deleteCharAt(outStream.length() - 1);
+            }
+            outResult = outStream.toString();
+            if(errStream.length() > 0) {
+                errStream = errStream.deleteCharAt(errStream.length() - 1);
+            }
+            errResult = errStream.toString();
+        }
     }
 
     private class InnerReader implements Runnable {
@@ -82,29 +104,11 @@ public class IOStreamReader implements Runnable {
         }
     }
 
-    private String getOutAndErrStream() {
-        if(p != null) {
-            StringBuffer out = new StringBuffer();
-            Thread tout = new Thread(new InnerReader(p.getInputStream(), out));
-            Thread terr = new Thread(new InnerReader(p.getErrorStream(), out));
-            tout.start();
-            terr.start();
-            try {
-                tout.join();
-                terr.join();
-            } catch(InterruptedException e) {
-                return null;
-            }
-            if(out.length() > 0) {
-                out = out.deleteCharAt(out.length() - 1);
-            }
-            return out.toString();
-        }
-        return null;
+    public String getErrResult() {
+        return errResult;
     }
 
-    public String getResult() {
-        return result;
+    public String getOutResult() {
+        return outResult;
     }
-
 }

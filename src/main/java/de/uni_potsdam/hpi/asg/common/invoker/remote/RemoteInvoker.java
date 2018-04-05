@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.remote;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,6 +19,7 @@ package de.uni_potsdam.hpi.asg.common.invoker.remote;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,6 +55,7 @@ public class RemoteInvoker {
     private String              remoteSubDir;
     private File                localDir;
     private boolean             removeRemoteDir;
+    private TimeStat            stat;
 
     public RemoteInvoker(RemoteConfig rinfo, String remoteSubDir, File localDir, boolean removeRemoteDir, int timeout) {
         this.rinfo = rinfo;
@@ -83,6 +85,11 @@ public class RemoteInvoker {
                 logger.error("Uploading files failed");
                 return ret;
             }
+            stat = TimeStat.create(localDir);
+            downloadIncludeFileStarts.add(stat.getFile().getName());
+            if(stat == null) {
+                return null;
+            }
             ret = execute(command);
             if(ret == null) {
                 logger.error("Executing scripts failed");
@@ -96,6 +103,11 @@ public class RemoteInvoker {
                 logger.error("Downloading files failed");
                 return ret;
             }
+            if(!evalStat(ret)) {
+                logger.error("Time Stat failed");
+                return ret;
+            }
+
         } catch(InterruptedException e) {
             return ret;
         } finally {
@@ -105,6 +117,15 @@ public class RemoteInvoker {
         }
 
         return ret;
+    }
+
+    private boolean evalStat(InvokeReturn ret) {
+        if(!stat.evaluate()) {
+            return false;
+        }
+        ret.setRemoteUserTime(stat.getUserTime());
+        ret.setRemoteSystemTime(stat.getSystemTime());
+        return true;
     }
 
     private boolean connect() {
@@ -154,14 +175,9 @@ public class RemoteInvoker {
 
     private InvokeReturn execute(List<String> cmd) {
         try {
-            TimeStat stat = TimeStat.create();
-            if(stat == null) {
-                return null;
-            }
-
             StringBuilder command = new StringBuilder();
             command.append("cd " + sftpcon.getRemoteDir().getAbsolutePath() + ";");
-            command.append(stat.getRemoteCmdStr() + " ");
+            command.append(stat.getCmdStr() + " ");
             for(String str : cmd) {
                 command.append(str + " ");
             }
@@ -170,12 +186,11 @@ public class RemoteInvoker {
             ChannelExec channel = (ChannelExec)session.openChannel("exec");
             channel.setCommand(command.toString());
 
-            OutputStream out = stat.getStream();
-            if(out == null) {
-                return null;
-            }
-            channel.setOutputStream(out);
-            channel.setErrStream(out);
+            OutputStream outStream = new ByteArrayOutputStream();
+            OutputStream errStream = new ByteArrayOutputStream();
+
+            channel.setOutputStream(outStream);
+            channel.setErrStream(errStream);
 
             int x = 0;
             channel.connect();
@@ -190,19 +205,11 @@ public class RemoteInvoker {
 
             channel.disconnect();
 
-            long userTime = 0;
-            long systemTime = 0;
-            if(stat.evaluate()) {
-                userTime = stat.getUserTime();
-                systemTime = stat.getSystemTime();
-            }
-
             InvokeReturn ret = new InvokeReturn(cmd);
             ret.setStatus(Status.ok);
             ret.setExitCode(channel.getExitStatus());
-            ret.setOutput(out.toString());
-            ret.setRemoteUserTime(userTime);
-            ret.setRemoteSystemTime(systemTime);
+            ret.setOutputStr(outStream.toString()); //TODO
+            ret.setErrorStr(errStream.toString());
 
             return ret;
         } catch(JSchException e) {

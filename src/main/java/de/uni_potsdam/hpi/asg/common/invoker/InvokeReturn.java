@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -30,7 +30,8 @@ public class InvokeReturn {
     private Status       status;
     private List<String> cmdline;
     private int          exitCode;
-    private String       output;
+    private String       outputStr;
+    private String       errorStr;
 
     private boolean      result;
     private long         localUserTime;
@@ -75,14 +76,6 @@ public class InvokeReturn {
         return status;
     }
 
-    public void setOutput(String output) {
-        this.output = output;
-    }
-
-    public String getOutput() {
-        return output;
-    }
-
     public long getLocalSystemTime() {
         return localSystemTime;
     }
@@ -121,5 +114,21 @@ public class InvokeReturn {
 
     public boolean getResult() {
         return result;
+    }
+
+    public String getErrorStr() {
+        return errorStr;
+    }
+
+    public String getOutputStr() {
+        return outputStr;
+    }
+
+    public void setErrorStr(String errorStr) {
+        this.errorStr = errorStr;
+    }
+
+    public void setOutputStr(String outputStr) {
+        this.outputStr = outputStr;
     }
 }

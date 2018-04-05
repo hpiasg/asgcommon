@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -53,11 +53,11 @@ public class LocalInvoker {
     }
 
     public InvokeReturn invoke(List<String> command) {
-        TimeStat stat = TimeStat.create();
+        TimeStat stat = TimeStat.create(workingDir);
         if(stat == null) {
             return null;
         }
-        command.addAll(0, stat.getLocalCmd());
+        command.addAll(0, stat.getCmd());
         InvokeReturn ret = run(command);
         if(!stat.evaluate()) {
             return null;
@@ -67,7 +67,7 @@ public class LocalInvoker {
         return ret;
     }
 
-    public InvokeReturn run(List<String> command) {
+    private InvokeReturn run(List<String> command) {
         InvokeReturn retVal = new InvokeReturn(command);
         Process process = null;
         try {
@@ -93,14 +93,16 @@ public class LocalInvoker {
             if(timeoutThread != null) {
                 timeoutThread.interrupt();
             }
-            String out = ioreader.getResult();
+            String out = ioreader.getOutResult();
+            String err = ioreader.getErrResult();
             //System.out.println(out);
             if(out == null) {
                 //System.out.println("out = null");
                 retVal.setStatus(Status.noio);
             }
             retVal.setExitCode(process.exitValue());
-            retVal.setOutput(out);
+            retVal.setOutputStr(out);
+            retVal.setErrorStr(err);
             retVal.setStatus(Status.ok);
         } catch(InterruptedException e) {
             process.destroy();

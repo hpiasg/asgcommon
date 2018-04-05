@@ -36,6 +36,7 @@ public class STGCopy {
     private STG                           inStg;
     private STG                           outStg;
 
+    // orig -> new
     private BiMap<Signal, Signal>         signalMap;
     private BiMap<Transition, Transition> transitionMap;
     private BiMap<Place, Place>           placeMap;

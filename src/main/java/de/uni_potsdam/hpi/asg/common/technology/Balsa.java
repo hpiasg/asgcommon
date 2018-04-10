@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -29,21 +29,14 @@ import javax.xml.bind.annotation.XmlElement;
 public class Balsa implements Serializable {
     private static final long serialVersionUID = -7729551903207056828L;
 
-    @XmlElement(name = "style")
-    private String            style;
     @XmlElement(name = "tech")
     private String            tech;
 
     protected Balsa() {
     }
 
-    public Balsa(String style, String tech) {
-        this.style = style;
+    public Balsa(String tech) {
         this.tech = tech;
-    }
-
-    public String getStyle() {
-        return style;
     }
 
     public String getTech() {

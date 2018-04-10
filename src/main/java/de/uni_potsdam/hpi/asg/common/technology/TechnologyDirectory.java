@@ -77,8 +77,8 @@ public class TechnologyDirectory {
         return techs;
     }
 
-    public Technology createTechnology(String name, File balsafolder, String style, File genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl, File libertyfile, File additionalInfoFile) {
-        Balsa balsa = new Balsa(style, name);
+    public Technology createTechnology(String name, File balsafolder, File genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl, File libertyfile, File additionalInfoFile) {
+        Balsa balsa = new Balsa(name);
         File targetdir = new File(balsaTechDir, name);
         targetdir.mkdirs();
         try {
@@ -199,7 +199,6 @@ public class TechnologyDirectory {
 
         File balsaSourceFolder = new File(srcDir, srcTech.getBalsa().getTech());
         File balsafolder = balsaSourceFolder;
-        String style = srcTech.getBalsa().getStyle();
 
         File genlibfile = srcTech.getGenLib();
 
@@ -212,7 +211,7 @@ public class TechnologyDirectory {
         File libertyfile = srcTech.getLibertyFile();
         File addInfoFile = srcTech.getAdditionalInfoFile();
 
-        return createTechnology(name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl, libertyfile, addInfoFile);
+        return createTechnology(name, balsafolder, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl, libertyfile, addInfoFile);
     }
 
     public void exportTechnology(String name, File dstDir) {

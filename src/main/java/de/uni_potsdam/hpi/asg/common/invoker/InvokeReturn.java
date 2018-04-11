@@ -29,6 +29,7 @@ public class InvokeReturn {
 
     private Status       status;
     private List<String> cmdline;
+    private String       workingDir;
     private int          exitCode;
     private String       outputStr;
     private String       errorStr;
@@ -130,5 +131,13 @@ public class InvokeReturn {
 
     public void setOutputStr(String outputStr) {
         this.outputStr = outputStr;
+    }
+
+    public String getWorkingDir() {
+        return workingDir;
+    }
+
+    public void setWorkingDir(String workingDir) {
+        this.workingDir = workingDir;
     }
 }

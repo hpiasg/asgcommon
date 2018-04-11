@@ -69,6 +69,7 @@ public class LocalInvoker {
 
     private InvokeReturn run(List<String> command) {
         InvokeReturn retVal = new InvokeReturn(command);
+        retVal.setWorkingDir(workingDir.getAbsolutePath());
         Process process = null;
         try {
             logger.debug("Exec command: " + command.toString().replace("\n", ""));

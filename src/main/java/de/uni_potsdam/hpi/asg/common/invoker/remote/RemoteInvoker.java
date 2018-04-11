@@ -95,6 +95,7 @@ public class RemoteInvoker {
                 logger.error("Executing scripts failed");
                 return ret;
             }
+            ret.setWorkingDir(localDir.getAbsolutePath());
             if(ret.getStatus() != Status.ok) {
                 logger.error("Executing scripts failed 2");
                 return ret;

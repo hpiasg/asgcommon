@@ -147,9 +147,11 @@ public abstract class ExternalToolsInvoker {
 
         if(cfg.getRemoteconfig() == null) {
             //local
+            logger.info("Running external tool '" + cmdType + "' locally");
             return runLocal(params, cfg, localWorkingDir);
         } else {
             //remote
+            logger.info("Running external tool '" + cmdType + "' remotely");
             return runRemote(params, cfg, localWorkingDir, subDir, additionalUploadFiles);
         }
     }
@@ -167,6 +169,7 @@ public abstract class ExternalToolsInvoker {
                         logger.debug("##########");
                         List<String> actualCommand = (ret.getCmdline().size() >= 6) ? ret.getCmdline().subList(5, ret.getCmdline().size()) : ret.getCmdline();
                         logger.error("An error was reported while executing " + actualCommand.toString().replace("\n", ""));
+                        logger.debug("Local dir: " + ret.getWorkingDir());
                         logger.debug("Exit code: " + ret.getExitCode());
                         logger.debug("Out: " + ret.getOutputStr());
                         logger.debug("Err: " + ret.getErrorStr());

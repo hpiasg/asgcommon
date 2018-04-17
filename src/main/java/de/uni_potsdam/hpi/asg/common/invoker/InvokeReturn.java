@@ -34,6 +34,8 @@ public class InvokeReturn {
     private String       outputStr;
     private String       errorStr;
 
+    private Object       payload;
+
     private boolean      result;
     private long         localUserTime;
     private long         localSystemTime;
@@ -139,5 +141,13 @@ public class InvokeReturn {
 
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
+    }
+
+    public Object getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Object payload) {
+        this.payload = payload;
     }
 }

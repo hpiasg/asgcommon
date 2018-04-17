@@ -48,17 +48,17 @@ public class Technology implements Serializable {
 
     //@formatter:off
     
-    @XmlAttribute(name = "name")
+    @XmlAttribute(name = "name", required = true)
     private String name;
-    @XmlElement(name = "balsa")
+    @XmlElement(name = "balsa", required = true)
     private Balsa balsa;
-    @XmlElement(name = "genlib")
+    @XmlElement(name = "genlib", required = true)
     private Genlib genlib;
-    @XmlElement(name = "liberty")
+    @XmlElement(name = "liberty", required = true)
     private String liberty;
     @XmlElement(name = "addInfo")
     private String additionalInfo;
-    @XmlElement(name = "synctool")
+    @XmlElement(name = "synctool", required = true)
     private SyncTool synctool;
     
     private File folder;

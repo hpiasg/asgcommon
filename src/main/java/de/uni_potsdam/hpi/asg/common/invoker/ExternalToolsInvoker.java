@@ -123,9 +123,9 @@ public abstract class ExternalToolsInvoker {
             return null;
         }
 
-        ToolConfig cfg = config.getToolConfig(cmdType);
+        ToolConfig cfg = config.getToolConfig(cmd);
         if(cfg == null) {
-            logger.error("Config for tool '" + cmdType + "' not found");
+            logger.error("Config for tool '" + cmd + "' not found");
             return null;
         }
         return cfg;

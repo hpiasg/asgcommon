@@ -37,6 +37,7 @@ public class InvokeReturn {
     private Object       payload;
 
     private boolean      result;
+    private String       errorMsg;
     private long         localUserTime;
     private long         localSystemTime;
     private long         remoteUserTime;
@@ -149,5 +150,13 @@ public class InvokeReturn {
 
     public void setPayload(Object payload) {
         this.payload = payload;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
     }
 }

@@ -161,4 +161,8 @@ public class Technology implements Serializable {
         }
         return new File(folder, liberty);
     }
+
+    public void setFolder(File folder) {
+        this.folder = folder;
+    }
 }

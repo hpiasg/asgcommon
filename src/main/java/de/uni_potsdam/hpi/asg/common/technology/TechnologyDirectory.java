@@ -128,6 +128,8 @@ public class TechnologyDirectory {
             logger.error("Error while creating technology file");
             return null;
         }
+        tech.setFolder(dir);
+
         this.techs.put(name, tech);
 
         return tech;

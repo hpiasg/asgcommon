@@ -196,7 +196,8 @@ public class TechnologyDirectory {
         String name = srcTech.getName();
 
         if(techs.containsKey(name)) {
-            return null;
+            // already present. reimport
+            deleteTechnology(name);
         }
 
         File balsaSourceFolder = new File(srcDir, srcTech.getBalsa().getTech());

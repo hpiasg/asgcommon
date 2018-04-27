@@ -177,7 +177,7 @@ public class RemoteInvoker {
     private InvokeReturn execute(List<String> cmd) {
         try {
             StringBuilder command = new StringBuilder();
-            command.append("cd " + sftpcon.getRemoteDir().getAbsolutePath() + ";");
+            command.append("cd " + sftpcon.getRemoteDir().getAbsolutePath() + "; ");
             command.append(stat.getCmdStr() + " ");
             for(String str : cmd) {
                 command.append(str + " ");

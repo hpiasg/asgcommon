@@ -31,6 +31,18 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
         </channels>
     </component>
     
+    <component breezename="BrzBar" symbol="[]">
+        <parameters>
+            <parameter id="0" type="input_count" />
+        </parameters>
+        <channels>
+            <channel id="0" type="data_out" porttype="passive" />
+            <channel id="1" type="control_in" porttype="passive" />
+            <channel id="2" type="data_in" porttype="active" />
+            <channel id="3" type="control_out" porttype="active" />
+        </channels>
+    </component>
+    
     <component breezename="BrzCallMux" symbol="&gt;--&gt;">
         <parameters>
             <parameter id="0" type="width" />

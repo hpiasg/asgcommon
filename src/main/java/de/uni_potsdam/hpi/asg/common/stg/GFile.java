@@ -508,7 +508,7 @@ public class GFile {
         int id = t.getId();
         Edge edge = t.getEdge();
         if(signal.getType() == SignalType.dummy) {
-            return signal.toString() + ((id != 0) ? "/" + id : "");
+            return signal.toString() + "/" + t.getDummyId();
         }
         return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((id != 0) ? "/" + id : "");
     }

@@ -30,15 +30,17 @@ public class Transition implements Comparable<Transition> {
         rising, falling
     }
 
-    private int         id;
+    private int         id;      // unique per signal and edge
+    private int         dummyId; // unique per signal: used if signal gets dummified (otherwise former x+/1 and x-/1 would get merged in gfile export)
     private Edge        edge;
     private Signal      signal;
 
     private List<Place> postset;
     private List<Place> preset;
 
-    public Transition(int id, Signal signal, Edge edge) {
+    public Transition(int id, int dummyId, Signal signal, Edge edge) {
         this.id = id;
+        this.dummyId = dummyId;
         this.signal = signal;
         this.edge = edge;
         this.preset = new ArrayList<Place>(1);
@@ -100,5 +102,9 @@ public class Transition implements Comparable<Transition> {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getDummyId() {
+        return dummyId;
     }
 }

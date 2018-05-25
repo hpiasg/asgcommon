@@ -103,7 +103,7 @@ public class STG {
             }
             if(trans == null) {
                 if(add) {
-                    trans = new Transition(id, sig, edge);
+                    trans = new Transition(id, sig.getNextDummyId(), sig, edge);
                     sig.addTransition(trans);
                     transitions.add(trans);
                 }

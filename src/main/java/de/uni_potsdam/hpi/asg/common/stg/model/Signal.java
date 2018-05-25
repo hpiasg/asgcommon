@@ -32,10 +32,13 @@ public class Signal implements Comparable<Signal> {
     private String           name;
     private List<Transition> transitions;
 
+    private int              nextDummyId;
+
     public Signal(String name, SignalType type) {
         this.name = name;
         this.type = type;
         this.transitions = new ArrayList<Transition>();
+        this.nextDummyId = 1;
     }
 
     public String getName() {
@@ -102,5 +105,9 @@ public class Signal implements Comparable<Signal> {
 
     public boolean isInternalOrOutput() {
         return(this.type == SignalType.internal || this.type == SignalType.output);
+    }
+
+    public int getNextDummyId() {
+        return nextDummyId++;
     }
 }

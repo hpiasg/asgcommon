@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -57,7 +57,8 @@ public class Parameter {
         var_spec, // Outputspec of Variable -- BrzVariable, BrzFalseVariable
         fetch_spec, // NYI -- BrzFetch, BrzCaseFetch
         case_spec, // NYI -- BrzCase
-        encode_spec // NYI -- BrzEncode
+        encode_spec, // NYI -- BrzEncode
+        sequence_spec
     }
 
     @XmlAttribute(name = "id", required = true)

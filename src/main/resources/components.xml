@@ -55,6 +55,10 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
     </component>
     
     <component breezename="BrzSequence" symbol=";">
+        <parameters>
+        	<parameter id="0" type="output_count" />
+            <parameter id="1" type="sequence_spec" />
+        </parameters>
         <channels>
             <channel id="0" type="control_in" porttype="passive" />
             <channel id="1" type="control_out" porttype="active" />

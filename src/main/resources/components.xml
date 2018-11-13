@@ -261,7 +261,7 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
         </channels>
     </component>
     
-    <component breezename="BrzEncode" symbol="@">
+    <component breezename="BrzEncode" symbol="Enc">
         <parameters>
             <parameter id="0" type="output_width" />
             <parameter id="1" type="input_count" />

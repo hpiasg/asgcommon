@@ -199,8 +199,8 @@ public class GFile {
             return false;
         }
         if(linesplit.size() == 1) {
-            logger.error("Only one Transition/Place found in line " + line);
-            return false;
+            logger.warn("Only one Transition/Place found in line " + line);
+            return true;
         }
 
         String firstElement = linesplit.get(0);

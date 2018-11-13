@@ -489,11 +489,17 @@ public class GFile {
             }
         }
         text.append(newline);
-        text.append(".marking { ");
-        for(Place p : stg.getInitMarking()) {
-            text.append(placeToString(p) + " ");
+
+        if(stg.getInitMarking() == null) {
+            logger.warn("STG has no init marking");
+        } else {
+            text.append(".marking { ");
+            for(Place p : stg.getInitMarking()) {
+                text.append(placeToString(p) + " ");
+            }
+            text.append("}" + newline);
         }
-        text.append("}" + newline);
+
         text.append(".end");
 
         return FileHelper.getInstance().writeFile(file, text.toString());

@@ -35,6 +35,7 @@ public class Parameter {
         port_count, // -- BrzDecisionWait
         index_width, // -- BrzCaseFetch
         low_index, // BrzSlice
+        guard_count, // BrzBar
 
         input_count, // -- BrzCallMux, BrzCaseFetch, BrzCombineEqual, BrzEncode
         input_width, // -- BrzVariable, BrzCase, BrzFalseVariable, BrzAdapt, BrzCombineEqual

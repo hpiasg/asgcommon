@@ -39,6 +39,10 @@ public class STG {
     private List<Place>              initMarking;
     private File                     file;
 
+    public STG() {
+        this(null);
+    }
+
     public STG(File file) {
         signals = new HashMap<String, Signal>();
         transitions = new ArrayList<Transition>();
@@ -113,6 +117,16 @@ public class STG {
             System.err.println("Signal " + signalName + " not found");
             return null;
         }
+    }
+
+    public void addConnection(Place p, Transition t) {
+        p.addPostTransition(t);
+        t.addPrePlace(p);
+    }
+
+    public void addConnection(Transition t, Place p) {
+        t.addPostPlace(p);
+        p.addPreTransition(t);
     }
 
     public void setInitMarking(List<Place> marking) {

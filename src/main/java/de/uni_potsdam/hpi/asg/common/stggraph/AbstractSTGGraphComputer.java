@@ -171,6 +171,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         newState = false;
         if(states.containsKey(mid)) {
             state = states.get(mid);
+            state.addMarking(marking);
         } else {
             try {
                 state = tclass.newInstance();
@@ -182,6 +183,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
                 return null;
             }
             states.put(mid, state);
+            state.addMarking(marking);
             newState = true;
         }
 //		System.out.println("State " + state.toStringSimple() + ": " + newState);

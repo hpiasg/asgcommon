@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.uni_potsdam.hpi.asg.common.stg.model.Place;
 import de.uni_potsdam.hpi.asg.common.stg.model.Signal;
 import de.uni_potsdam.hpi.asg.common.stg.model.Transition;
 
@@ -74,11 +75,31 @@ public abstract class AbstractState<T extends AbstractState<T>> {
     protected Set<T>             prevStates;
     protected Map<Transition, T> nextStates;
     protected int                id;
+    protected Set<Set<Place>>    markings;
 
     public AbstractState() {
         this.nextStates = new HashMap<Transition, T>();
         this.prevStates = new HashSet<T>();
         this.id = sid++;
+        this.markings = new HashSet<>();
+    }
+
+    public void addMarking(Set<Place> marking) {
+        boolean found = false;
+        for(Set<Place> entry : markings) {
+            if(entry.containsAll(marking) && marking.containsAll(entry)) {
+                //skip - sets are identical
+                found = true;
+                break;
+            }
+        }
+        if(!found) {
+            Set<Place> newMarking = new HashSet<>();
+            for(Place p : marking) {
+                newMarking.add(p);
+            }
+            markings.add(newMarking);
+        }
     }
 
     public abstract void setSignalState(Signal sig, Value val);
@@ -113,5 +134,9 @@ public abstract class AbstractState<T extends AbstractState<T>> {
         }
         this.nextStates.put(t, state);
         state.prevStates.add((T)this);
+    }
+
+    public Set<Set<Place>> getMarkings() {
+        return markings;
     }
 }

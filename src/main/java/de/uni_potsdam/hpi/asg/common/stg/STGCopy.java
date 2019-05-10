@@ -19,9 +19,9 @@ package de.uni_potsdam.hpi.asg.common.stg;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -95,7 +95,7 @@ public class STGCopy {
         }
 
         // Init marking
-        List<Place> outInitMarking = new ArrayList<>();
+        Set<Place> outInitMarking = new HashSet<>();
         for(Place inPlace : inStg.getInitMarking()) {
             Place outPlace = placeMap.get(inPlace);
             outInitMarking.add(outPlace);

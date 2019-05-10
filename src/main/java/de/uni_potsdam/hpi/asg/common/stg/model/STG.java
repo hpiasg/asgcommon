@@ -20,11 +20,11 @@ package de.uni_potsdam.hpi.asg.common.stg.model;
  */
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -34,9 +34,9 @@ import de.uni_potsdam.hpi.asg.common.stg.model.Transition.Edge;
 public class STG {
 
     private Map<String, Signal>      signals;
-    private List<Transition>         transitions;
+    private Set<Transition>          transitions;
     private SortedMap<String, Place> places;
-    private List<Place>              initMarking;
+    private Set<Place>               initMarking;
     private File                     file;
 
     public STG() {
@@ -44,9 +44,9 @@ public class STG {
     }
 
     public STG(File file) {
-        signals = new HashMap<String, Signal>();
-        transitions = new ArrayList<Transition>();
-        places = new TreeMap<String, Place>();
+        signals = new HashMap<>();
+        transitions = new HashSet<>();
+        places = new TreeMap<>();
         this.file = file;
     }
 
@@ -129,11 +129,11 @@ public class STG {
         p.addPreTransition(t);
     }
 
-    public void setInitMarking(List<Place> marking) {
+    public void setInitMarking(Set<Place> marking) {
         this.initMarking = marking;
     }
 
-    public List<Place> getInitMarking() {
+    public Set<Place> getInitMarking() {
         return initMarking;
     }
 
@@ -149,7 +149,7 @@ public class STG {
         return signals.get(str);
     }
 
-    public List<Transition> getTransitions() {
+    public Set<Transition> getTransitions() {
         return transitions;
     }
 

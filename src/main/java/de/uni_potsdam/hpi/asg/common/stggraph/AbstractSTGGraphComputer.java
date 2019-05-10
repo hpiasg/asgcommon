@@ -90,7 +90,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
             insertPlacesIntoEmptyPostset();
         }
 
-        List<Place> marking = new ArrayList<Place>();
+        Set<Place> marking = new HashSet<Place>();
         marking.addAll(stg.getInitMarking());
         init = getNewSteps(marking, newSteps, null, null, prefillStates);
         steps.addAll(newSteps);
@@ -128,7 +128,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         }
     }
 
-    private void fire(List<Place> marking, Transition fireTrans) {
+    private void fire(Set<Place> marking, Transition fireTrans) {
         enabledForFiring = true;
         for(Place p : fireTrans.getPreset()) {
             if(!marking.contains(p)) {
@@ -146,7 +146,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         }
     }
 
-    private T getNewSteps(List<Place> marking, List<SimulationStep<T>> newSteps, Transition firedTrans, T prevState, boolean prefillStates) {
+    private T getNewSteps(Set<Place> marking, List<SimulationStep<T>> newSteps, Transition firedTrans, T prevState, boolean prefillStates) {
         // check wich transitions are activated in this marking
         activatedTrans.clear();
         allact = true;
@@ -295,7 +295,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         //System.gc();
     }
 
-    private BitSet getMarkingId(List<Place> marking) {
+    private BitSet getMarkingId(Set<Place> marking) {
         x = 0;
         BitSet retVal = new BitSet(stg.getPlaces().size());
         for(Entry<String, Place> entry : stg.getPlaces().entrySet()) {

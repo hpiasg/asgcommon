@@ -308,7 +308,7 @@ public class GFile {
     }
 
     private static boolean parseMarking(STG stg, String line) {
-        List<Place> markedPlaces = new ArrayList<Place>();
+        Set<Place> markedPlaces = new HashSet<Place>();
         Matcher m0 = markingPattern.matcher(line);
         if(m0.matches()) {
             List<String> splitted = pickMarkings(m0.group(1));

@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker;
 
 /*
- * Copyright (C) 2017 - 2018 Norman Kluge
+ * Copyright (C) 2017 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -54,6 +54,8 @@ public abstract class ExternalToolsInvoker {
     private File                       workingDir;                       // default: WorkingDirGenerator value
     private int                        timeout;                          // default: 0 (=off)
     private boolean                    removeRemoteDir;                  // default: true
+
+    protected File                     localWorkingDir;                  // actual working dir (valid after run)
 
     private Set<File>                  inputFilesToCopy;
     private Map<String, File>          outputFilesToExport;
@@ -138,7 +140,7 @@ public abstract class ExternalToolsInvoker {
         }
 
         // create (local) directory
-        File localWorkingDir = createLocalTempDirectory(subDir + "_");
+        localWorkingDir = createLocalTempDirectory(subDir + "_");
         if(localWorkingDir == null) {
             return null;
         }

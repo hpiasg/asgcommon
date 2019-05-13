@@ -63,6 +63,15 @@ public class GFile {
         return null;
     }
 
+    public static Transition getTransitionFromString(STG stg, String str) {
+        Transition trans = null;
+        Matcher m = transPattern.matcher(str);
+        if(m.matches()) {
+            trans = stg.getTransition(m.group(1), getEdge(m.group(2)), getId(m.group(3)));
+        }
+        return trans;
+    }
+
     private static STG readGFile(File file) {
         boolean inputs = false;
         boolean outputs = false;

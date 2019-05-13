@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg;
 
 /*
- * Copyright (C) 2014 - 2018 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -422,11 +422,10 @@ public class GFile {
         Set<Signal> inputs = new HashSet<Signal>();
         Set<Signal> outputs = new HashSet<Signal>();
         Set<Signal> internals = new HashSet<Signal>();
-        Set<Signal> dummies = new HashSet<Signal>();
         for(Signal sig : stg.getSignals()) {
             switch(sig.getType()) {
                 case dummy:
-                    dummies.add(sig);
+//                    dummies.add(sig);
                     break;
                 case input:
                     inputs.add(sig);
@@ -440,6 +439,13 @@ public class GFile {
                 default:
             }
         }
+        Set<String> dummies = new HashSet<>();
+        for(Transition t : stg.getTransitions()) {
+            if(t.isDummy()) {
+                dummies.add(transitionToString(t));
+            }
+        }
+
         if(!inputs.isEmpty()) {
             text.append(".inputs");
             for(Signal sig : inputs) {
@@ -463,8 +469,8 @@ public class GFile {
         }
         if(!dummies.isEmpty()) {
             text.append(".dummy");
-            for(Signal sig : dummies) {
-                text.append(" " + sig.getName());
+            for(String str : dummies) {
+                text.append(" " + str);
             }
             text.append(newline);
         }
@@ -513,8 +519,8 @@ public class GFile {
         Signal signal = t.getSignal();
         int id = t.getId();
         Edge edge = t.getEdge();
-        if(signal.getType() == SignalType.dummy) {
-            return signal.toString() + "/" + t.getDummyId();
+        if(t.isDummy()) {
+            return "dum" + t.getGlobalId();
         }
         return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((id != 0) ? "/" + id : "");
     }

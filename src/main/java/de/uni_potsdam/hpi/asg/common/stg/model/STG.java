@@ -39,15 +39,18 @@ public class STG {
     private Set<Place>               initMarking;
     private File                     file;
 
+    private int                      globalTransitionId;
+
     public STG() {
         this(null);
     }
 
     public STG(File file) {
-        signals = new HashMap<>();
-        transitions = new HashSet<>();
-        places = new TreeMap<>();
+        this.signals = new HashMap<>();
+        this.transitions = new HashSet<>();
+        this.places = new TreeMap<>();
         this.file = file;
+        this.globalTransitionId = 0;
     }
 
     public void addSignal(String name, SignalType type) {
@@ -107,7 +110,7 @@ public class STG {
             }
             if(trans == null) {
                 if(add) {
-                    trans = new Transition(id, sig.getNextDummyId(), sig, edge);
+                    trans = new Transition(id, globalTransitionId++, sig, edge);
                     sig.addTransition(trans);
                     transitions.add(trans);
                 }

@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2018 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -32,13 +32,10 @@ public class Signal implements Comparable<Signal> {
     private String           name;
     private List<Transition> transitions;
 
-    private int              nextDummyId;
-
     public Signal(String name, SignalType type) {
         this.name = name;
         this.type = type;
         this.transitions = new ArrayList<Transition>();
-        this.nextDummyId = 1;
     }
 
     public String getName() {
@@ -59,9 +56,8 @@ public class Signal implements Comparable<Signal> {
 
     public void dummify() {
         this.type = SignalType.dummy;
-        int id = 0;
         for(Transition t : transitions) {
-            t.setId(id++);
+            t.dummify();
         }
     }
 
@@ -105,9 +101,5 @@ public class Signal implements Comparable<Signal> {
 
     public boolean isInternalOrOutput() {
         return(this.type == SignalType.internal || this.type == SignalType.output);
-    }
-
-    public int getNextDummyId() {
-        return nextDummyId++;
     }
 }

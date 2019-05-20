@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2018 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,19 +19,19 @@ package de.uni_potsdam.hpi.asg.common.stg.model;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Place {
 
-    private String           id;
-    private List<Transition> preset;
-    private List<Transition> postset;
+    private String          id;
+    private Set<Transition> preset;
+    private Set<Transition> postset;
 
     public Place(String id) {
         this.id = id;
-        this.preset = new ArrayList<Transition>();
-        this.postset = new ArrayList<Transition>();
+        this.preset = new HashSet<Transition>();
+        this.postset = new HashSet<Transition>();
     }
 
     public String getId() {
@@ -46,18 +46,18 @@ public class Place {
         this.preset.add(pre);
     }
 
-    public List<Transition> getPostset() {
+    public Set<Transition> getPostset() {
         return postset;
     }
 
-    public List<Transition> getPreset() {
+    public Set<Transition> getPreset() {
         return preset;
     }
 
     @Override
     public String toString() {
         if(id.startsWith("tmp")) {
-            return "<" + this.preset.get(0) + "," + this.postset.get(0) + ">";
+            return "<" + this.preset.iterator().next() + "," + this.postset.iterator().next() + ">";
         }
         return id;
     }

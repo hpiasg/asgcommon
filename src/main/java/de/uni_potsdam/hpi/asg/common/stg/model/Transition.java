@@ -19,8 +19,8 @@ package de.uni_potsdam.hpi.asg.common.stg.model;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Transition implements Comparable<Transition> {
 
@@ -28,22 +28,22 @@ public class Transition implements Comparable<Transition> {
         rising, falling
     }
 
-    private int         transitionId; // unique per signal and edge
-    private int         globalId;     // unique in stg: used if transition gets dummified
-    private boolean     isDummy;
-    private Edge        edge;
-    private Signal      signal;
+    private int        transitionId; // unique per signal and edge
+    private int        globalId;     // unique in stg: used if transition gets dummified
+    private boolean    isDummy;
+    private Edge       edge;
+    private Signal     signal;
 
-    private List<Place> postset;
-    private List<Place> preset;
+    private Set<Place> postset;
+    private Set<Place> preset;
 
     public Transition(int transitionId, int globalId, Signal signal, Edge edge) {
         this.transitionId = transitionId;
         this.globalId = globalId;
         this.signal = signal;
         this.edge = edge;
-        this.preset = new ArrayList<Place>(1);
-        this.postset = new ArrayList<Place>(1);
+        this.preset = new HashSet<Place>(1);
+        this.postset = new HashSet<Place>(1);
         this.isDummy = false;
     }
 
@@ -55,11 +55,11 @@ public class Transition implements Comparable<Transition> {
         return signal;
     }
 
-    public List<Place> getPostset() {
+    public Set<Place> getPostset() {
         return postset;
     }
 
-    public List<Place> getPreset() {
+    public Set<Place> getPreset() {
         return preset;
     }
 

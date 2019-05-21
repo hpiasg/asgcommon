@@ -108,7 +108,7 @@ public class Transition implements Comparable<Transition> {
     }
 
     public boolean isDummy() {
-        return isDummy;
+        return isDummy || signal.isDummy();
     }
 
     public int getGlobalId() {

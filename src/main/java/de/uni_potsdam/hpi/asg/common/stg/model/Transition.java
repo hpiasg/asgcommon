@@ -22,6 +22,8 @@ package de.uni_potsdam.hpi.asg.common.stg.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.uni_potsdam.hpi.asg.common.stg.GFile;
+
 public class Transition implements Comparable<Transition> {
 
     public enum Edge {
@@ -77,10 +79,11 @@ public class Transition implements Comparable<Transition> {
 
     @Override
     public String toString() {
-        if(isDummy) {
-            return "dum" + globalId + "(" + signal.toString() + ((transitionId != 0) ? "/" + transitionId : "") + ")";
-        }
-        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((transitionId != 0) ? "/" + transitionId : "");
+//        if(isDummy) {
+//            return "dum" + globalId + "(" + signal.toString() + ((transitionId != 0) ? "/" + transitionId : "") + ")";
+//        }
+//        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((transitionId != 1) ? "/" + transitionId : "");
+        return GFile.formatTransition(this);
     }
 
     @Override

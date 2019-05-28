@@ -46,7 +46,7 @@ public class GFile {
     private static final Logger  logger              = LogManager.getLogger();
 
     private static final Pattern markingPattern      = Pattern.compile(".marking\\s*\\{\\s*(.*)\\s*\\}\\s*");
-    private static final Pattern transPattern        = Pattern.compile("(\\w+)([+-])/?(\\d*)");
+    public static final Pattern  transPattern        = Pattern.compile("(\\w+)([+-])/?(\\d*)");
     private static final Pattern dummyPattern        = Pattern.compile("(\\w+)/?(\\d*)");
     private static final Pattern markingTransPattern = Pattern.compile("\\s*([a-zA-Z0-9_/+-]+)\\s*,\\s*([a-zA-Z0-9_/+-]+)\\s*");
     private static final Pattern interfacePattern    = Pattern.compile("(.inputs|.outputs|.internal|.dummy)\\s*(.*)");
@@ -301,11 +301,11 @@ public class GFile {
         return retVal;
     }
 
-    private static int getId(String str) {
-        return (str.equals("")) ? 0 : Integer.parseInt(str);
+    public static int getId(String str) {
+        return (str.equals("")) ? 1 : Integer.parseInt(str);
     }
 
-    private static Edge getEdge(String str) {
+    public static Edge getEdge(String str) {
         if(str.equals("+")) {
             return Edge.rising;
         } else if(str.equals("-")) {
@@ -452,7 +452,7 @@ public class GFile {
         Set<String> dummies = new HashSet<>();
         for(Transition t : stg.getTransitions()) {
             if(t.isDummy()) {
-                dummies.add(transitionToString(t));
+                dummies.add(formatTransition(t));
             }
         }
 
@@ -490,16 +490,16 @@ public class GFile {
             if(!entry.getValue().getPostset().isEmpty()) {
                 text.append(entry.getKey());
                 for(Transition t : entry.getValue().getPostset()) {
-                    text.append(" " + transitionToString(t));
+                    text.append(" " + formatTransition(t));
                 }
                 text.append(newline);
             }
         }
         for(Transition t : stg.getTransitions()) {
             if(!t.getPostset().isEmpty()) {
-                text.append(transitionToString(t));
+                text.append(formatTransition(t));
                 for(Place p : t.getPostset()) {
-                    text.append(" " + placeToString(p));
+                    text.append(" " + formatPlace(p));
                 }
                 text.append(newline);
             }
@@ -511,7 +511,7 @@ public class GFile {
         } else {
             text.append(".marking { ");
             for(Place p : stg.getInitMarking()) {
-                text.append(placeToString(p) + " ");
+                text.append(formatPlace(p) + " ");
             }
             text.append("}" + newline);
         }
@@ -521,17 +521,36 @@ public class GFile {
         return FileHelper.getInstance().writeFile(file, text.toString());
     }
 
-    private static String placeToString(Place p) {
+    private static String formatPlace(Place p) {
         return p.getId();
     }
 
-    private static String transitionToString(Transition t) {
-        Signal signal = t.getSignal();
-        int id = t.getId();
-        Edge edge = t.getEdge();
+    public static String formatTransition(Transition t) {
         if(t.isDummy()) {
             return "dum" + t.getGlobalId();
         }
-        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((id != 0) ? "/" + id : "");
+
+        String signalStr = t.getSignal().toString();
+        String edgeStr = null;
+        switch(t.getEdge()) {
+            case falling:
+                edgeStr = "-";
+                break;
+            case rising:
+                edgeStr = "+";
+                break;
+        }
+        int id = t.getId();
+        String idStr = null;
+        if(id <= 0) {
+            logger.error("Transition id <= 0");
+            return null;
+        } else if(id == 1) {
+            idStr = "";
+        } else { //id > 1
+            idStr = "/" + id;
+        }
+
+        return signalStr + edgeStr + idStr;
     }
 }

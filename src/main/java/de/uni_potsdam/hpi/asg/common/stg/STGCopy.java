@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg;
 
 /*
- * Copyright (C) 2018 Norman Kluge
+ * Copyright (C) 2018 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 

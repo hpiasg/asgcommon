@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.iohelper;
+package de.uni_potsdam.hpi.asg.common.stggraph.stategraph.csc;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2016 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,23 +19,12 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Timeout implements Runnable {
+import java.io.File;
 
-    private Thread t;
-    private int    timeout;
+import de.uni_potsdam.hpi.asg.common.stg.model.STG;
 
-    public Timeout(Thread t, int timeout) {
-        this.t = t;
-        this.timeout = timeout;
-    }
+public interface CSCSolver {
 
-    public void run() {
-        try {
-            Thread.sleep(timeout);
-            t.interrupt();
-            return;
-        } catch(InterruptedException e) {
-            return;
-        }
-    }
+    public boolean solveCSC(STG stgin, File stgoutfile);
+
 }

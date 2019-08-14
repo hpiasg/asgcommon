@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stggraph;
 
 /*
- * Copyright (C) 2014 - 2016 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,23 +19,23 @@ package de.uni_potsdam.hpi.asg.common.stggraph;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import de.uni_potsdam.hpi.asg.common.stg.model.Place;
 import de.uni_potsdam.hpi.asg.common.stg.model.Transition;
 
 public class SimulationStep<T extends AbstractState<T>> {
 
-    private List<Place> marking;
-    private Transition  fireTrans;
-    private T           state;
+    private Set<Place> marking;
+    private Transition fireTrans;
+    private T          state;
 
     public SimulationStep() {
-        marking = new ArrayList<Place>();
+        marking = new HashSet<Place>();
     }
 
-    public void addPlaces(List<Place> places) {
+    public void addPlaces(Set<Place> places) {
         this.marking.addAll(places);
     }
 
@@ -47,7 +47,7 @@ public class SimulationStep<T extends AbstractState<T>> {
         this.fireTrans = fireTrans;
     }
 
-    public List<Place> getMarking() {
+    public Set<Place> getMarking() {
         return marking;
     }
 

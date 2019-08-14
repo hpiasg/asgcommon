@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -24,33 +24,39 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.uni_potsdam.hpi.asg.common.iohelper.BasedirHelper;
+import de.uni_potsdam.hpi.asg.common.misc.CommonConstants;
 
 public class ReadTechnologyHelper {
     private static final Logger logger = LogManager.getLogger();
 
-    public static Technology read(File optTech, String cfgTech) {
-        if(optTech != null) {
-            if(optTech.exists()) {
-                logger.debug("Using options technology file: " + optTech.getAbsolutePath());
-                return Technology.readIn(optTech);
+    public static Technology read(String optTechName, File optTechFile, String cfgTech) {
+        if(optTechName != null) {
+            File f = new File(CommonConstants.DEF_TECH_DIR_FILE, optTechName + CommonConstants.XMLTECH_FILE_EXTENSION);
+            if(f.exists()) {
+                logger.debug("Using installed technology '" + optTechName + "'");
+                return Technology.readIn(f);
             } else {
-                logger.warn("Options technology file " + optTech.getAbsolutePath() + " not found. Trying default from config");
+                logger.warn("Installed technology '" + optTechName + "' does not exist. Trying other options..");
             }
-        } else {
-            logger.debug("No technology in options passed. Trying default from config");
+        }
+
+        if(optTechFile != null) {
+            if(optTechFile.exists()) {
+                logger.debug("Using options technology file: " + optTechFile.getAbsolutePath());
+                return Technology.readIn(optTechFile);
+            } else {
+                logger.warn("Options technology file " + optTechFile.getAbsolutePath() + " not found. Trying default from config");
+            }
         }
 
         if(cfgTech != null) {
-            File cfgTechFile = BasedirHelper.replaceBasedirAsFile(cfgTech);
-            if(cfgTechFile.exists()) {
-                logger.debug("Using config technology file: " + cfgTechFile.getAbsolutePath());
-                return Technology.readIn(cfgTechFile);
+            File f = new File(CommonConstants.DEF_TECH_DIR_FILE, cfgTech + CommonConstants.XMLTECH_FILE_EXTENSION);
+            if(f.exists()) {
+                logger.debug("Using default installed technology '" + optTechName + "'");
+                return Technology.readIn(f);
             } else {
-                logger.warn("Config technology file " + cfgTechFile.getAbsolutePath() + " not found.");
+                logger.warn("Default installed technology '" + optTechName + "' does not exist");
             }
-        } else {
-            logger.warn("No default technology in config file defined");
         }
 
         return null;

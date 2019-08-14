@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
 
 /*
- * Copyright (C) 2012 - 2015 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -25,6 +25,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
+import de.uni_potsdam.hpi.asg.common.breeze.model.xml.Channel.ChannelType;
+
 @XmlAccessorType(XmlAccessType.NONE)
 public class Channels {
     @XmlElement(name = "channel")
@@ -33,6 +35,15 @@ public class Channels {
     public Channel getChannel(int id) {
         for(Channel chan : channels) {
             if(chan.getId() == id) {
+                return chan;
+            }
+        }
+        return null;
+    }
+
+    public Channel getChannel(ChannelType type) {
+        for(Channel chan : channels) {
+            if(chan.getType() == type) {
                 return chan;
             }
         }

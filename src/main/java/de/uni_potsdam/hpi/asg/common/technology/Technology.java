@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2012 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -48,17 +48,17 @@ public class Technology implements Serializable {
 
     //@formatter:off
     
-    @XmlAttribute(name = "name")
+    @XmlAttribute(name = "name", required = true)
     private String name;
-    @XmlElement(name = "balsa")
+    @XmlElement(name = "balsa", required = true)
     private Balsa balsa;
-    @XmlElement(name = "genlib")
+    @XmlElement(name = "genlib", required = true)
     private Genlib genlib;
-    @XmlElement(name = "liberty")
+    @XmlElement(name = "liberty", required = true)
     private String liberty;
     @XmlElement(name = "addInfo")
     private String additionalInfo;
-    @XmlElement(name = "synctool")
+    @XmlElement(name = "synctool", required = true)
     private SyncTool synctool;
     
     private File folder;
@@ -149,10 +149,20 @@ public class Technology implements Serializable {
     }
 
     public File getAdditionalInfoFile() {
+        if(additionalInfo == null) {
+            return null;
+        }
         return new File(folder, additionalInfo);
     }
 
     public File getLibertyFile() {
+        if(liberty == null) {
+            return null;
+        }
         return new File(folder, liberty);
+    }
+
+    public void setFolder(File folder) {
+        this.folder = folder;
     }
 }

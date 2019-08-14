@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.iohelper;
+package de.uni_potsdam.hpi.asg.common.invoker;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -20,19 +20,16 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
  */
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import de.uni_potsdam.hpi.asg.common.iohelper.FileHelper;
 
 public class TimeStat {
 
-    private File             file;
-    private FileOutputStream stream;
-    private long             userTime;
-    private long             systemTime;
+    private File file;
+    private long userTime;
+    private long systemTime;
 
     private TimeStat(File file) {
         this.file = file;
@@ -40,37 +37,31 @@ public class TimeStat {
         this.systemTime = 0;
     }
 
-    public static TimeStat create() {
-        File file = null;
-        try {
-            file = File.createTempFile("timestat", ".txt");
-        } catch(IOException e) {
-            return null;
-        }
-        if(file == null) {
-            return null;
-        }
-        return new TimeStat(file);
+    public static TimeStat create(File dir) {
+        return new TimeStat(new File(dir, "timestat.txt"));
     }
 
-    public String getRemoteCmdStr() {
-        return "/usr/bin/time -f U:%U\\\\nS:%S\\\\n";
-    }
-
-    public String[] getLocalCmd() {
+    public List<String> getCmd() {
         //@formatter:off
-        return new String[] {
+        return Arrays.asList(
             "/usr/bin/time",
             "-f", "U:%U\nS:%S\n",
-            "-o", file.getAbsolutePath()
-        };
+            "-o", file.getName()
+        );
         //@formatter:on
+    }
+
+    public String getCmdStr() {
+        return "/usr/bin/time -f U:%U\\\\nS:%S\\\\n -o " + file.getName();
     }
 
     public boolean evaluate() {
         List<String> lines = FileHelper.getInstance().readFile(file);
         userTime = 0;
         systemTime = 0;
+        if(lines == null) {
+            return false;
+        }
         for(String line : lines) {
             if(line.startsWith("U:")) {
                 userTime = (long)(Float.parseFloat(line.replace("U:", "")) * 1000);
@@ -79,7 +70,7 @@ public class TimeStat {
                 systemTime = (long)(Float.parseFloat(line.replace("S:", "")) * 1000);
             }
         }
-        file.delete();
+        //file.delete();
         return true;
     }
 
@@ -91,14 +82,7 @@ public class TimeStat {
         return userTime;
     }
 
-    public FileOutputStream getStream() {
-        if(stream == null) {
-            try {
-                stream = new FileOutputStream(file);
-            } catch(FileNotFoundException e) {
-                return null;
-            }
-        }
-        return stream;
+    public File getFile() {
+        return file;
     }
 }

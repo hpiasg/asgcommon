@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2015 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -20,11 +20,11 @@ package de.uni_potsdam.hpi.asg.common.stg.model;
  */
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -34,21 +34,34 @@ import de.uni_potsdam.hpi.asg.common.stg.model.Transition.Edge;
 public class STG {
 
     private Map<String, Signal>      signals;
-    private List<Transition>         transitions;
+    private Set<Transition>          transitions;
     private SortedMap<String, Place> places;
-    private List<Place>              initMarking;
+    private Set<Place>               initMarking;
     private File                     file;
 
+    private int                      globalTransitionId;
+
+    public STG() {
+        this(null);
+    }
+
     public STG(File file) {
-        signals = new HashMap<String, Signal>();
-        transitions = new ArrayList<Transition>();
-        places = new TreeMap<String, Place>();
+        this.signals = new HashMap<>();
+        this.transitions = new HashSet<>();
+        this.places = new TreeMap<>();
         this.file = file;
+        this.globalTransitionId = 0;
     }
 
     public void addSignal(String name, SignalType type) {
         Signal sig = new Signal(name, type);
         signals.put(name, sig);
+    }
+
+    public void changeSignalName(Signal sig, String newName) {
+        this.signals.remove(sig.getName());
+        sig.changeName(newName);
+        this.signals.put(newName, sig);
     }
 
     public Place getPlace(String str) {
@@ -97,7 +110,7 @@ public class STG {
             }
             if(trans == null) {
                 if(add) {
-                    trans = new Transition(id, sig, edge);
+                    trans = new Transition(id, globalTransitionId++, sig, edge);
                     sig.addTransition(trans);
                     transitions.add(trans);
                 }
@@ -109,11 +122,21 @@ public class STG {
         }
     }
 
-    public void setInitMarking(List<Place> marking) {
+    public void addConnection(Place p, Transition t) {
+        p.addPostTransition(t);
+        t.addPrePlace(p);
+    }
+
+    public void addConnection(Transition t, Place p) {
+        t.addPostPlace(p);
+        p.addPreTransition(t);
+    }
+
+    public void setInitMarking(Set<Place> marking) {
         this.initMarking = marking;
     }
 
-    public List<Place> getInitMarking() {
+    public Set<Place> getInitMarking() {
         return initMarking;
     }
 
@@ -129,7 +152,7 @@ public class STG {
         return signals.get(str);
     }
 
-    public List<Transition> getTransitions() {
+    public Set<Transition> getTransitions() {
         return transitions;
     }
 

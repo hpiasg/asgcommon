@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.technology;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2018 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -77,8 +77,8 @@ public class TechnologyDirectory {
         return techs;
     }
 
-    public Technology createTechnology(String name, File balsafolder, String style, File genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl, File libertyfile, File additionalInfoFile) {
-        Balsa balsa = new Balsa(style, name);
+    public Technology createTechnology(String name, File balsafolder, File genlibfile, String searchPaths, String libraries, List<String> postCompileCmds, List<String> verilogIncludes, String layouttcl, File libertyfile, File additionalInfoFile) {
+        Balsa balsa = new Balsa(name);
         File targetdir = new File(balsaTechDir, name);
         targetdir.mkdirs();
         try {
@@ -99,22 +99,28 @@ public class TechnologyDirectory {
 
         SyncTool synctool = new SyncTool(searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl);
 
-        String liberty = name + CommonConstants.LIBERTY_FILE_EXTENSION;
-        targetfile = new File(dir, liberty);
-        try {
-            FileUtils.copyFile(libertyfile, targetfile);
-        } catch(IOException e) {
-            logger.error("Error while copying liberty file");
-            return null;
+        String liberty = null;
+        if(libertyfile != null) {
+            liberty = name + CommonConstants.LIBERTY_FILE_EXTENSION;
+            targetfile = new File(dir, liberty);
+            try {
+                FileUtils.copyFile(libertyfile, targetfile);
+            } catch(IOException e) {
+                logger.error("Error while copying liberty file");
+                return null;
+            }
         }
 
-        String additionalInfo = name + CommonConstants.ADDINFO_FILE_EXTENSION;
-        targetfile = new File(dir, additionalInfo);
-        try {
-            FileUtils.copyFile(additionalInfoFile, targetfile);
-        } catch(IOException e) {
-            logger.error("Error while copying addInfo file");
-            return null;
+        String additionalInfo = null;
+        if(additionalInfoFile != null) {
+            additionalInfo = name + CommonConstants.ADDINFO_FILE_EXTENSION;
+            targetfile = new File(dir, additionalInfo);
+            try {
+                FileUtils.copyFile(additionalInfoFile, targetfile);
+            } catch(IOException e) {
+                logger.error("Error while copying addInfo file");
+                return null;
+            }
         }
 
         Technology tech = new Technology(name, balsa, genlib, synctool, liberty, additionalInfo);
@@ -122,6 +128,8 @@ public class TechnologyDirectory {
             logger.error("Error while creating technology file");
             return null;
         }
+        tech.setFolder(dir);
+
         this.techs.put(name, tech);
 
         return tech;
@@ -144,6 +152,7 @@ public class TechnologyDirectory {
     private Set<Technology> importTechFromFile(File file) {
         Set<Technology> retVal = new HashSet<>();
 
+        // xml file
         Technology tech = Technology.readInSilent(file);
         if(tech != null) {
             Technology newTech = this.importTechnology(tech, file.getParentFile());
@@ -153,6 +162,7 @@ public class TechnologyDirectory {
             }
         }
 
+        // zip
         File tmpDir = Files.createTempDir();
         if(Zipper.getInstance().unzip(file, tmpDir)) {
             retVal = importTechFromDir(tmpDir);
@@ -186,12 +196,12 @@ public class TechnologyDirectory {
         String name = srcTech.getName();
 
         if(techs.containsKey(name)) {
-            return null;
+            // already present. reimport
+            deleteTechnology(name);
         }
 
         File balsaSourceFolder = new File(srcDir, srcTech.getBalsa().getTech());
         File balsafolder = balsaSourceFolder;
-        String style = srcTech.getBalsa().getStyle();
 
         File genlibfile = srcTech.getGenLib();
 
@@ -204,7 +214,7 @@ public class TechnologyDirectory {
         File libertyfile = srcTech.getLibertyFile();
         File addInfoFile = srcTech.getAdditionalInfoFile();
 
-        return createTechnology(name, balsafolder, style, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl, libertyfile, addInfoFile);
+        return createTechnology(name, balsafolder, genlibfile, searchPaths, libraries, postCompileCmds, verilogIncludes, layouttcl, libertyfile, addInfoFile);
     }
 
     public void exportTechnology(String name, File dstDir) {

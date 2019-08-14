@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stg.model;
 
 /*
- * Copyright (C) 2014 - 2015 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,10 +19,10 @@ package de.uni_potsdam.hpi.asg.common.stg.model;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import de.uni_potsdam.hpi.asg.common.stg.model.Signal.SignalType;
+import de.uni_potsdam.hpi.asg.common.stg.GFile;
 
 public class Transition implements Comparable<Transition> {
 
@@ -30,19 +30,23 @@ public class Transition implements Comparable<Transition> {
         rising, falling
     }
 
-    private int         id;
-    private Edge        edge;
-    private Signal      signal;
+    private int        transitionId; // unique per signal and edge
+    private int        globalId;     // unique in stg: used if transition gets dummified
+    private boolean    isDummy;
+    private Edge       edge;
+    private Signal     signal;
 
-    private List<Place> postset;
-    private List<Place> preset;
+    private Set<Place> postset;
+    private Set<Place> preset;
 
-    public Transition(int id, Signal signal, Edge edge) {
-        this.id = id;
+    public Transition(int transitionId, int globalId, Signal signal, Edge edge) {
+        this.transitionId = transitionId;
+        this.globalId = globalId;
         this.signal = signal;
         this.edge = edge;
-        this.preset = new ArrayList<Place>(1);
-        this.postset = new ArrayList<Place>(1);
+        this.preset = new HashSet<Place>(1);
+        this.postset = new HashSet<Place>(1);
+        this.isDummy = false;
     }
 
     public Edge getEdge() {
@@ -53,16 +57,16 @@ public class Transition implements Comparable<Transition> {
         return signal;
     }
 
-    public List<Place> getPostset() {
+    public Set<Place> getPostset() {
         return postset;
     }
 
-    public List<Place> getPreset() {
+    public Set<Place> getPreset() {
         return preset;
     }
 
     public int getId() {
-        return id;
+        return transitionId;
     }
 
     public void addPostPlace(Place post) {
@@ -75,11 +79,11 @@ public class Transition implements Comparable<Transition> {
 
     @Override
     public String toString() {
-
-        if(signal.getType() == SignalType.dummy) {
-            return signal.toString() + ((id != 0) ? "/" + id : "");
-        }
-        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((id != 0) ? "/" + id : "");
+//        if(isDummy) {
+//            return "dum" + globalId + "(" + signal.toString() + ((transitionId != 0) ? "/" + transitionId : "") + ")";
+//        }
+//        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((transitionId != 1) ? "/" + transitionId : "");
+        return GFile.formatTransition(this);
     }
 
     @Override
@@ -91,21 +95,26 @@ public class Transition implements Comparable<Transition> {
             } else if(this.edge == Edge.rising && o.edge == Edge.falling) {
                 return 1;
             } else {
-                return Integer.compare(this.id, o.id);
+                return Integer.compare(this.transitionId, o.transitionId);
             }
         } else {
             return cmpSigName;
         }
     }
 
-    public void setId(int id) {
-        this.id = id;
+//    public void setId(int id) {
+//        this.transitionId = id;
+//    }
+
+    public void dummify() {
+        this.isDummy = true;
     }
 
-    public String outputForGFile() {
-        if(signal.getType() == SignalType.dummy) {
-            return signal.toString() + ((id != 0) ? "/" + id : "");
-        }
-        return signal.toString() + ((edge == Edge.falling) ? "-" : "+") + ((id != 0) ? "/" + id : "");
+    public boolean isDummy() {
+        return isDummy || signal.isDummy();
+    }
+
+    public int getGlobalId() {
+        return globalId;
     }
 }

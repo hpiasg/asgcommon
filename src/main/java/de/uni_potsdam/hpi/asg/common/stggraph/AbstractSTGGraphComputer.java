@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.stggraph;
 
 /*
- * Copyright (C) 2014 - 2016 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -41,9 +41,12 @@ import de.uni_potsdam.hpi.asg.common.stggraph.AbstractState.Value;
 import gnu.trove.map.hash.THashMap;
 
 public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
-    private static final Logger   logger        = LogManager.getLogger();
+    private static final Logger   logger                       = LogManager.getLogger();
 
-    private static final long     showThreshold = 100;
+    private static final long     showThreshold                = 100;
+
+    private int                   tmpPlaceId                   = 0;
+    protected boolean             insertPlacesIntoEmptyPostset = false;
 
     private Class<T>              tclass;
 
@@ -83,7 +86,11 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         pool.setMaxTotal(-1);
         numsteps = 0;
 
-        List<Place> marking = new ArrayList<Place>();
+        if(insertPlacesIntoEmptyPostset) {
+            insertPlacesIntoEmptyPostset();
+        }
+
+        Set<Place> marking = new HashSet<Place>();
         marking.addAll(stg.getInitMarking());
         init = getNewSteps(marking, newSteps, null, null, prefillStates);
         steps.addAll(newSteps);
@@ -111,7 +118,17 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         return true;
     }
 
-    private void fire(List<Place> marking, Transition fireTrans) {
+    private void insertPlacesIntoEmptyPostset() {
+        for(Transition t : stg.getTransitions()) {
+            if(t.getPostset().isEmpty()) {
+                logger.warn("Postset of " + t.toString() + " is empty. Inserting place");
+                Place p = stg.getPlaceOrAdd("tmpOutP_" + (tmpPlaceId++));
+                t.addPostPlace(p);
+            }
+        }
+    }
+
+    private void fire(Set<Place> marking, Transition fireTrans) {
         enabledForFiring = true;
         for(Place p : fireTrans.getPreset()) {
             if(!marking.contains(p)) {
@@ -129,7 +146,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         }
     }
 
-    private T getNewSteps(List<Place> marking, List<SimulationStep<T>> newSteps, Transition firedTrans, T prevState, boolean prefillStates) {
+    private T getNewSteps(Set<Place> marking, List<SimulationStep<T>> newSteps, Transition firedTrans, T prevState, boolean prefillStates) {
         // check wich transitions are activated in this marking
         activatedTrans.clear();
         allact = true;
@@ -154,6 +171,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         newState = false;
         if(states.containsKey(mid)) {
             state = states.get(mid);
+            state.addMarking(marking);
         } else {
             try {
                 state = tclass.newInstance();
@@ -165,6 +183,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
                 return null;
             }
             states.put(mid, state);
+            state.addMarking(marking);
             newState = true;
         }
 //		System.out.println("State " + state.toStringSimple() + ": " + newState);
@@ -278,7 +297,7 @@ public class AbstractSTGGraphComputer<T extends AbstractState<T>> {
         //System.gc();
     }
 
-    private BitSet getMarkingId(List<Place> marking) {
+    private BitSet getMarkingId(Set<Place> marking) {
         x = 0;
         BitSet retVal = new BitSet(stg.getPlaces().size());
         for(Entry<String, Place> entry : stg.getPlaces().entrySet()) {

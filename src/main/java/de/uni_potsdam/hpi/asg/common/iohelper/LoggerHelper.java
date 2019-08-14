@@ -106,7 +106,7 @@ public class LoggerHelper {
                 default:
                     consoleLevel = Level.WARN;
             }
-            fileLevel = Level.INFO;
+            fileLevel = Level.DEBUG;
             System.setProperty("isdebug", "false");
         }
 

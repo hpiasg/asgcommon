@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.technology;
+package de.uni_potsdam.hpi.asg.common.invoker.local;
 
 /*
- * Copyright (C) 2012 - 2018 Norman Kluge
+ * Copyright (C) 2012 - 2015 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,27 +19,23 @@ package de.uni_potsdam.hpi.asg.common.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Serializable;
+public class Timeout implements Runnable {
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+    private Thread t;
+    private int    timeout;
 
-@XmlAccessorType(XmlAccessType.NONE)
-public class Balsa implements Serializable {
-    private static final long serialVersionUID = -7729551903207056828L;
-
-    @XmlElement(name = "tech")
-    private String            tech;
-
-    protected Balsa() {
+    public Timeout(Thread t, int timeout) {
+        this.t = t;
+        this.timeout = timeout;
     }
 
-    public Balsa(String tech) {
-        this.tech = tech;
-    }
-
-    public String getTech() {
-        return tech;
+    public void run() {
+        try {
+            Thread.sleep(timeout);
+            t.interrupt();
+            return;
+        } catch(InterruptedException e) {
+            return;
+        }
     }
 }

@@ -1,7 +1,7 @@
-package de.uni_potsdam.hpi.asg.common.technology;
+package de.uni_potsdam.hpi.asg.common.stghelper.model;
 
 /*
- * Copyright (C) 2012 - 2018 Norman Kluge
+ * Copyright (C) 2014 - 2019 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,27 +19,23 @@ package de.uni_potsdam.hpi.asg.common.technology;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Serializable;
+import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+public class Regions {
 
-@XmlAccessorType(XmlAccessType.NONE)
-public class Balsa implements Serializable {
-    private static final long serialVersionUID = -7729551903207056828L;
+    private List<CFRegion> risingRegions;
+    private List<CFRegion> fallingRegions;
 
-    @XmlElement(name = "tech")
-    private String            tech;
-
-    protected Balsa() {
+    public Regions(List<CFRegion> risingRegions, List<CFRegion> fallingRegions) {
+        this.risingRegions = risingRegions;
+        this.fallingRegions = fallingRegions;
     }
 
-    public Balsa(String tech) {
-        this.tech = tech;
+    public List<CFRegion> getFallingRegions() {
+        return fallingRegions;
     }
 
-    public String getTech() {
-        return tech;
+    public List<CFRegion> getRisingRegions() {
+        return risingRegions;
     }
 }

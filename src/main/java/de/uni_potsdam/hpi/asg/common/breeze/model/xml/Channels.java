@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
 
 /*
- * Copyright (C) 2012 - 2018 Norman Kluge
+ * Copyright (C) 2012 - 2021 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -21,9 +21,9 @@ package de.uni_potsdam.hpi.asg.common.breeze.model.xml;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import de.uni_potsdam.hpi.asg.common.breeze.model.xml.Channel.ChannelType;
 

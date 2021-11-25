@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.invoker.config;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2021 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -22,9 +22,9 @@ package de.uni_potsdam.hpi.asg.common.invoker.config;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 

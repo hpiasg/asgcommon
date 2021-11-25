@@ -41,9 +41,6 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
 			<url>http://www.gnu.org/licenses/gpl.txt</url>
 		</license>
 	</licenses>
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -100,6 +97,26 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+				<execution>
+					<id>enforce-maven</id>
+					<goals>
+					<goal>enforce</goal>
+					</goals>
+					<configuration>
+					<rules>
+						<requireMavenVersion>
+							<version>3.1.1</version>
+						</requireMavenVersion>
+					</rules>    
+					</configuration>
+				</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>javacc-maven-plugin</artifactId>
 				<version>2.6</version>
@@ -118,7 +135,7 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.6.1</version>
+				<version>3.8.1</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>

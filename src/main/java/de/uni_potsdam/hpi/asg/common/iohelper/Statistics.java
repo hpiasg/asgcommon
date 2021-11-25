@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2017 Norman Kluge
+ * Copyright (C) 2017 - 2021 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -19,10 +19,10 @@ package de.uni_potsdam.hpi.asg.common.iohelper;
  * along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "statistics")
 @XmlAccessorType(XmlAccessType.NONE)

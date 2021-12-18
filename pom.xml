@@ -152,7 +152,7 @@ along with ASGcommon.  If not, see <http://www.gnu.org/licenses/>.
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.15.0</version>
+			<version>2.17.0</version>
 		</dependency>
 		<dependency>
 			<groupId>args4j</groupId>

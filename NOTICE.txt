@@ -1,5 +1,5 @@
-ASGcommon v3.0.1
-Copyright (C) 2004-2021 Universitaet Augsburg, HHasso-Plattner-Institut für Digital Engineering gGmbH
+ASGcommon v3.0
+Copyright (C) 2004-2022 Universitaet Augsburg, HHasso-Plattner-Institut für Digital Engineering gGmbH
 
 This product includes software developed at Universitaet Augsburg.
 The Software developed and owned by the Universitaet Augsburg is licensed under the GNU GENERAL PUBLIC LICENSE Version 3 (http://www.fsf.org/licensing/licenses/gpl-3.0.html) ("GPL") to all third parties and that license, as required by the GPL, is included in the LICENSE.txt file.

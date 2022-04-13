@@ -1,7 +1,7 @@
 package de.uni_potsdam.hpi.asg.common.iohelper;
 
 /*
- * Copyright (C) 2012 - 2017 Norman Kluge
+ * Copyright (C) 2012 - 2022 Norman Kluge
  * 
  * This file is part of ASGcommon.
  * 
@@ -26,6 +26,7 @@ import java.net.URL;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -33,8 +34,11 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 
 public class LoggerHelper {
 
-    private static final URL GUI_CONFIG     = LoggerHelper.class.getResource("/asg_log4j2_gui.xml");
-    private static final URL CMDLINE_CONFIG = LoggerHelper.class.getResource("/asg_log4j2_cmdline.xml");
+    private static final URL    GUI_CONFIG            = LoggerHelper.class.getResource("/asg_log4j2_gui.xml");
+    private static final URL    CMDLINE_CONFIG        = LoggerHelper.class.getResource("/asg_log4j2_cmdline.xml");
+
+    private static final String CONSOLE_APPENDER_NAME = "Routing_console";
+    private static final String FILE_APPENDER_NAME    = "Routing_file";
 
     public enum Mode {
         cmdline, gui
@@ -110,11 +114,15 @@ public class LoggerHelper {
             System.setProperty("isdebug", "false");
         }
 
-        if(rootConfig.getAppenders().containsKey("Routing_console") && rootConfig.getAppenders().containsKey("Routing_file")) {
+        if(rootConfig.getAppenders().containsKey(CONSOLE_APPENDER_NAME) && rootConfig.getAppenders().containsKey(FILE_APPENDER_NAME)) {
             // advanced mode
             rootConfig.setLevel(Level.ALL);
-            rootConfig.addAppender(rootConfig.getAppenders().get("Routing_console"), consoleLevel, null);
-            rootConfig.addAppender(rootConfig.getAppenders().get("Routing_file"), fileLevel, null);
+            Appender consoleAppender = rootConfig.getAppenders().get(CONSOLE_APPENDER_NAME);
+            rootConfig.removeAppender(CONSOLE_APPENDER_NAME);
+            rootConfig.addAppender(consoleAppender, consoleLevel, null);
+            Appender fileAppender = rootConfig.getAppenders().get(FILE_APPENDER_NAME);
+            rootConfig.removeAppender(FILE_APPENDER_NAME);
+            rootConfig.addAppender(fileAppender, fileLevel, null);
         } else {
             // normal mode
             rootConfig.setLevel(consoleLevel);
